@@ -1,6 +1,6 @@
 {
   "paths": [
-    "localstorage:///grid/demos/demo-async-threads.xjson",
+    "localstorage://grid/demos/demo-async-threads.xjson",
     "github://kljh/grid/demos/demo-async-threads.xjson"
   ],
   "input": {
