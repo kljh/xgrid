@@ -1,6 +1,6 @@
 {
   "paths": [
-    "localstorage:///grid/demos/demo-html.xjson",
+    "localstorage://grid/demos/demo-html.xjson",
     "github://kljh/grid/demos/demo-html.xjson"
   ],
   "input": {
