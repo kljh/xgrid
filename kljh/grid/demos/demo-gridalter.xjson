@@ -10,7 +10,6 @@
     "D1": "=$D$7==1 && $D$15==9",
     "A3": "Ref to the end",
     "B3:B4": "=B17",
-    "D3": "=$B3",
     "G3": "<< try to copy-paste one column further right",
     "A4": "Ref to the B7",
     "A6": "Clone",
