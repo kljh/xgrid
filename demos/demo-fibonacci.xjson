@@ -1,6 +1,6 @@
 {
   "paths": [
-    "localstorage:///grid/demos/demo-fibonacci.xjson",
+    "localstorage://grid/demos/demo-fibonacci.xjson",
     "github://kljh/grid/demos/demo-fibonacci.xjson"
   ],
   "input": {
