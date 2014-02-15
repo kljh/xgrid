@@ -9,6 +9,7 @@
     "D1": "Async demo",
     "E1": "'=async_echo(3000, 'finally done')",
     "F1": "'=E1",
+    "H1": "z",
     "A2": "'=H9==1",
     "B2": "'=I10==4",
     "A3": "N",
