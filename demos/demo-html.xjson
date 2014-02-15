@@ -1,0 +1,76 @@
+{
+  "paths": [
+    "localstorage:///grid/demos/demo-html.xjson",
+    "github://kljh/grid/demos/demo-html.xjson"
+  ],
+  "input": {
+    "A1": "Test status",
+    "B1": "=K2=='B is true'",
+    "I1": "Demo of formula with complex structure below. Double click to explore (suggestion from Simon).",
+    "I2": 1,
+    "J2": "={ a: 'A is '+I2+2, b: 'B is true' }",
+    "K2": "=@J2.b",
+    "L2": "<a href=\"http://www.kljh.org\" target=\"_blank\">=@J2</a>",
+    "A3": "<span>if a value is surrounded with '&lt;' and '&gt;' then it is displayed as <tt>html</tt>.</span>",
+    "A4": "<span>don't we live a <b>great</b> era?</span>",
+    "A6": "<b>Librarians</b>",
+    "A7": "<img src=\"http://imgs.xkcd.com/comics/librarians.png\">",
+    "A9": "<tt>Micro SD</tt>",
+    "A10": "<img src=\"http://imgs.xkcd.com/comics/microsd.png\">",
+    "A12": "<i><u>Couple</u></i>",
+    "A13": "<img src=\"http://imgs.xkcd.com/comics/couple.png\">",
+    "A15": "Cells below are not allowed to overflow, compare the icons colors between this cell and the cells below.",
+    "A16": "Text in this cell is not allowed to exceed it's cell, and we use ellipsis to show it is truncated.",
+    "A17": "<img src=\"http://imgs.xkcd.com/comics/iphone_or_droid.png\">"
+  },
+  "format": {
+    "A1": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "I1": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "A2": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "A4": {
+      "overflow": "overflow"
+    },
+    "A5": {
+      "overflow": "overflow"
+    },
+    "A6": {
+      "overflow": "overflow"
+    },
+    "A7": {
+      "overflow": "overflow"
+    },
+    "A8": {
+      "overflow": "overflow"
+    },
+    "A9": {
+      "overflow": "overflow"
+    },
+    "A10": {
+      "overflow": "overflow"
+    },
+    "A11": {
+      "overflow": "overflow"
+    },
+    "A12": {
+      "overflow": "overflow"
+    },
+    "A13": {
+      "overflow": "overflow"
+    },
+    "A14": {
+      "overflow": "ellipsis"
+    },
+    "A15": {
+      "overflow": "ellipsis"
+    }
+  }
+}
