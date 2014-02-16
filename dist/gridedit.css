@@ -1,0 +1,85 @@
+body {
+    background-color: white;
+    margin: 0px;
+}
+h2 {
+    margin: 20px 0;
+}
+.handsontableInput {
+    text-align: center;
+}
+.handsontable th {
+    background-color: #CDE;}
+.handsontable td {
+    text-align: center;
+    font-style: normal;
+    border-right: 1px solid #EEE;
+    border-bottom: 1px solid #EEE;
+}
+
+/* Align class */
+
+td[vision-class~="left"] {
+    text-align: left;
+} 
+td[vision-class~="center"] {
+    text-align: center;
+} 
+td[vision-class~="right"] {
+    text-align: right;
+} 
+
+/* Overflow class */
+
+td[vision-class~="ellipsis"] {
+    max-width: 200px; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+td[vision-class~="overflow"] {
+    max-width: 200px; 
+    overflow: visible;  
+    white-space: nowrap;
+} 
+
+/* Colors code class */
+
+td[vision-class~="title"] {
+    background-color: #200; color: white;  
+} 
+td[vision-class~="label"] {
+    background-color: #9CF;  
+} 
+td[vision-class~="input"] {
+    background-color: #CFC;  
+} 
+td[vision-class~="output"] {
+    background-color: #FFC;  
+} 
+tr:nth-child(odd) td[vision-class~="table"] {
+    background-color: #FEC;  
+} 
+tr:nth-child(even) td[vision-class~="table"] {
+    background-color: #FDC;  
+} 
+
+/* Border */
+
+td[vision-class~="border-top"] {
+    border-top: 1px solid #55A;
+} 
+td[vision-class~="border-bottom"] {
+    border-bottom: 1px solid #55A;
+} 
+td[vision-class~="border-left"] {
+    border-left: 1px solid #55A;
+} 
+td[vision-class~="border-right"] {
+    border-right: 1px solid #55A;
+} 
+
+.vision-theme {
+    color : #3276b1;
+} 
+
