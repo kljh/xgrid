@@ -1,0 +1,10 @@
+
+Copyright 2014 Claude Cochet.
+
+Dependencies licenses:
+
+JQuery : under MIT License (and it seems diluted copyright).
+Bootstrap : under MIT license and is Copyright 2014 Twitter.
+Hands-on-table : under MIT License and Copyright 2013 Marcin Warpechowski / Nextgen.pl.
+RequireJs : under under two licenses: new BSD and MIT and Copyright Dojo fundation (contributors signed a Contributors License Agreement).
+NumeralJs : under MIT license and Copyright 2012 Adam Draper.
