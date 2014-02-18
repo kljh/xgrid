@@ -14,5 +14,9 @@
     "C6": "=make_dropdown(Object.keys(views))",
     "D6": "=\"\\n\\n\\n\\n\""
   },
-  "format": {}
+  "format": {
+    "C6": {
+      "align": "left"
+    }
+  }
 }
