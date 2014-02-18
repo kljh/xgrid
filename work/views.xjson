@@ -9,7 +9,10 @@
     "B3": "load views.js",
     "C3": "=load_script(\"../views/views.js\")",
     "B5": "#views",
-    "C5": "=Object.keys(views).length"
+    "C5": "=Object.keys(views).length",
+    "B6": "dropdown",
+    "C6": "=make_dropdown(Object.keys(views))",
+    "D6": "=\"\\n\\n\\n\\n\""
   },
   "format": {}
 }
