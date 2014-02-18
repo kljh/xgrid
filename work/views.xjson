@@ -7,7 +7,9 @@
     "B2": "define callback",
     "C2": "=window.setViews=function(v) { window.views = v; }",
     "B3": "load views.js",
-    "C3": "=load_script(\"../views/views.js\")"
+    "C3": "=load_script(\"../views/views.js\")",
+    "B5": "#views",
+    "C5": "=Object.keys(views).length"
   },
   "format": {}
 }
