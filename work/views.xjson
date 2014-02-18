@@ -1,0 +1,13 @@
+{
+  "paths": [
+    "localstorage://grid/work/views.xjson",
+    "github://kljh/grid/work/views.xjson"
+  ],
+  "input": {
+    "B2": "define callback",
+    "C2": "=window.setViews=function(v) { window.views = v; }",
+    "B3": "load views.js",
+    "C3": "=load_script(\"../views/views.js\")"
+  },
+  "format": {}
+}
