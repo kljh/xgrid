@@ -7,10 +7,10 @@
     "A1": "Test status",
     "B1": "=Math.abs(D8-3.14)<0.005",
     "D1": "Async demo",
-    "E1": "'=async_echo(3000, 'finally done')",
-    "F1": "'=E1",
-    "A2": "'=H9==1",
-    "B2": "'=I10==4",
+    "E1": "=async_echo(3000, 'finally done')",
+    "F1": "=E1",
+    "A2": "=H9==1",
+    "B2": "=I10==4",
     "A3": "N",
     "B3": "Pi",
     "H3": 1,
@@ -26,11 +26,8 @@
     "I7": 2,
     "D8": "=average($B$4:$B$16)",
     "D9": "'=min($B$4:$B$16)",
-    "H9": "'{=mtx_prod(H3:I4, H6:I7) & }",
-    "I9": "'{=mtx_prod(H3:I4, H6:I7) & }",
-    "D10": "'=max($B$4:$B$16)",
-    "H10": "'{=mtx_prod(H3:I4, H6:I7) & }",
-    "I10": "'{=mtx_prod(H3:I4, H6:I7) & }"
+    "H9:I10": "{=mtx_prod(H3:I4, H6:I7) & }",
+    "D10": "'=max($B$4:$B$16)"
   },
   "format": {}
 }
