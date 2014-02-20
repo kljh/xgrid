@@ -4,12 +4,17 @@
     "github://kljh/grid/work/views.xjson"
   ],
   "input": {
+    "E1": "define callback",
+    "F1": "=window.setViewData=function(v) { window.view_data = v; }",
     "B2": "define callback",
     "C2": "=window.setViews=function(v) { window.views = v; }",
     "E2": "=\"This cell is in column \"+caller.col",
     "B3": "load views.js",
     "C3": "=async_load_script(\"../views/views.js\")",
     "E3": "load selected view",
+    "F3": "=async_load_script(E4)",
+    "G3": "=JSON.parse(view_data)",
+    "H3": "=@G3.views.length",
     "E4": "=views[E5]",
     "B5": "#views",
     "C5": "=($C$3!=\"\"?Object.keys(views).length:\"-\")",
@@ -20,6 +25,12 @@
     "E6": "={ ref: caller, value: \"-\" }"
   },
   "format": {
+    "E1": {},
+    "F1": {},
+    "H1": {},
+    "I1": {},
+    "F3": {},
+    "G3": {},
     "C6": {
       "align": "left"
     }
