@@ -6,7 +6,7 @@
   "input": {
     "B2": "define callback",
     "C2": "=window.setViews=function(v) { window.views = v; }",
-    "E2": "=caller.row",
+    "E2": "=caller.col",
     "B3": "load views.js",
     "C3": "=async_load_script(\"../views/views.js\")",
     "B5": "#views",
