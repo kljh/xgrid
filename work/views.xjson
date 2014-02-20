@@ -10,8 +10,9 @@
     "C3": "=async_load_script(\"../views/views.js\")",
     "B5": "#views",
     "C5": "=($C$3!=\"\"?Object.keys(views).length:\"-\")",
+    "E5:E6": "=[]",
     "B6": "dropdown",
-    "C6": "=($C$3!=\"\"?make_checkboxes(Object.keys(views),true):\"-\")",
+    "C6": "=($C$3!=\"\"?make_checkboxes(Object.keys(views),true,@E5):\"-\")",
     "D6": "=\"\\n\\n\\n\\n\""
   },
   "format": {
