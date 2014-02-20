@@ -6,16 +6,13 @@
   "input": {
     "B2": "define callback",
     "C2": "=window.setViews=function(v) { window.views = v; }",
+    "E2": "=caller.row",
     "B3": "load views.js",
     "C3": "=async_load_script(\"../views/views.js\")",
     "B5": "#views",
     "C5": "=($C$3!=\"\"?Object.keys(views).length:\"-\")",
-    "E5": "=[]",
-    "F5": "=@E6.row",
     "B6": "dropdown",
-    "C6": "=($C$3!=\"\"?make_checkboxes(Object.keys(views),caller,true):\"-\")",
-    "D6": "=\"\\n\\n\\n\\n\"",
-    "E6": "={ ref: { row: row, col: col }, value: \"Yuki\" }"
+    "C6": "=($C$3!=\"\"?make_checkboxes(Object.keys(views),caller,true):\"-\")"
   },
   "format": {
     "C6": {
