@@ -12,7 +12,8 @@
     "B5": "#views",
     "C5": "=($C$3!=\"\"?Object.keys(views).length:\"-\")",
     "B6": "dropdown",
-    "C6": "=($C$3!=\"\"?make_checkboxes(Object.keys(views),caller,true):\"-\")"
+    "C6": "=($C$3!=\"\"?make_checkboxes(Object.keys(views),caller,true):\"-\")",
+    "E6": "=C6"
   },
   "format": {
     "C6": {
