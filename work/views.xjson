@@ -15,7 +15,7 @@
     "B6": "dropdown",
     "C6": "=($C$3!=\"\"?make_checkboxes(Object.keys(views),@E6,true):\"-\")",
     "D6": "=\"\\n\\n\\n\\n\"",
-    "E6": "={ row: row, col: col, value: \"Yuki\" }"
+    "E6": "={ ref: { row: row, col: col }, value: \"Yuki\" }"
   },
   "format": {
     "C6": {
