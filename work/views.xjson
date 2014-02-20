@@ -9,9 +9,9 @@
     "B3": "load views.js",
     "C3": "=async_load_script(\"../views/views.js\")",
     "B5": "#views",
-    "C5": "=Object.keys(views).length",
+    "C5": "=($C$3!=\"\"?Object.keys(views).length:\"-\")",
     "B6": "dropdown",
-    "C6": "=make_dropdown(Object.keys(views))",
+    "C6": "=($C$3!=\"\"?make_dropdown(Object.keys(views)):\"-\")",
     "D6": "=\"\\n\\n\\n\\n\""
   },
   "format": {
