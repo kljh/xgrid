@@ -1,0 +1,68 @@
+{
+  "paths": [
+    "localstorage://grid/work/views.xjson",
+    "github://kljh/grid/work/views3.xjson"
+  ],
+  "input": {
+    "B2": "define callback",
+    "C2": "=window.setViews=function(v) { window.views = v; }",
+    "E2": "view",
+    "F2": "=@I3.value",
+    "I2": "=\"This cell is in column \"+caller.col",
+    "K2": "view",
+    "M2": "=$F$3.replace(\"views.js\",@$I$4.views[$K$3].file)",
+    "B3": "load views.js",
+    "C3": "=async_load_script(\"../views/views.js\")",
+    "E3": "view path",
+    "F3": "=views[F2]",
+    "I3": "={ ref: caller, value: \"-\" }",
+    "K3": 1,
+    "M3:O5": "{=@$I$4.views[$K$3].mtx}",
+    "B4": "#views",
+    "C4": "=($C$3!=\"\"?Object.keys(views).length:\"-\")",
+    "E4": "define callback",
+    "F4": "=window.setViewData=function(v) { window.view_data = v; }",
+    "I4": "=($F$5!=\"\"?JSON.parse(view_data):\"\")",
+    "K4": "=JSON.stringify(Object.keys(@$I$4.views[$K$3]))",
+    "E5": "load selected view",
+    "F5": "=async_load_script(F3)",
+    "I5": "=@$I$4.views.length",
+    "B6": "=($C$3!=\"\"?make_checkboxes(Object.keys(views),@I3.ref,caller,true):\"-\")",
+    "E6": "='<img src=\"'+$M$2+'\">'"
+  },
+  "format": {
+    "E1": {},
+    "F1": {},
+    "H1": {},
+    "I1": {},
+    "F2": {},
+    "I2": {},
+    "K2": {},
+    "M2": {
+      "overflow": "overflow"
+    },
+    "F3": {},
+    "G3": {},
+    "I3": {},
+    "M3": {},
+    "B4": {},
+    "C4": {},
+    "E4": {},
+    "F4": {},
+    "I4": {},
+    "K4": {},
+    "E5": {},
+    "F5": {},
+    "I5": {},
+    "B6": {
+      "align": "left",
+      "overflow": "overflow"
+    },
+    "C6": {
+      "align": "left"
+    },
+    "E6": {
+      "overflow": "overflow"
+    }
+  }
+}
