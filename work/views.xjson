@@ -9,6 +9,8 @@
     "E2": "=\"This cell is in column \"+caller.col",
     "B3": "load views.js",
     "C3": "=async_load_script(\"../views/views.js\")",
+    "E3": "load selected view",
+    "E4": "=views[E5]",
     "B5": "#views",
     "C5": "=($C$3!=\"\"?Object.keys(views).length:\"-\")",
     "E5": "=@E6.value",
