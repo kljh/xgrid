@@ -68,7 +68,7 @@
     "I5": "=@$I$4.views.length",
     "B6": "select view",
     "C6": "Ontwikkel Verkoop",
-    "B7": 1,
+    "B7": "=make_chooser(\"C6\",Object.keys(C4))",
     "C7": "=C6",
     "B8": "=($C$3!=\"\"?make_checkboxes(Object.keys(views),@I3.ref,caller,true):\"-\")",
     "E8": "='<img src=\"'+$M$2+'\">'"
