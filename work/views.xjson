@@ -5,7 +5,7 @@
   ],
   "input": {
     "B2": "define callback",
-    "C2": "=window.setViews=function(v) { window.views = v; }",
+    "C2": "=window.setViews=function(v) { window.views = v; set_range_input_and_fire(\"C1\", v); }",
     "E2": "view",
     "F2": "=@I3.value",
     "I2": "=\"This cell is in column \"+caller.col",
