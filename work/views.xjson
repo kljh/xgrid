@@ -66,9 +66,8 @@
     "E5": "load selected view",
     "F5": "=async_load_script(F3)",
     "I5": "=@$I$4.views.length",
-    "E6": "='<img src=\"'+$M$2+'\">'",
     "B8": "=($C$3!=\"\"?make_checkboxes(Object.keys(views),@I3.ref,caller,true):\"-\")",
-    "E8": 1
+    "E8": "='<img src=\"'+$M$2+'\">'"
   },
   "format": {
     "E1": {},
@@ -97,11 +96,11 @@
     "C6": {
       "align": "left"
     },
-    "E6": {
-      "overflow": "overflow"
-    },
     "B8": {
       "align": "left",
+      "overflow": "overflow"
+    },
+    "E8": {
       "overflow": "overflow"
     }
   }
