@@ -14,7 +14,7 @@
     "B3": "load views.js",
     "C3": "=$C$2!=\"\"?async_load_script(\"../views/views.js\"):\"-\"",
     "E3": "view path",
-    "F3": "=($C$3!=\"\"?views[F2]:\"\")",
+    "F3": "=($C$3!=\"\"?@C4[F2]:\"\")",
     "I3": "={ ref: caller, value: \"Haneda\" }",
     "K3": 1,
     "M3:O5": "{=@$I$4.views[$K$3].mtx}",
@@ -67,7 +67,7 @@
     "F5": "=async_load_script(F3)",
     "I5": "=@$I$4.views.length",
     "B6": "select view",
-    "C6": "RainbowBridge",
+    "C6": "Calibration",
     "B7": "=make_chooser(\"C6\",Object.keys(C4))",
     "B8": "=($C$3!=\"\"?make_checkboxes(Object.keys(views),@I3.ref,caller,true):\"-\")",
     "E8": "='<img src=\"'+$M$2+'\">'"
