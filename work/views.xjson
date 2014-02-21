@@ -61,7 +61,7 @@
     "F4": "=window.setViewData=function(v) { set_range_input_and_fire(\"F6\", v); }",
     "H4": "image",
     "I4": 1,
-    "K4": "=JSON.stringify(Object.keys(@$I$4.views[$I$4]))",
+    "K4": "=JSON.stringify(Object.keys(@$F$6.views[$I$4]))",
     "B5": "#views",
     "C5": "=Object.keys(@C4).length",
     "E5": "load selected view",
