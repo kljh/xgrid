@@ -7,7 +7,7 @@
     "B2": "define callback",
     "C2": "=window.setViews=function(v) { set_range_input_and_fire(\"C4\", v); }",
     "E2": "view",
-    "F2": "=@I3.value",
+    "F2": "=C6",
     "I2": "=\"This cell is in column \"+caller.col",
     "K2": "view",
     "M2": "=$F$3.replace(\"views.js\",@$I$4.views[$K$3].file)",
@@ -68,9 +68,7 @@
     "I5": "=@$I$4.views.length",
     "B6": "select view",
     "C6": "RainbowBridge",
-    "A7": 2,
     "B7": "=make_chooser(\"C6\",Object.keys(C4))",
-    "C7": "=C6",
     "B8": "=($C$3!=\"\"?make_checkboxes(Object.keys(views),@I3.ref,caller,true):\"-\")",
     "E8": "='<img src=\"'+$M$2+'\">'"
   },
