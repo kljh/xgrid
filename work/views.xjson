@@ -14,7 +14,7 @@
     "B3": "load views.js",
     "C3": "=async_load_script(\"../views/views.js\")",
     "E3": "view path",
-    "F3": "=views[F2]",
+    "F3": "=($C$3!=\"\"?views[F2]:\"\")",
     "I3": "={ ref: caller, value: \"Haneda\" }",
     "K3": 1,
     "M3:O5": "{=@$I$4.views[$K$3].mtx}",
