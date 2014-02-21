@@ -66,6 +66,8 @@
     "E5": "load selected view",
     "F5": "=async_load_script(F3)",
     "I5": "=@$I$4.views.length",
+    "B6": "select view",
+    "C7": "=C6",
     "B8": "=($C$3!=\"\"?make_checkboxes(Object.keys(views),@I3.ref,caller,true):\"-\")",
     "E8": "='<img src=\"'+$M$2+'\">'"
   },
