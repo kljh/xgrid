@@ -67,7 +67,8 @@
     "F5": "=async_load_script(F3)",
     "I5": "=@$I$4.views.length",
     "B6": "=($C$3!=\"\"?make_checkboxes(Object.keys(views),@I3.ref,caller,true):\"-\")",
-    "E6": "='<img src=\"'+$M$2+'\">'"
+    "E6": "='<img src=\"'+$M$2+'\">'",
+    "E8": 1
   },
   "format": {
     "E1": {},
