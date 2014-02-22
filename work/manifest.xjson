@@ -15,9 +15,19 @@
     "B12": "- complexity of evaluation algorithm are at linear in number of cells",
     "B15": "Keep thing simple, leverage modern technlogy",
     "B16": "- you have access to all modern web technologies (Ajax, HTML5, HighCharts, D3Js, EMScripten, ...)",
-    "B19": "However",
+    "B19": "However...",
     "B20": "- still miss a few shortcuts that make life easier (Ctrl-Arrow, Ctrl-D, Ctrl-R, ...)",
-    "B21": "- but you get things that should work in leading spreadsheet but don't (inserting a row in the middle of an array formula)"
+    "B21": "- but you get things that should work in leading spreadsheet but don't (inserting a row in the middle of an array formula)",
+    "B23": "To do:",
+    "B24": "- refresh with bottom up algorithm",
+    "B25": "- export dependency graph",
+    "B26": "- chat mode",
+    "B27": "- auto border",
+    "B28": "- thread display ",
+    "B29": "- notifications",
+    "B30": "-insert row accross repeated formula",
+    "B31": "- bug with cut paste",
+    "B32": "- bug with edit mode sometimes not exiting as expected"
   },
   "format": {
     "B2": {
@@ -105,6 +115,42 @@
       "align": "left"
     },
     "B23": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B24": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B25": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B26": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B27": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B28": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B29": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B30": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B31": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B32": {
       "overflow": "overflow",
       "align": "left"
     }
