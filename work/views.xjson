@@ -221,6 +221,7 @@
       ]
     },
     "B7": "=make_chooser(\"C6\",Object.keys(C4))",
+    "B8": "=make_img_clip($M$2,0,0,100,100)",
     "E8": "='<img src=\"'+$M$2+'\">'"
   },
   "format": {
