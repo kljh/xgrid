@@ -28,7 +28,8 @@
     "B30": "-insert row accross repeated formula",
     "B31": "- bug with cut paste",
     "B32": "- bug with edit mode sometimes not exiting as expected",
-    "B33": "- minor cosmetic changes"
+    "B33": "- minor cosmetic changes",
+    "B34": "- throttle github save"
   },
   "format": {
     "B2": {
@@ -158,6 +159,10 @@
     "B33": {
       "overflow": "overflow",
       "align": "left"
+    },
+    "B34": {
+      "align": "left",
+      "overflow": "overflow"
     }
   }
 }
