@@ -65,7 +65,7 @@
     "C5": "=Object.keys(@C4).length",
     "E5": "load selected view",
     "F5": "=async_load_script(F3)",
-    "I5": 3,
+    "I5": 8,
     "B6": "=make_chooser(\"select view\", \"C6\",Object.keys(C4))",
     "C6": "Haneda",
     "E6": "view object",
