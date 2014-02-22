@@ -6,51 +6,107 @@
   "input": {
     "B2": "Keep control of your data",
     "B3": "- your data is yours, now and tomorrow",
-    "B4": "- files are stored in your account or your server",
-    "B5": "- file format is simple enough to be compatible with all spreadsheet programs"
+    "B4": "- files are stored in your account, your machine or your server",
+    "B5": "- file format is simple enough to be compatible with all spreadsheet programs",
+    "B8": "Keep complexity under control",
+    "B9": "- circular references are correctly spotted and accurately reported",
+    "B10": "- use standard diff tools to compare different version of spreadsheets (use github as file storage)",
+    "B11": "- multithreaded and asynchronous evaluation (for responsive spreadsheets)",
+    "B12": "- complexity of evaluation algorithm are at linear in number of cells",
+    "B15": "Keep thing simple, leverage modern technlogy",
+    "B16": "- you have access to all modern web technologies (Ajax, HTML5, HighCharts, D3Js, EMScripten, ...)",
+    "B19": "However",
+    "B20": "- still miss a few shortcuts that make life easier (Ctrl-Arrow, Ctrl-D, Ctrl-R, ...)",
+    "B21": "- but you get things that should work in leading spreadsheet but don't (inserting a row in the middle of an array formula)"
   },
   "format": {
     "B2": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "B3": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "B4": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "B5": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "B6": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "B7": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "B8": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "B9": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "B10": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "B11": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "B12": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "B13": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "B14": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "B15": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B16": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B17": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B18": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B19": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B20": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B21": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B22": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B23": {
+      "overflow": "overflow",
+      "align": "left"
     }
   }
 }
