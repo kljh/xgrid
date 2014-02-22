@@ -17,7 +17,7 @@
     "B3": "load views.js",
     "C3": "=$C$2!=\"\"?async_load_script($C$1):\"-\"",
     "E3": "view path",
-    "F3": "=($C$3!=\"\"?@C4[F2]:\"\")",
+    "F3": "=($C$3!=\"\"?C1.replace(\"views.js\",\"\")+@C4[F2]:\"\")",
     "H3": "#images",
     "I3": "=@F6.views.length",
     "B4": "loaded views.js",
@@ -1229,7 +1229,9 @@
     "M2": {
       "overflow": "overflow"
     },
-    "F3": {},
+    "F3": {
+      "overflow": "ellipsis"
+    },
     "G3": {},
     "I3": {
       "css": " "
