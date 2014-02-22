@@ -27,7 +27,8 @@
     "B29": "- notifications",
     "B30": "-insert row accross repeated formula",
     "B31": "- bug with cut paste",
-    "B32": "- bug with edit mode sometimes not exiting as expected"
+    "B32": "- bug with edit mode sometimes not exiting as expected",
+    "B33": "- minor cosmetic changes"
   },
   "format": {
     "B2": {
@@ -151,6 +152,10 @@
       "align": "left"
     },
     "B32": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B33": {
       "overflow": "overflow",
       "align": "left"
     }
