@@ -10,14 +10,13 @@
     "F2": "=C6",
     "H2": "misc",
     "I2": "=\"This cell is in column \"+caller.col",
-    "M2": "=$F$3.replace(\"views.js\",$F$6.views[$I$4].file)",
+    "M2:M3": "=$F$3.replace(\"views.js\",$F$6.views[$I4].file)",
     "B3": "load views.js",
     "C3": "=$C$2!=\"\"?async_load_script(\"../views/views.js\"):\"-\"",
     "E3": "view path",
     "F3": "=($C$3!=\"\"?@C4[F2]:\"\")",
     "H3": "#images",
     "I3": "=@F6.views.length",
-    "M3:O5": "{=@$F$6.views[$I$4].mtx}",
     "B4": "loaded views.js",
     "C4": {
       "20100815": "../views/20100815/views.js",
@@ -61,10 +60,12 @@
     "F4": "=window.setViewData=function(v) { set_range_input_and_fire(\"F6\", v); }",
     "H4": "image",
     "I4": 2,
+    "M4:O6": "{=@$F$6.views[$I$4].mtx}",
     "B5": "#views",
     "C5": "=Object.keys(@C4).length",
     "E5": "load selected view",
     "F5": "=async_load_script(F3)",
+    "I5": 3,
     "B6": "=make_chooser(\"select view\", \"C6\",Object.keys(C4))",
     "C6": "Haneda",
     "E6": "view object",
@@ -1225,7 +1226,9 @@
     "I3": {
       "css": " "
     },
-    "M3": {},
+    "M3": {
+      "overflow": "overflow"
+    },
     "C4": {},
     "E4": {},
     "F4": {},
@@ -1233,10 +1236,14 @@
     "I4": {
       "css": "input"
     },
+    "M4": {},
     "B5": {},
     "C5": {},
     "E5": {},
     "F5": {},
+    "I5": {
+      "css": "input"
+    },
     "B6": {},
     "C6": {
       "align": "left",
