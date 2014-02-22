@@ -221,6 +221,7 @@
       ]
     },
     "B8": "=make_img_clip($M$2,100,100,200,200)",
+    "C8": "=make_img_clip($M$2,100,100,200,200)",
     "E8": "='<img src=\"'+$M$2+'\" style=\"max-width: 800px;\">'"
   },
   "format": {
@@ -289,6 +290,7 @@
         "2013-10-05 141933 htmlbooth"
       ]
     },
+    "C8": {},
     "E8": {
       "overflow": "overflow"
     }
