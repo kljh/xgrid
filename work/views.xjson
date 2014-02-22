@@ -1209,7 +1209,9 @@
     "I6": "=JSON.stringify(Object.keys(@$F$6.views[$I$4]))",
     "B12": "=make_img_clip($M$2,100,100,200,200)",
     "C12": "=make_img_clip($M$2,100,100,200,200)",
-    "E12": "='<img src=\"'+$M$2+'\" style=\"max-width: 800px;\">'"
+    "E12": "='<img src=\"'+$M$2+'\" style=\"max-width: 600px;\">'",
+    "K12": "",
+    "M12": "='<img src=\"'+$M$3+'\" style=\"max-width: 600px;\">'"
   },
   "format": {
     "E1": {},
@@ -1291,6 +1293,12 @@
     "B12": {},
     "C12": {},
     "E12": {
+      "overflow": "overflow"
+    },
+    "K12": {
+      "overflow": "overflow"
+    },
+    "M12": {
       "overflow": "overflow"
     }
   }
