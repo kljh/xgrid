@@ -1,0 +1,10 @@
+{
+  "paths": [
+    "localstorage://grid/work/offline.xjson",
+    "github://kljh/grid/work/offline.xjson"
+  ],
+  "input": {
+    "B2": "xx"
+  },
+  "format": {}
+}
