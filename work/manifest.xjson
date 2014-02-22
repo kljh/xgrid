@@ -1,0 +1,55 @@
+{
+  "paths": [
+    "localstorage://grid/work/manifest.xjson",
+    "github://kljh/grid/work/manifest.xjson"
+  ],
+  "input": {
+    "B2": "Keep control of your data",
+    "B3": "- your data is yours: files are stored in your account or your server, file format is simple enough to be compatible with all spreadsheet programs",
+    "B4": "- your data is yours: files are stored in your account or your server, file format is simple enough to be compatible with all spreadsheet programs"
+  },
+  "format": {
+    "B2": {
+      "overflow": "overflow"
+    },
+    "B3": {
+      "overflow": "overflow"
+    },
+    "B4": {
+      "overflow": "overflow"
+    },
+    "B5": {
+      "overflow": "overflow"
+    },
+    "B6": {
+      "overflow": "overflow"
+    },
+    "B7": {
+      "overflow": "overflow"
+    },
+    "B8": {
+      "overflow": "overflow"
+    },
+    "B9": {
+      "overflow": "overflow"
+    },
+    "B10": {
+      "overflow": "overflow"
+    },
+    "B11": {
+      "overflow": "overflow"
+    },
+    "B12": {
+      "overflow": "overflow"
+    },
+    "B13": {
+      "overflow": "overflow"
+    },
+    "B14": {
+      "overflow": "overflow"
+    },
+    "B15": {
+      "overflow": "overflow"
+    }
+  }
+}
