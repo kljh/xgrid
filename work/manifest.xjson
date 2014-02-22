@@ -5,8 +5,9 @@
   ],
   "input": {
     "B2": "Keep control of your data",
-    "B3": "- your data is yours: files are stored in your account or your server, file format is simple enough to be compatible with all spreadsheet programs",
-    "B4": "- your data is yours: files are stored in your account or your server, file format is simple enough to be compatible with all spreadsheet programs"
+    "B3": "- your data is yours, now and tomorrow",
+    "B4": "- files are stored in your account or your server",
+    "B5": "- file format is simple enough to be compatible with all spreadsheet programs"
   },
   "format": {
     "B2": {
