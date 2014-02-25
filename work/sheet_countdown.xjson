@@ -12,16 +12,16 @@
     "D3": "",
     "G3": "=setInterval(function() { set_range_input_and_fire(\"C4\", new Date()); model.evaluate_sheet(hot_render); }, 1000)",
     "B4": "now",
-    "C4": "2014-02-25T22:35:10.987Z",
+    "C4": "2014-02-25T22:41:37.940Z",
     "B5": "",
     "C5": "",
     "D5": "",
     "B6": "in",
-    "C6": "=C3-C4 ",
-    "D6": "ms",
+    "C6": "=(C3-C4)/1000 ",
+    "D6": "seconds",
     "B7": "or",
     "C7": "=C6",
-    "D7": "ms",
+    "D7": "seconds",
     "B8": "or",
     "C8": "=moment(C3).fromNow();"
   },
@@ -50,6 +50,7 @@
     "D6": {},
     "C7": {
       "fmt": "0.00 a"
-    }
+    },
+    "D7": {}
   }
 }
