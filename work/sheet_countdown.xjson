@@ -12,7 +12,7 @@
     "D3": "",
     "G3": "=setInterval(function() { set_range_input_and_fire(\"C4\", new Date()); model.evaluate_sheet(hot_render); }, 1000)",
     "B4": "now",
-    "C4": "2014-02-25T22:41:37.940Z",
+    "C4": "2014-02-25T22:42:00.974Z",
     "B5": "",
     "C5": "",
     "D5": "",
