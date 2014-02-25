@@ -18,7 +18,8 @@
     "D5": "",
     "B6": "in",
     "C6": "=C3-C4 ",
-    "D6": "ms"
+    "D6": "ms",
+    "C8": "=moment(C3).fromNow();"
   },
   "format": {
     "C2": {
