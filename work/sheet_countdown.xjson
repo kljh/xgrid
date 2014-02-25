@@ -8,17 +8,21 @@
     "C2": "Kodo One Earth Tour 2014 ",
     "G2": "This is the heartbeat of the spreadsheet, it should be hidden from most people...",
     "B3": "on",
-    "C3": "=new Date(\"28 Feb 2014 11:00\")",
+    "C3": "=new Date(\"28 Feb 2014 15:00\")",
     "D3": "",
     "G3": "=setInterval(function() { set_range_input_and_fire(\"C4\", new Date()); model.evaluate_sheet(hot_render); }, 1000)",
     "B4": "now",
-    "C4": "2014-02-25T21:39:49.827Z",
+    "C4": "2014-02-25T21:45:08.319Z",
     "B5": "",
     "C5": "",
     "D5": "",
     "B6": "in",
     "C6": "=C3-C4 ",
     "D6": "ms",
+    "B7": "or",
+    "C7": "=C6",
+    "D7": "ms",
+    "B8": "or",
     "C8": "=moment(C3).fromNow();"
   },
   "format": {
@@ -37,8 +41,11 @@
     "D5": {},
     "B6": {},
     "C6": {
-      "fmt": "0."
+      "fmt": "0,0."
     },
-    "D6": {}
+    "D6": {},
+    "C7": {
+      "fmt": "0.00 a"
+    }
   }
 }
