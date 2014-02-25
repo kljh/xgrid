@@ -6,7 +6,7 @@
   "input": {
     "C1": "",
     "C2": "Kodo One Earth Tour 2014 ",
-    "G2": "'=setInterval(function() { set_range_input_and_fire(\"C4\", new Date()); model.evaluate_sheet(hot_render()); }, 5000)",
+    "G2": "'=setInterval(function() { set_range_input_and_fire(\"C4\", new Date()); model.evaluate_sheet(hot_render); }, 5000)",
     "B3": "on",
     "C3": "=new Date(\"2014-02-28\")",
     "D3": "",
