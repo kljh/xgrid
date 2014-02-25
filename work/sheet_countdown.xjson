@@ -5,19 +5,35 @@
   ],
   "input": {
     "C1": "",
-    "B2": "Now",
-    "C2": "=new Date()",
-    "B3": "Do not miss",
+    "C2": "Kodo One Earth Tour 2014 ",
+    "G2": "'=setInterval(function() { set_range_input_and_fire(\"C4\", new Date()); }, 15000)",
+    "B3": "on",
     "C3": "=new Date(\"2014-02-28\")",
-    "D3": "Kodo One Earth Tour 2014 ",
-    "C4": "",
-    "B5": "in",
-    "C5": "=C3-C2 ",
-    "D5": "ms"
+    "D3": "",
+    "B4": "now",
+    "C4": "=C2!=''?new Date():''",
+    "B5": "",
+    "C5": "",
+    "D5": "",
+    "B6": "in",
+    "C6": "=C3-C4 ",
+    "D6": "ms"
   },
   "format": {
-    "C2": {},
+    "C2": {
+      "overflow": "overflow",
+      "css": "title"
+    },
+    "B3": {},
     "C3": {},
-    "C5": {}
+    "D3": {},
+    "B4": {},
+    "C4": {},
+    "B5": {},
+    "C5": {},
+    "D5": {},
+    "B6": {},
+    "C6": {},
+    "D6": {}
   }
 }
