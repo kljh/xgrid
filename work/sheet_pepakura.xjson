@@ -1,0 +1,13 @@
+{
+  "paths": [
+    "localstorage://grid/work/sheet_pepakura.xjson",
+    "github://kljh/grid/work/sheet_pepakura.xjson"
+  ],
+  "input": {
+    "B3": "<a href=\"http://www.tamasoft.co.jp/pepakura/\" target=\"_blank\">Pepakura</a>",
+    "B4": "<a href=\"http://www.geocities.jp/kamikara1967/index.html\" target=\"_blank\">Heart Gear</a>",
+    "B5": "<a href=\"http://www.geocities.jp/kamikara1967/cubeoflizard.htm\" target=\"_blank\">Cube of lizards</a>",
+    "B6": "<a href=\"http://www.thingiverse.com/thing:50716\" target=\"_blank\">Cube gears</a>"
+  },
+  "format": {}
+}
