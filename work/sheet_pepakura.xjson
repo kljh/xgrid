@@ -10,67 +10,116 @@
     "B5": "<a href=\"http://www.geocities.jp/kamikara1967/cubeoflizard.htm\" target=\"_blank\">Cube of lizards</a>",
     "B6": "<a href=\"http://www.thingiverse.com/thing:50716\" target=\"_blank\">Cube gears</a>",
     "B9": "vertex",
+    "H9": "faces",
     "A10": 0,
     "B10": 1,
     "C10": 1,
     "D10": 1,
     "E10": "center",
-    "K10": "=freediv(scatter_svg(100,100,B11:C16))",
+    "G10": 0,
+    "H10": 1,
+    "I10:I21": "=A12",
+    "J10:J21": "=A13",
+    "L10": "=freediv(scatter_svg(300,300,B11:C16))",
     "A11:A23": "=A10+1",
     "B11": 0,
     "C11": 0,
     "D11": 0,
     "E11": "corner",
+    "G11:G33": "=G10+1",
+    "H11": 1,
     "B12": 1,
     "C12": 0,
     "D12": 0,
     "E12": "face avant / dessous",
+    "H12": 1,
     "B13": 0.7,
     "C13": 0.4,
     "D13": 0,
     "E13": "face avant",
+    "H13": 1,
     "B14": 1,
     "C14": 1,
     "D14": 0,
     "E14": "face avant",
+    "H14": 1,
     "B15": "=C13",
     "C15": "=1+(1-B13)",
     "D15": 0,
     "E15": "face avant",
+    "H15": 1,
     "B16": 0,
     "C16:C20": "=B12",
     "D16:D24": "=C12",
     "E16": "face avant / gauche",
+    "H16": 1,
     "B17": 0,
     "E17": "face gauche",
+    "H17": 1,
     "B18": 0,
     "E18": "face gauche",
+    "H18": 1,
     "B19": 0,
     "E19": "face gauche",
+    "H19": 1,
     "B20:B24": "=C12",
     "E20": "face gauche / dessous",
+    "H20": 1,
     "C21": 0,
     "E21": "face dessous",
+    "H21": 1,
     "C22": 0,
     "E22": "face dessous",
+    "H22": 0,
+    "I22:I33": "=J10",
+    "J22:J33": "=I10",
     "C23": 0,
     "E23": "face dessous",
+    "H23": 0,
     "A24": 2,
     "C24": 0,
-    "E24": "face dessous / avant"
+    "E24": "face dessous / avant",
+    "H24": 0,
+    "H25": 0,
+    "H26": 0,
+    "H27": 0,
+    "H28": 0,
+    "H29": 0,
+    "H30": 0,
+    "H31": 0,
+    "H32": 0,
+    "H33": 0
   },
   "format": {
     "B10": {},
     "C10": {},
     "D10": {},
     "E10": {},
-    "K10": {
+    "H10": {
+      "border": "border-top border-left "
+    },
+    "I10": {
+      "border": "border-top "
+    },
+    "J10": {
+      "border": "border-top border-right "
+    },
+    "L10": {
       "overflow": "overflow"
     },
     "B11": {},
     "C11": {},
     "D11": {},
     "E11": {},
+    "H11": {
+      "border": "border-left "
+    },
+    "I11": {
+      "border": ""
+    },
+    "J11": {
+      "border": "border-right "
+    },
     "B12": {
       "border": "border-top border-left "
     },
@@ -78,6 +127,15 @@
       "border": "border-top border-right "
     },
     "E12": {},
+    "H12": {
+      "border": "border-left "
+    },
+    "I12": {
+      "border": ""
+    },
+    "J12": {
+      "border": "border-right "
+    },
     "B13": {
       "border": "border-left "
     },
@@ -86,6 +144,15 @@
     },
     "D13": {},
     "E13": {},
+    "H13": {
+      "border": "border-left "
+    },
+    "I13": {
+      "border": ""
+    },
+    "J13": {
+      "border": "border-right "
+    },
     "B14": {
       "border": "border-left "
     },
@@ -93,6 +160,15 @@
       "border": "border-right "
     },
     "E14": {},
+    "H14": {
+      "border": "border-left "
+    },
+    "I14": {
+      "border": ""
+    },
+    "J14": {
+      "border": "border-right "
+    },
     "B15": {
       "border": "border-left "
     },
@@ -100,6 +176,15 @@
       "border": "border-right "
     },
     "E15": {},
+    "H15": {
+      "border": "border-left "
+    },
+    "I15": {
+      "border": ""
+    },
+    "J15": {
+      "border": "border-right "
+    },
     "B16": {
       "border": "border-left border-bottom "
     },
@@ -110,10 +195,28 @@
       "border": "border-top border-right "
     },
     "E16": {},
+    "H16": {
+      "border": "border-left "
+    },
+    "I16": {
+      "border": ""
+    },
+    "J16": {
+      "border": "border-right "
+    },
     "C17": {
       "border": "border-left "
     },
     "D17": {
+      "border": "border-right "
+    },
+    "H17": {
+      "border": "border-left "
+    },
+    "I17": {
+      "border": ""
+    },
+    "J17": {
       "border": "border-right "
     },
     "C18": {
@@ -122,10 +225,28 @@
     "D18": {
       "border": "border-right "
     },
+    "H18": {
+      "border": "border-left "
+    },
+    "I18": {
+      "border": ""
+    },
+    "J18": {
+      "border": "border-right "
+    },
     "C19": {
       "border": "border-left "
     },
     "D19": {
+      "border": "border-right "
+    },
+    "H19": {
+      "border": "border-left "
+    },
+    "I19": {
+      "border": ""
+    },
+    "J19": {
       "border": "border-right "
     },
     "B20": {
@@ -137,11 +258,29 @@
     "D20": {
       "border": "border-top border-left "
     },
+    "H20": {
+      "border": "border-left "
+    },
+    "I20": {
+      "border": ""
+    },
+    "J20": {
+      "border": "border-right "
+    },
     "B21": {
       "border": "border-right "
     },
     "D21": {
       "border": "border-left "
+    },
+    "H21": {
+      "border": "border-left border-bottom "
+    },
+    "I21": {
+      "border": "border-bottom "
+    },
+    "J21": {
+      "border": "border-bottom border-right "
     },
     "B22": {
       "border": "border-right "
@@ -149,11 +288,29 @@
     "D22": {
       "border": "border-left "
     },
+    "H22": {
+      "border": "border-top border-left "
+    },
+    "I22": {
+      "border": "border-top "
+    },
+    "J22": {
+      "border": "border-top border-right "
+    },
     "B23": {
       "border": "border-right "
     },
     "D23": {
       "border": "border-left "
+    },
+    "H23": {
+      "border": "border-left "
+    },
+    "I23": {
+      "border": ""
+    },
+    "J23": {
+      "border": "border-right "
     },
     "A24": {
       "css": "title"
@@ -163,6 +320,96 @@
     },
     "D24": {
       "border": "border-left border-bottom "
+    },
+    "H24": {
+      "border": "border-left "
+    },
+    "I24": {
+      "border": ""
+    },
+    "J24": {
+      "border": "border-right "
+    },
+    "H25": {
+      "border": "border-left "
+    },
+    "I25": {
+      "border": ""
+    },
+    "J25": {
+      "border": "border-right "
+    },
+    "H26": {
+      "border": "border-left "
+    },
+    "I26": {
+      "border": ""
+    },
+    "J26": {
+      "border": "border-right "
+    },
+    "H27": {
+      "border": "border-left "
+    },
+    "I27": {
+      "border": ""
+    },
+    "J27": {
+      "border": "border-right "
+    },
+    "H28": {
+      "border": "border-left "
+    },
+    "I28": {
+      "border": ""
+    },
+    "J28": {
+      "border": "border-right "
+    },
+    "H29": {
+      "border": "border-left "
+    },
+    "I29": {
+      "border": ""
+    },
+    "J29": {
+      "border": "border-right "
+    },
+    "H30": {
+      "border": "border-left "
+    },
+    "I30": {
+      "border": ""
+    },
+    "J30": {
+      "border": "border-right "
+    },
+    "H31": {
+      "border": "border-left "
+    },
+    "I31": {
+      "border": ""
+    },
+    "J31": {
+      "border": "border-right "
+    },
+    "H32": {
+      "border": "border-left "
+    },
+    "I32": {
+      "border": ""
+    },
+    "J32": {
+      "border": "border-right "
+    },
+    "H33": {
+      "border": "border-left border-bottom "
+    },
+    "I33": {
+      "border": "border-bottom "
+    },
+    "J33": {
+      "border": "border-bottom border-right "
     }
   }
 }
