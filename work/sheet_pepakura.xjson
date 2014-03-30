@@ -4,13 +4,17 @@
     "github://kljh/grid/work/sheet_pepakura.xjson"
   ],
   "input": {
-    "K2": "<div style=\"background-color: red;\">x<div>",
     "B3": "<a href=\"http://www.tamasoft.co.jp/pepakura/\" target=\"_blank\">Pepakura</a>",
     "B4": "<a href=\"http://www.geocities.jp/kamikara1967/index.html\" target=\"_blank\">Heart Gear</a>",
     "B5": "<a href=\"http://www.geocities.jp/kamikara1967/cubeoflizard.htm\" target=\"_blank\">Cube of lizards</a>",
     "B6": "<a href=\"http://www.thingiverse.com/thing:50716\" target=\"_blank\">Cube gears</a>",
+    "L8": "faces a plat",
+    "P8": "vertex a plat",
     "B9": "vertex",
     "H9": "faces",
+    "L9": "face",
+    "P9": "id",
+    "Q9": "id3d",
     "A10": 0,
     "B10": 1,
     "C10": 1,
@@ -20,7 +24,16 @@
     "H10": 1,
     "I10:I21": "=A12",
     "J10:J21": "=A13",
-    "L10": "=freediv(scatter_svg(300,300,B11:C16))",
+    "L10": 1,
+    "M10": 0,
+    "N10": 1,
+    "O10": 2,
+    "P10": 0,
+    "Q10": 1,
+    "R10": 0,
+    "S10": 0,
+    "T10": 0,
+    "U10": "=freediv(scatter_svg(300,300,B11:C16))",
     "A11:A23": "=A10+1",
     "B11": 0,
     "C11": 0,
@@ -28,11 +41,17 @@
     "E11": "corner",
     "G11:G33": "=G10+1",
     "H11": 1,
+    "L11:O11": "{=paper_project_next_face($B$10:$D$24,$H$10:$J$30,$L$10:O10)}",
     "B12": 1,
     "C12": 0,
     "D12": 0,
     "E12": "face avant / dessous",
     "H12": 1,
+    "P12:P17": "=P11+1",
+    "Q12": 3,
+    "R12": 0,
+    "S12": 0,
+    "T12": 0,
     "B13": 0.7,
     "C13": 0.4,
     "D13": 0,
@@ -91,6 +110,7 @@
     "H33": 0
   },
   "format": {
+    "L8": {},
     "B10": {},
     "C10": {},
     "D10": {},
@@ -104,7 +124,7 @@
     "J10": {
       "border": "border-top border-right "
     },
-    "L10": {
+    "U10": {
       "overflow": "overflow"
     },
     "B11": {},
