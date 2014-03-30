@@ -4,10 +4,8 @@
     "github://kljh/grid/work/sheet_pepakura.xjson"
   ],
   "input": {
-    "K1": "<div style=\"background-color: red;\">x<div>",
     "K2": "<div style=\"background-color: red;\">x<div>",
     "B3": "<a href=\"http://www.tamasoft.co.jp/pepakura/\" target=\"_blank\">Pepakura</a>",
-    "K3": "=freediv('<svg width=\"300\" height=\"200\"><polygon points=\"100,10 40,180 190,60 10,60 160,180\" style=\"fill:lime;stroke:purple;stroke-width:5;fill-rule:evenodd;\" /></svg>')",
     "B4": "<a href=\"http://www.geocities.jp/kamikara1967/index.html\" target=\"_blank\">Heart Gear</a>",
     "B5": "<a href=\"http://www.geocities.jp/kamikara1967/cubeoflizard.htm\" target=\"_blank\">Cube of lizards</a>",
     "B6": "<a href=\"http://www.thingiverse.com/thing:50716\" target=\"_blank\">Cube gears</a>",
@@ -17,6 +15,7 @@
     "C10": 1,
     "D10": 1,
     "E10": "center",
+    "K10": "=freediv(scatter_svg(100,100,B11:C16))",
     "A11": 1,
     "B11": 0,
     "C11": 0,
@@ -32,7 +31,6 @@
     "C13": 0.4,
     "D13": 0,
     "E13": "face avant",
-    "K13": "=freediv(scatter_svg(100,100,B11:C16))",
     "A14": 4,
     "B14": 1,
     "C14": 1,
@@ -51,14 +49,13 @@
     "E17": "face cote"
   },
   "format": {
-    "K1": {},
-    "K3": {
-      "overflow": "overflow"
-    },
     "B10": {},
     "C10": {},
     "D10": {},
     "E10": {},
+    "K10": {
+      "overflow": "overflow"
+    },
     "B11": {},
     "C11": {},
     "D11": {},
