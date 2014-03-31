@@ -12,6 +12,7 @@
     "P8": "vertex a plat",
     "B9": "vertex",
     "H9": "faces",
+    "I9": "(must be direct order)",
     "L9": "face",
     "P9": "id",
     "Q9": "id3d",
@@ -111,6 +112,9 @@
   },
   "format": {
     "L8": {},
+    "I9": {
+      "overflow": "overflow"
+    },
     "B10": {},
     "C10": {},
     "D10": {},
