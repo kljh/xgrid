@@ -4,7 +4,9 @@
     "github://kljh/grid/work/societe.xjson"
   ],
   "input": {
-    "B2": "<a href=\"http://www.assemblee-nationale.fr/qui/\">Composition assemblée Nationale</a>"
+    "B2": "<a href=\"http://www.assemblee-nationale.fr/qui/\">Composition assemblée Nationale</a>",
+    "B3": "http://www.vie-publique.fr/decouverte-institutions/institutions/approfondissements/quelques-elements-statistiques-elus-locaux.html",
+    "B4": "http://www.metropolitiques.eu/Les-elus-municipaux-representent.html"
   },
   "format": {}
 }
