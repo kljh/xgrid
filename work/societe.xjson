@@ -1,0 +1,10 @@
+{
+  "paths": [
+    "localstorage://grid/work/societe.xjson",
+    "github://kljh/grid/work/societe.xjson"
+  ],
+  "input": {
+    "B2": "<a href=\"http://www.assemblee-nationale.fr/qui/\">Composition assemblée Nationale</a>"
+  },
+  "format": {}
+}
