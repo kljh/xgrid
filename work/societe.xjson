@@ -4,13 +4,19 @@
     "github://kljh/grid/work/societe.xjson"
   ],
   "input": {
-    "B2": "<a href=\"http://www.assemblee-nationale.fr/qui/\">Composition assemblée Nationale</a>",
-    "B3": "http://www.vie-publique.fr/decouverte-institutions/institutions/approfondissements/quelques-elements-statistiques-elus-locaux.html",
-    "B4": "http://www.metropolitiques.eu/Les-elus-municipaux-representent.html",
-    "B5": "http://femmes.gouv.fr/wp-content/uploads/2012/03/Chiffres_cles-egalite-2011.pdf",
-    "B7": "INSEE",
-    "B8": "http://www.insee.fr/fr/themes/detail.asp?reg_id=99&ref_id=base-cc-emploi-pop-active-2010",
-    "B9": "http://www.insee.fr/fr/themes/tableau.asp?reg_id=0&ref_id=NATCCF03338",
+    "B2": "Liberté, justice, fraternité",
+    "B3": "L'égalité est la relation entre deux choses ne présentant aucune différence de grandeur, ni de qualité.",
+    "B4": "Nous ne sommes pas plus égaux que nous sommes identiques. A moins de restreindre ce qui est comparé: \"égaux en droit\", \"égaux à competences égales\".",
+    "B5": "L'idée du droit à l'égalité est naïve ou hypocrite. Le droit à la justice est raisonnable.",
+    "B8": "<a href=\"http://www.assemblee-nationale.fr/qui/\">Composition assemblée Nationale</a>",
+    "B9": "http://www.vie-publique.fr/decouverte-institutions/institutions/approfondissements/quelques-elements-statistiques-elus-locaux.html",
+    "B10": "http://www.metropolitiques.eu/Les-elus-municipaux-representent.html",
+    "B11": "http://femmes.gouv.fr/wp-content/uploads/2012/03/Chiffres_cles-egalite-2011.pdf",
+    "B12": "",
+    "B13": "INSEE",
+    "B14": "http://www.insee.fr/fr/themes/detail.asp?reg_id=99&ref_id=base-cc-emploi-pop-active-2010",
+    "B15": "http://www.insee.fr/fr/themes/tableau.asp?reg_id=0&ref_id=NATCCF03338",
+    "B16": "",
     "B22": "",
     "C22": "",
     "D22": "",
@@ -60,15 +66,29 @@
     "B5": {
       "align": "left"
     },
-    "B7": {
-      "align": "left"
-    },
     "B8": {
       "align": "left"
     },
     "B9": {
       "align": "left"
     },
+    "B10": {
+      "align": "left"
+    },
+    "B11": {
+      "align": "left"
+    },
+    "B12": {},
+    "B13": {
+      "align": "left"
+    },
+    "B14": {
+      "align": "left"
+    },
+    "B15": {
+      "align": "left"
+    },
+    "B16": {},
     "B22": {},
     "C22": {},
     "D22": {},
