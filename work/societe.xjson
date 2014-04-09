@@ -6,7 +6,33 @@
   "input": {
     "B2": "<a href=\"http://www.assemblee-nationale.fr/qui/\">Composition assemblée Nationale</a>",
     "B3": "http://www.vie-publique.fr/decouverte-institutions/institutions/approfondissements/quelques-elements-statistiques-elus-locaux.html",
-    "B4": "http://www.metropolitiques.eu/Les-elus-municipaux-representent.html"
+    "B4": "http://www.metropolitiques.eu/Les-elus-municipaux-representent.html",
+    "B5": "http://femmes.gouv.fr/wp-content/uploads/2012/03/Chiffres_cles-egalite-2011.pdf",
+    "B7": "INSEE",
+    "B8": "http://www.insee.fr/fr/themes/detail.asp?reg_id=99&ref_id=base-cc-emploi-pop-active-2010",
+    "B9": "http://www.insee.fr/fr/themes/tableau.asp?reg_id=0&ref_id=NATCCF03338"
   },
-  "format": {}
+  "format": {
+    "B2": {
+      "align": "left"
+    },
+    "B3": {
+      "align": "left"
+    },
+    "B4": {
+      "align": "left"
+    },
+    "B5": {
+      "align": "left"
+    },
+    "B7": {
+      "align": "left"
+    },
+    "B8": {
+      "align": "left"
+    },
+    "B9": {
+      "align": "left"
+    }
+  }
 }
