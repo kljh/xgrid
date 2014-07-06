@@ -12,6 +12,7 @@
     "G2": "Consonance",
     "H2": "freq mult",
     "J2": "nb half tones",
+    "K2": "degré",
     "A3": 0,
     "B3": "Do / C4",
     "C3:C11": "=C4/$C$17",
@@ -31,6 +32,7 @@
     "J4": 12,
     "K4": "=E15",
     "B5": "Re",
+    "E5": "(II) sus-tonique",
     "G5": "quinte",
     "H5": "3/2",
     "I5": "=3/2",
@@ -42,6 +44,7 @@
     "H6": "4/3",
     "I6": "=4/3",
     "J6": 5,
+    "K6": "=E8",
     "L6": "quarte renversement de la quite (5+7=12 & 3/2*4/3=2)",
     "B7": "Mi",
     "E7": "(III) médiante (maj)",
@@ -52,6 +55,7 @@
     "K7": "=E7",
     "L7": "la médiante est une note modale",
     "B8": "Fa",
+    "E8": "(IV) sous-dominante",
     "G8": "tierce min",
     "H8": "6/5",
     "I8": "=6/5",
@@ -63,6 +67,7 @@
     "H9": "5/3",
     "I9": "=5/3",
     "J9": 9,
+    "K9": "=E12",
     "L9": "sixte renversement de la tierce (4+8=3+2=12 & 5/4*8/5=6/5*5/3=2)",
     "B10": "Sol",
     "E10": "(V) dominante",
@@ -70,18 +75,23 @@
     "H10": "8/5",
     "I10": "=8/5",
     "J10": 8,
+    "K10": "=E11",
     "B11": "Sol#",
+    "E11": "(VI) sus-dominante (min)",
     "G11": "seconde maj",
     "J11": 2,
     "B12": "La / A4",
     "C12": 440,
+    "E12": "(VI) sus-dominante (maj)",
     "G12": "seconde min",
     "J12": 1,
     "B13": "La#",
     "C13:C15": "=C12*$C$17",
     "G13": "septième maj",
     "J13": 11,
+    "K13": "=E14",
     "B14": "Si",
+    "E14": "(VII) sensible",
     "G14": "septième min",
     "J14": 10,
     "B15": "Do / C5",
@@ -102,15 +112,25 @@
       "overflow": "overflow",
       "align": "left"
     },
+    "E2": {
+      "align": "left"
+    },
     "G2": {},
+    "K2": {
+      "align": "left"
+    },
     "C3": {
       "fmt": "0,0.00"
     },
     "D3": {
       "fmt": "0,0.0000"
     },
+    "E3": {
+      "align": "left"
+    },
     "K3": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "C4": {
       "fmt": "0,0.00"
@@ -118,8 +138,12 @@
     "D4": {
       "fmt": "0,0.0000"
     },
+    "E4": {
+      "align": "left"
+    },
     "K4": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "C5": {
       "fmt": "0,0.00"
@@ -127,12 +151,16 @@
     "D5": {
       "fmt": "0,0.0000"
     },
+    "E5": {
+      "align": "left"
+    },
     "G5": {},
     "H5": {},
     "I5": {},
     "J5": {},
     "K5": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "C6": {
       "fmt": "0,0.00"
@@ -140,7 +168,9 @@
     "D6": {
       "fmt": "0,0.0000"
     },
-    "E6": {},
+    "E6": {
+      "align": "left"
+    },
     "G6": {},
     "H6": {},
     "I6": {
@@ -148,7 +178,8 @@
     },
     "J6": {},
     "K6": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "L6": {
       "overflow": "overflow",
@@ -160,13 +191,16 @@
     "D7": {
       "fmt": "0,0.0000"
     },
-    "E7": {},
+    "E7": {
+      "align": "left"
+    },
     "G7": {},
     "H7": {},
     "I7": {},
     "J7": {},
     "K7": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "L7": {
       "overflow": "overflow",
@@ -178,18 +212,25 @@
     "D8": {
       "fmt": "0,0.0000"
     },
+    "E8": {
+      "align": "left"
+    },
     "G8": {},
     "H8": {},
     "I8": {},
     "J8": {},
     "K8": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "C9": {
       "fmt": "0,0.00"
     },
     "D9": {
       "fmt": "0,0.0000"
+    },
+    "E9": {
+      "align": "left"
     },
     "G9": {},
     "H9": {},
@@ -198,7 +239,8 @@
     },
     "J9": {},
     "K9": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "L9": {
       "overflow": "overflow",
@@ -210,12 +252,16 @@
     "D10": {
       "fmt": "0,0.0000"
     },
+    "E10": {
+      "align": "left"
+    },
     "G10": {},
     "H10": {},
     "I10": {},
     "J10": {},
     "K10": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "C11": {
       "fmt": "0,0.00"
@@ -223,9 +269,13 @@
     "D11": {
       "fmt": "0,0.0000"
     },
+    "E11": {
+      "align": "left"
+    },
     "J11": {},
     "K11": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "C12": {
       "fmt": "0,0.00"
@@ -233,9 +283,13 @@
     "D12": {
       "fmt": "0,0.0000"
     },
+    "E12": {
+      "align": "left"
+    },
     "J12": {},
     "K12": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "C13": {
       "fmt": "0,0.00"
@@ -243,9 +297,13 @@
     "D13": {
       "fmt": "0,0.0000"
     },
+    "E13": {
+      "align": "left"
+    },
     "J13": {},
     "K13": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "C14": {
       "fmt": "0,0.00"
@@ -253,9 +311,13 @@
     "D14": {
       "fmt": "0,0.0000"
     },
+    "E14": {
+      "align": "left"
+    },
     "J14": {},
     "K14": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "C15": {
       "fmt": "0,0.00"
@@ -263,9 +325,12 @@
     "D15": {
       "fmt": "0,0.0000"
     },
-    "E15": {},
+    "E15": {
+      "align": "left"
+    },
     "K15": {
-      "overflow": "overflow"
+      "overflow": "overflow",
+      "align": "left"
     },
     "C17": {
       "fmt": "0,0.0000"
