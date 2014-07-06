@@ -1,0 +1,86 @@
+{
+  "paths": [
+    "localstorage://grid/work/music_theory.xjson",
+    "github://kljh/grid/work/music_theory.xjson"
+  ],
+  "input": {
+    "B1": "Equal temperament scale",
+    "B2": "Gamme tempérée",
+    "B3": "Do / C4",
+    "C3:C11": "=C4/$C$17",
+    "B4": "Do#",
+    "B5": "Re",
+    "B6": "Re#",
+    "B7": "Mi",
+    "B8": "Fa",
+    "B9": "Fa#",
+    "B10": "Sol",
+    "B11": "Sol#",
+    "B12": "La / A4",
+    "C12": 440,
+    "B13": "La#",
+    "C13:C15": "=C12*$C$17",
+    "B14": "Si",
+    "B15": "Do / C5",
+    "B17": "Freq multiplier",
+    "C17": "=Math.exp(Math.log(2)*1/12)",
+    "B18": "frequency is multiplied by 2^(1/12) for each half-tone",
+    "C18": ""
+  },
+  "format": {
+    "B1": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "B2": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "C3": {
+      "fmt": "0,0.00"
+    },
+    "C4": {
+      "fmt": "0,0.00"
+    },
+    "C5": {
+      "fmt": "0,0.00"
+    },
+    "C6": {
+      "fmt": "0,0.00"
+    },
+    "C7": {
+      "fmt": "0,0.00"
+    },
+    "C8": {
+      "fmt": "0,0.00"
+    },
+    "C9": {
+      "fmt": "0,0.00"
+    },
+    "C10": {
+      "fmt": "0,0.00"
+    },
+    "C11": {
+      "fmt": "0,0.00"
+    },
+    "C12": {
+      "fmt": "0,0.00"
+    },
+    "C13": {
+      "fmt": "0,0.00"
+    },
+    "C14": {
+      "fmt": "0,0.00"
+    },
+    "C15": {
+      "fmt": "0,0.00"
+    },
+    "C17": {
+      "fmt": "0,0.0000"
+    },
+    "B18": {
+      "overflow": "overflow"
+    },
+    "C18": {}
+  }
+}
