@@ -5,11 +5,12 @@
   ],
   "input": {
     "B1": "Equal temperament scale",
+    "G1": "Consonance",
     "B2": "Gamme tempérée",
     "C2": "freq (Hz)",
     "D2": "freq mult",
     "E2": "degré",
-    "G2": "Consonance",
+    "G2": "Intervalle",
     "H2": "freq mult",
     "J2": "nb half tones",
     "K2": "degré",
@@ -80,6 +81,7 @@
     "E11": "(VI) sus-dominante (min)",
     "G11": "seconde maj",
     "J11": 2,
+    "K11": "=E5",
     "B12": "La / A4",
     "C12": 440,
     "E12": "(VI) sus-dominante (maj)",
@@ -108,6 +110,7 @@
       "overflow": "overflow",
       "align": "left"
     },
+    "G1": {},
     "B2": {
       "overflow": "overflow",
       "align": "left"
