@@ -80,6 +80,8 @@
     "B11": "Sol#",
     "E11": "(VI) sus-dominante (min)",
     "G11": "seconde maj",
+    "H11": "9/8",
+    "I11": "=9/2",
     "J11": 2,
     "K11": "=E5",
     "B12": "La / A4",
@@ -90,8 +92,10 @@
     "B13": "La#",
     "C13:C15": "=C12*$C$17",
     "G13": "septième maj",
+    "H13": "??",
     "J13": 11,
     "K13": "=E14",
+    "L13": "mote de passage",
     "B14": "Si",
     "E14": "(VII) sensible",
     "G14": "septième min",
@@ -100,10 +104,45 @@
     "E15": "(I) tonique",
     "G15": "<a href=\"http://fr.wikipedia.org/wiki/Triton_(musique)\">triton</a>",
     "J15": 6,
-    "B17": "Freq multiplier",
+    "B17": "Half tone freq mult",
     "C17": "=Math.exp(Math.log(2)*1/12)",
-    "B18": "frequency is multiplied by 2^(1/12) for each half-tone",
-    "C18": ""
+    "G17": "ton majeur",
+    "H17": "9/8",
+    "I17": "=9/8",
+    "J17": 2,
+    "B18": "Tone freq mult",
+    "C18": "=C17*C17",
+    "G18": "ton mineur",
+    "H18": "10/9",
+    "I18": "=10/9",
+    "J18": 2,
+    "B19": "frequency is multiplied by 2^(1/12) for each half-tone",
+    "G20": "quinte du loup",
+    "G21": "=Math.pow(3/2, 12)",
+    "H21": "rapport des fréquences après 12 quintes : (3/2)^12",
+    "G22": "=G21/Math.pow(2,6)",
+    "H22": "rapport réduit a l'octave de base (differe de l'octave juste par un comma pythagoricien)",
+    "G23": "=Math.pow(3/2, 11)/Math.pow(2,6)",
+    "H23": "rapport des fréquences après 11 quintes réduit à l'octave: (3/2)^11 mod 2 : Fa",
+    "G24": "cos(a)+cos(b)=2.sin((a+b)/2).cos((a-b)/2)",
+    "G25": "(a+b)/2",
+    "H25": "=($G$23+1)/2",
+    "I25:I26": "=H25*440",
+    "G26": "(a-b)/2",
+    "H26": "=($G$23-1)/2",
+    "G28": "quinte juste",
+    "G29": "=3/2",
+    "H29": "rapport des fréquences après 1 quinte 3/2 : Sol",
+    "I29": "",
+    "G30": "cos(a)+cos(b)=2.sin((a+b)/2).cos((a-b)/2)",
+    "H30": "",
+    "I30": "",
+    "G31": "(a+b)/2",
+    "H31": "=($G$29+1)/2",
+    "I31": "=H31*440",
+    "G32": "(a-b)/2",
+    "H32": "=($G$29-1)/2",
+    "I32": "=H32*440"
   },
   "format": {
     "B1": {
@@ -308,6 +347,9 @@
       "overflow": "overflow",
       "align": "left"
     },
+    "L13": {
+      "align": "left"
+    },
     "C14": {
       "fmt": "0,0.00"
     },
@@ -338,9 +380,73 @@
     "C17": {
       "fmt": "0,0.0000"
     },
-    "B18": {
+    "G17": {},
+    "H17": {},
+    "I17": {
+      "fmt": "0,0.0000"
+    },
+    "B18": {},
+    "C18": {
+      "fmt": "0,0.0000"
+    },
+    "G18": {},
+    "H18": {},
+    "I18": {
+      "fmt": "0,0.0000"
+    },
+    "B19": {
       "overflow": "overflow"
     },
-    "C18": {}
+    "G21": {
+      "fmt": "0,0.0000"
+    },
+    "H21": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "G22": {
+      "fmt": "0,0.0000"
+    },
+    "H22": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "G23": {
+      "fmt": "0,0.0000"
+    },
+    "H23": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "H25": {
+      "fmt": "0,0.0000"
+    },
+    "I25": {
+      "fmt": "0,0.0000"
+    },
+    "G26": {},
+    "H26": {
+      "fmt": "0,0.0000"
+    },
+    "I26": {
+      "fmt": "0,0.0000"
+    },
+    "G29": {
+      "fmt": "0,0.0000"
+    },
+    "H29": {
+      "overflow": "overflow",
+      "align": "left"
+    },
+    "I29": {},
+    "G30": {},
+    "H30": {},
+    "I30": {},
+    "G31": {},
+    "H31": {},
+    "I31": {},
+    "G32": {},
+    "H32": {},
+    "I32": {}
   }
 }
