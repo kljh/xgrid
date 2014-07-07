@@ -88,22 +88,30 @@
     "C12": 440,
     "E12": "(VI) sus-dominante (maj)",
     "G12": "seconde min",
+    "H12": "??",
     "J12": 1,
+    "K12": "??",
     "B13": "La#",
     "C13:C15": "=C12*$C$17",
     "G13": "septième maj",
     "H13": "??",
     "J13": 11,
     "K13": "=E14",
-    "L13": "mote de passage",
+    "L13": "note de passage",
     "B14": "Si",
     "E14": "(VII) sensible",
     "G14": "septième min",
+    "H14": "16/9",
+    "I14": "=16/9",
     "J14": 10,
+    "K14": "sous-tonique",
     "B15": "Do / C5",
     "E15": "(I) tonique",
     "G15": "<a href=\"http://fr.wikipedia.org/wiki/Triton_(musique)\">triton</a>",
+    "H15": "36/25",
+    "I15": "=36/25",
     "J15": 6,
+    "K15": "??",
     "B17": "Half tone freq mult",
     "C17": "=Math.exp(Math.log(2)*1/12)",
     "G17": "ton majeur",
@@ -361,6 +369,9 @@
     "E14": {
       "align": "left"
     },
+    "I14": {
+      "fmt": "0,0.0000"
+    },
     "J14": {},
     "K14": {
       "overflow": "overflow",
@@ -374,6 +385,9 @@
     },
     "E15": {
       "align": "left"
+    },
+    "I15": {
+      "fmt": "0,0.0000"
     },
     "K15": {
       "overflow": "overflow",
