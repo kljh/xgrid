@@ -89,12 +89,14 @@
     "E12": "(VI) sus-dominante (maj)",
     "G12": "seconde min",
     "H12": "??",
+    "I12": "?",
     "J12": 1,
     "K12": "??",
     "B13": "La#",
     "C13:C15": "=C12*$C$17",
     "G13": "septième maj",
     "H13": "??",
+    "I13": "?",
     "J13": 11,
     "K13": "=E14",
     "L13": "note de passage",
@@ -118,12 +120,14 @@
     "H17": "9/8",
     "I17": "=9/8",
     "J17": 2,
+    "K17": "l'intervalle entre ces deux tons est un comma",
     "B18": "Tone freq mult",
     "C18": "=C17*C17",
     "G18": "ton mineur",
     "H18": "10/9",
     "I18": "=10/9",
     "J18": 2,
+    "K18": "environ 9 commas dans un ton",
     "B19": "frequency is multiplied by 2^(1/12) for each half-tone",
     "G20": "quinte du loup",
     "G21": "=Math.pow(3/2, 12)",
@@ -401,6 +405,9 @@
     "I17": {
       "fmt": "0,0.0000"
     },
+    "K17": {
+      "overflow": "overflow"
+    },
     "B18": {},
     "C18": {
       "fmt": "0,0.0000"
@@ -409,6 +416,9 @@
     "H18": {},
     "I18": {
       "fmt": "0,0.0000"
+    },
+    "K18": {
+      "overflow": "overflow"
     },
     "B19": {
       "overflow": "overflow"
