@@ -58,13 +58,15 @@ var TOK_TYPE_UNKNOWN   = "unknown"
 var TOK_SUBTYPE_START       = "start";
 var TOK_SUBTYPE_STOP        = "stop";
 
+// TOK_TYPE_OPERAND
 var TOK_SUBTYPE_TEXT        = "text";
 var TOK_SUBTYPE_NUMBER      = "number";
 var TOK_SUBTYPE_LOGICAL     = "logical";
 var TOK_SUBTYPE_ERROR       = "error";
 var TOK_SUBTYPE_RANGE       = "range";
 
-var TOK_SUBTYPE_MATH        = "math";
+// TOK_TYPE_OP_IN
+var TOK_SUBTYPE_MATH        = "math";  // also TOK_SUBTYPE_LOGICAL
 var TOK_SUBTYPE_CONCAT      = "concatenate";
 var TOK_SUBTYPE_INTERSECT   = "intersect";
 var TOK_SUBTYPE_UNION       = "union";
