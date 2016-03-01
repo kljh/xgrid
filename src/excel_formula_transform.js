@@ -7,7 +7,7 @@ function parse_and_transfrom_test() {
 		'=50%', 	// % operator
 		'=3.1E-24-2.1E-24',
 		'=1+3+5',
-		'=3 * 4 + 5',
+		'=3 * 4 + \n\t 5',
 		'=1-(3+5) ',
 		'=1=5', 	// = operator
 		'=1<>5',	// <> operator
@@ -17,6 +17,13 @@ function parse_and_transfrom_test() {
 		'={1.2,"s";TRUE,FALSE}',	// array notation
 		'=$A1',
 		'=$B$2',
+		'=Sheet1!A1',
+		'=\'Another sheet\'!A1',
+		'=[Book1]Sheet1!$A$1',
+		'=[data.xls]sheet1!$A$1',
+		'=\'[Book1]Another sheet\'!$A$1',
+		'=\'[Book No2.xlsx]Sheet1\'!$A$1',
+		'=\'[Book No2.xlsx]Another sheet\'!$A$1',
 		'=[data.xls]sheet1!$A$1',
 		//'=[\'my data.xls\']\'my sheet\'!$A$1',
 		'=SUM(B5:B15)',
@@ -190,6 +197,9 @@ function excel_to_js_formula(tokens) {
 					res += excel_to_js_function_call_formula(token);
 			
 				break;
+      case "white-space":
+        res += token.value;
+        break;
 			default:
 				throw new Error(arguments.callee.name+": unhandled "+token.type);
 		}
