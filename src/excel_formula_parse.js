@@ -414,10 +414,10 @@ function getTokens(formula) {
 	
 	// move all tokens to a new collection, excluding all unnecessary white-space tokens
 	
-  var bKeepWs = false;
+	var bKeepWs = false;
 	var tokens2 = bKeepWs ? tokens : new f_tokens();
 	
-  if (!bKeepWs)
+	if (!bKeepWs)
 	while (tokens.moveNext()) {
 
 		token = tokens.current();

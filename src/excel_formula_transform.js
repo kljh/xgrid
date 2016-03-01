@@ -45,6 +45,7 @@ function parse_and_transfrom_test() {
 		'=IF(R[39]C[11]>65,R[25]C[42],ROUND((R[11]C[11]*IF(OR(AND(R[39]C[11]>=55, R[40]C[11]>=20),AND(R[40]C[11]>=20,R11C3="YES")),R[44]C[11],R[43]C[11]))+(R[14]C[11] *IF(OR(AND(R[39]C[11]>=55,R[40]C[11]>=20),AND(R[40]C[11]>=20,R11C3="YES")), R[45]C[11],R[43]C[11])),0))',
 		];
 
+	var fcts={}, vars={};
 	for (var f=0; f<formulas.length; f++) {
 		var xlformula = formulas[f];
 		print(f);
@@ -56,7 +57,7 @@ function parse_and_transfrom_test() {
 			var ast = build_token_tree(tokens);
 			//print("TREE:\n"+JSON.stringify(ast,null,4));
 
-			var jsformula = "="+excel_to_js_formula(ast);
+			var jsformula = "="+excel_to_js_formula(ast,vars,fcts);
 			print(jsformula);
 
 		} catch (e) {
@@ -64,7 +65,10 @@ function parse_and_transfrom_test() {
 		}
 		print("\n------\n");
 		//break;
-		}
+	}
+	
+	print("vars:\n"+JSON.stringify(vars,null,4));
+	print("fcts:\n"+JSON.stringify(fcts,null,4));
 }
 
 function build_token_tree(tokens) {
@@ -96,7 +100,10 @@ function build_token_tree(tokens) {
 	return stack_top.args[0];
 } 
 
-function excel_to_js_formula(tokens) {
+function excel_to_js_formula(tokens, opt_vars, opt_fcts) {
+	var vars = opt_vars || {};
+	var fcts = opt_fcts || {};
+	var vars_count = Object.keys(vars).length;
 
 	function excel_to_js_operand(token) {
 		switch (token.subtype) {
@@ -109,7 +116,11 @@ function excel_to_js_formula(tokens) {
 			case TOK_SUBTYPE_ERROR:
 				return "null";
 			case TOK_SUBTYPE_RANGE:
-				return token.value//+".value()";
+				if (!vars[token.value]) {
+					vars_count++;
+					vars[token.value] = "x"+vars_count;
+				}
+				return vars[token.value];
 			default:
 				throw new Error(arguments.callee.name+": unhandled subtype "+token.subtype+"\n"+JSON.stringify(token,null,4));
 		}
@@ -131,14 +142,28 @@ function excel_to_js_formula(tokens) {
 	}
 
 	function excel_to_js_function_call_formula(token) {
+		fcts[token.value] = (fcts[token.value]||0) + 1;
 		var res = token.value+"(";
 		var nb_args = token.args.length;
 		for (var i=0; i<nb_args; i++) {
 			var expr = token.args[i];
-			res += excel_to_js_formula(expr);
+			res += excel_to_js_formula(expr,vars,fcts);
 			res += (i+1<nb_args ? "," : "");
 		}
 		return res+")";
+	}
+
+	function excel_to_js_if_then_else_trigram(token) {
+		var nb_args = token.args.length;
+		if (nb_args<2 || nb_args>3) 
+		throw new Error(arguments.callee.name+": expect 2 or 3 arguments");
+
+		var res = 
+			"(" + excel_to_js_formula(token.args[0],vars,fcts) +
+			"?" + excel_to_js_formula(token.args[1],vars,fcts) +
+			":" + (nb_args==3?excel_to_js_formula(token.args[2],vars,fcts):"null") + 
+			")";
+		return res;
 	}
 
 	function excel_to_js_operator(token) {
@@ -193,8 +218,10 @@ function excel_to_js_formula(tokens) {
 			case "subexpression":
 				if (token.value=="ARRAY")
 					res += excel_to_js_array_operand(token);
+				else if (token.value=="IF")
+					res += excel_to_js_if_then_else_trigram(token);
 				else 
-					res += excel_to_js_function_call_formula(token);
+					res += excel_to_js_function_call_formula(token,vars,fcts);
 			
 				break;
       case "white-space":
