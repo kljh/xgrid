@@ -44,30 +44,53 @@ fs.readdir(folder, function(err, files) {
 		if (filepath.indexOf(".xls")!=filepath.length-4)
 			continue;
 		
-		console.log("filepath: "+filepath);
+		console.log("filepath: "+filepath+"\n");
 		var book = xl.Workbooks.Open(filepath);
 		var nb_sheet = book.Worksheets.Count;
 		console.log("nb_sheet: "+nb_sheet);
 		for (var s=0; s<nb_sheet; s++) {
-			console.log("sheet: "+(s+1)+"/"+nb_sheet);
 			var sheet = book.Worksheets(s+1);
-			console.log("sheet: "+sheet.Name);
-			// Range("B4").End(xlUp).Select  go to end of contiguous range
+			console.log("sheet: "+(s+1)+"/"+nb_sheet+" "+sheet.Name);
 			
-			console.log(""+sheet.Cells.Rows.Count);
+			// find total span of content
 			var xlCellTypeLastCell =11;
 			var rng_bottom_right = sheet.Cells(1,1) .SpecialCells(xlCellTypeLastCell)
 			var n = rng_bottom_right.Row, 
 				m= rng_bottom_right.Column;
 			console.log(n+" x "+m);
-			//
-			for (var i=0; i<n; i++) {
-				for (var j=0; j<m; j++) {
-					console.log(i+" x "+j+" "+sheet.Cells(i+1,j+1).FormulaR1C1);
+			// Range("B4").End(xlUp).Select  go to end of contiguous range
+			
+			for (var j=0; j<m; j++) {
+				for (var i=0; i<n; i++) {
+					var rng = sheet.Cells(i+1,j+1);
+					var addr = ""+rng.Address;
+					if (rng.HasArray()==true) {
+						//console.log(rng.Address+" AF "+JSON.stringify(rng.HasArray())+" "+rng.CurrentArray().Cells(1,1).Address );
+						var array_addr = ""+rng.CurrentArray().Cells(1,1).Address
+						if (addr==array_addr)
+						//if (rng.CurrentArray().Cells(1,1).Address==rng.Address)
+							console.log(rng.CurrentArray().Address+" {} "+rng.FormulaArray);
+						//rng.FormulaArray
+					} else if (rng.HasFormula()==true) {
+						var txt = ""+rng.FormulaR1C1;
+						var rng0 = rng;
+						if (i>0 && (""+sheet.Cells(i, j+1).FormulaR1C1)==txt)
+							continue; // already used
+						while ((""+sheet.Cells(i+1+1, j+1).FormulaR1C1)==txt)
+							i++;
+						var rng1 = sheet.Cells(i+1, j+1);
+						var rng = sheet.Range(rng0, rng1);
+						if (""+rng0.Address != ""+rng1.Address) {
+							console.log(rng.Address+" [] "+rng0.FormulaR1C1);
+						} else {
+							console.log(rng.Address+"    "+rng.FormulaR1C1);
+						}
+					} else if (rng.Text!="") {
+						// Value2 property doesn’t use the Currency and Date 
+						console.log(rng.Address+" VAL "+rng.Text);
+					}
 				}
 			}
-			
-			//
 		}
 	
 		book.Close();
@@ -76,14 +99,9 @@ fs.readdir(folder, function(err, files) {
 });
 
 /*
-var win32com = require('win32com');
-var xl = win32com.client.Dispatch('Excel.Application', 'C'); // locale 
-xl.Visible = true;
 var book = xl.Workbooks.Add();
 var sheet = book.Worksheets(1);
-sheet.Name = 'sheetnameA utf8';
 sheet.Cells(1, 2).Value = 'test utf8';
-var rg = sheet.Range(sheet.Cells(2, 2), sheet.Cells(4, 4));
 rg.RowHeight = 5.18;
 rg.ColumnWidth = 0.58;
 rg.Interior.ColorIndex = 6; // Yellow 
@@ -92,9 +110,6 @@ xl.ScreenUpdating = true;
 xl.Workbooks.Close();
 xl.Quit();
 
-Application.ScreenUpdating = False
-        Cancel = True
-        LastRow = Cells(Rows.Count, keyColumn).End(xlUp).Row
-        Set SortRange = Target.CurrentRegion
-        
+Set SortRange = Target.CurrentRegion
+
 */
