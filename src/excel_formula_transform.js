@@ -48,27 +48,28 @@ function parse_and_transfrom_test() {
 	var fcts={}, vars={};
 	for (var f=0; f<formulas.length; f++) {
 		var xlformula = formulas[f];
-		print(f);
-		print(xlformula);
+		info_msg(f);
+		info_msg(xlformula);
 		var tokens, ast;
 		try {
-			var tokens = getTokens(xlformula);
-			//print("TOKENS:\n"+JSON.stringify(tokens,null,4));
+			var tokens = parser.getTokens(xlformula);
+			//info_msg("TOKENS:\n"+JSON.stringify(tokens,null,4));
 			var ast = build_token_tree(tokens);
-			//print("TREE:\n"+JSON.stringify(ast,null,4));
+			if (f==6)
+				info_msg("TREE:\n"+JSON.stringify(ast,null,4));
 
 			var jsformula = "="+excel_to_js_formula(ast,vars,fcts);
-			print(jsformula);
+			info_msg(jsformula);
 
 		} catch (e) {
-			print("ERROR: "+e+"\n"+e.stack);
+			info_msg("ERROR: "+e+"\n"+e.stack);
 		}
-		print("\n------\n");
+		info_msg("\n------\n");
 		//break;
 	}
 	
-	print("vars:\n"+JSON.stringify(vars,null,4));
-	print("fcts:\n"+JSON.stringify(fcts,null,4));
+	info_msg("vars:\n"+JSON.stringify(vars,null,4));
+	info_msg("fcts:\n"+JSON.stringify(fcts,null,4));
 }
 
 function build_token_tree(tokens) {
@@ -78,13 +79,13 @@ function build_token_tree(tokens) {
 	while (tokens.moveNext()) {
 		var token = tokens.current();
 
-		if (token.subtype==TOK_SUBTYPE_START) {
+		if (token.subtype==parser.TOK_SUBTYPE_START) {
 			stack.push(stack_top);
 			stack_top = token;
 			stack_top.args = [[]]; 
-		} else if (token.type==TOK_TYPE_ARGUMENT) {
+		} else if (token.type==parser.TOK_TYPE_ARGUMENT) {
 			stack_top.args.push([]);
-		} else if (token.subtype==TOK_SUBTYPE_STOP) {
+		} else if (token.subtype==parser.TOK_SUBTYPE_STOP) {
 			var tmp = stack_top
 			stack_top = stack.pop();
 			
@@ -107,15 +108,15 @@ function excel_to_js_formula(tokens, opt_vars, opt_fcts) {
 
 	function excel_to_js_operand(token) {
 		switch (token.subtype) {
-			case TOK_SUBTYPE_TEXT:
+			case parser.TOK_SUBTYPE_TEXT:
 				return JSON.stringify(token.value);
-			case TOK_SUBTYPE_NUMBER:
+			case parser.TOK_SUBTYPE_NUMBER:
 				return token.value;
-			case TOK_SUBTYPE_LOGICAL:
+			case parser.TOK_SUBTYPE_LOGICAL:
 				return token.value.toLowerCase();
-			case TOK_SUBTYPE_ERROR:
+			case parser.TOK_SUBTYPE_ERROR:
 				return "null";
-			case TOK_SUBTYPE_RANGE:
+			case parser.TOK_SUBTYPE_RANGE:
 				if (!vars[token.value]) {
 					vars_count++;
 					vars[token.value] = "x"+vars_count;
@@ -168,10 +169,10 @@ function excel_to_js_formula(tokens, opt_vars, opt_fcts) {
 
 	function excel_to_js_operator(token) {
 		switch (token.subtype) {
-			case TOK_SUBTYPE_MATH:
+			case parser.TOK_SUBTYPE_MATH:
 				return token.value;
 				break;
-			case TOK_SUBTYPE_LOGICAL:
+			case parser.TOK_SUBTYPE_LOGICAL:
 				if (token.value=="=")
 					return "==";
 				else if (token.value=="<>")
@@ -179,11 +180,11 @@ function excel_to_js_formula(tokens, opt_vars, opt_fcts) {
 				else 
 					return token.value;
 				break;
-			case TOK_SUBTYPE_CONCAT:
+			case parser.TOK_SUBTYPE_CONCAT:
 				return "+"; // instead of &
 				break;
-			case TOK_SUBTYPE_INTERSECT:
-			case TOK_SUBTYPE_UNION:
+			case parser.TOK_SUBTYPE_INTERSECT:
+			case parser.TOK_SUBTYPE_UNION:
 			default:
 				throw new Error(arguments.callee.name+": unhandled subtype "+token.subtype+"\n"+JSON.stringify(token));
 		}
@@ -234,5 +235,9 @@ function excel_to_js_formula(tokens, opt_vars, opt_fcts) {
 	return res;
 }
 
-load("excel_formula_parse.js")
+function info_msg(msg) {
+	console.log(msg);
+}
+
+var parser = require("./excel_formula_parse")
 parse_and_transfrom_test();
