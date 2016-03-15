@@ -98,10 +98,9 @@ function parse_column_name_to_index(col) {
 
 	var pos = 0;
 	var mult = 1;
-	var A = col.charCodeAt(0);
-	var Z = col.charCodeAt(0);
+	var valOfA = "A".charCodeAt(0);
 	for (var i=col.length-1; i>=0; i--) {
-		var v = col.charCodeAt(i) - A + 1;
+		var v = col.charCodeAt(i) - valOfA + 1;
 		pos += mult*v;
 		mult *= 26;
 	}
@@ -116,3 +115,5 @@ function info_msg(msg) {
 }
 
 parse_range_test();
+
+module.exports.parse_range = parse_range;
