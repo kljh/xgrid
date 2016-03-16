@@ -45,6 +45,21 @@ function scope_test() {
 	
 }
 
+
+function evaluate_formula(src, vars) {
+	var var_names=[], var_values=[];
+	for (var v in vars) {
+		var_names.push(v);
+		var_values.push(vars[v]);
+	}
+
+	var var_names_and_function_src = var_names.concat(["return "+src+";"]);
+	var fct = Function.prototype.constructor.apply(undefined, var_names_and_function_src);
+
+	var res = fct.apply(fct, var_values);
+	return res;
+}
+
 function spreadsheet_exec_test() {
 
 
