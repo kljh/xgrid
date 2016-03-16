@@ -239,5 +239,13 @@ function info_msg(msg) {
 	console.log(msg);
 }
 
-var parser = require("./excel_formula_parse")
-parse_and_transfrom_test();
+// Nodejs stuff
+if (typeof module!="undefined") {
+
+	var parser = require("./excel_formula_parse")
+
+	// run tests if this file is called directly
+	if (require.main === module)
+		parse_and_transfrom_test();
+
+}

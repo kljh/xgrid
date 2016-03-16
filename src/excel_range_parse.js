@@ -114,6 +114,16 @@ function info_msg(msg) {
 		print(msg);
 }
 
-parse_range_test();
 
-module.exports.parse_range = parse_range;
+// Nodejs stuff
+if (typeof module!="undefined") {
+
+	var parser = require("./excel_formula_parse")
+
+	// run tests if this file is called directly
+	if (require.main === module)
+		parse_range_test();
+
+	module.exports.parse_range = parse_range;
+
+}
