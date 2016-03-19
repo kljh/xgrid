@@ -1,49 +1,4 @@
 
-function spreadsheet_scope() {
-	this.A1 = 13
-	this.f = function() { info_msg(this.A1); }
-}
-spreadsheet_scope.prototype.fun = function() { info_msg(this.A1); }
-spreadsheet_scope.prototype.fun2 = function() { info_msg(A1); }
-
-function scope_test() {
-	var obj = {
-		get A1 () {
-			return 11;
-		}
-	}
-	
-	function f() { info_msg(this.A1); }
-	f.call({ A1: 7 })
-	f.call(obj)
-
-	var ss = new spreadsheet_scope;
-	ss.f();
-	ss.fun();
-	ss.fun2();
-
-	ss.A2 = 17;
-	ss.g = function() { info_msg(this.A2); }
-	ss.g();
-
-	ss.A3 = 23;
-	ss.h = new Function("return this.A3;");
-	info_msg(ss.h());
-	
-	var A5 = 5
-	function f5() { info_msg(A5); }
-	f5();
-
-	var A6 = 6
-	f6 = function() { info_msg(A6); }
-	f6();
-	
-	var A7 = 7
-	f7a = new Function("info_msg(A7);");
-	f7 = f7a.bind(this);
-	f7();
-	
-}
 
 
 function evaluate_formula(src, vars) {
@@ -61,8 +16,6 @@ function evaluate_formula(src, vars) {
 }
 
 function spreadsheet_exec_test() {
-
-
 	var path = require('path');
 	var filepath = path.resolve(__dirname+'/../work/music_theory.xjson');
 	info_msg("Executing "+filepath);
@@ -74,14 +27,18 @@ function spreadsheet_exec_test() {
 
 	var eval = {};
 	for (var r in input) {
-		if (input[r].substr && input[r][0]=="=") {
-			if (input[r]==="") continue;
+		if (input[r]==="") continue;
 
+		var target = range_parser.parse_range(r);
+		
+		var isFormula = input[r].substr && input[r][0]=="=";
+		if (isFormula) {
 			append_depth_first_eval_function(r, input[r], eval);
-			
-
+			eval[r].target = target;
 		} else {
 			eval[r] = {
+				target: target,
+				vakue: input[r],
 				f : new Function("return "+JSON.stringify(input[r])) };
 		}
 	}
@@ -138,6 +95,7 @@ function info_msg(msg) {
 if (typeof module!="undefined") {
 	var fs = require("fs");
 	var parser = require("./excel_formula_parse");
+	var range_parser = require("./excel_range_parse");
 	var xlexpr = require("./excel_formula_transform");
 
 	// run tests if this file is called directly
