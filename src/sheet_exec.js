@@ -22,69 +22,234 @@ function spreadsheet_exec_test() {
 
 	var txt = fs.readFileSync(filepath, 'utf8');
 	var data = JSON.parse(txt);
-	var input = data.input;
-	info_msg("input "+JSON.stringify(input, null, 4));
+	var sheet = data.input;
+	info_msg("sheet "+JSON.stringify(sheet, null, 4));
 
+	sheet_exec(sheet)
+}
+
+function sheet_exec(sheet) {
 	var eval = {};
-	for (var r in input) {
-		if (input[r]==="") continue;
+	for (var r in sheet) {
+		var val = sheet[r];
+		if (val==="") continue;
 
 		var target = range_parser.parse_range(r);
 		
-		var isFormula = input[r].substr && input[r][0]=="=";
-		if (isFormula) {
-			append_depth_first_eval_function(r, input[r], eval);
-			eval[r].target = target;
+		var isFormula = val.substr && val[0]=="=";
+		var isFormulaArray = val.substr && val[0]=="{" && val[0]=="=" && val[val.length]=="}";
+		if (isFormula || isFormulaArray) {
+			var formula = isFormula ? val.substr(1) : val.substr(2, val.length-2);
+
+			var vars =  {}, fcts= {};
+			var expr = xlexpr.parse_and_transfrom(formula,vars,fcts);
+			
+			var ids = []; 
+			var args = []; 
+			for (var addr in vars) {
+				ids.push(vars[addr]);
+				args.push(addr);
+			}
+
+			var func = new Function(ids, "var res="+expr+"; return res;");
+			info_msg("expr: "+expr);
+
+			if (target.end && !isFormulaArray) {
+				for (var i=target.row; i<=target.end.row; i++)
+					for (var j=target.col; j<=target.end.col; j++) {
+
+						var tmp_args = new Array(args.length);
+						for (var a=0; a<args.length; a++) 
+							tmp_args[a] = range_parser.stringify_range(move_range(range_parser.parse_range(args[a]), i, j));
+
+						eval[r+"_"+i+"_"+j] = {
+							target: { row: i, col: j },
+							expr: expr,
+							fct: func,
+							args: tmp_args
+							};
+					}
+			} else {
+				eval[r] = {
+					target: target,
+					expr: expr,
+					fct: func,
+					args: args
+					};
+			}
+			
 		} else {
+
 			eval[r] = {
 				target: target,
-				vakue: input[r],
-				f : new Function("return "+JSON.stringify(input[r])) };
+				value: val,
+				};
 		}
 	}
 
 	info_msg("evaluation: "+JSON.stringify(eval, null, 4));
 
+	//return ;
+
 	var final_ranges_to_evaluate = [ "G32", "G30", "H32" ];
+	var final_ranges_to_evaluate = Object.keys(eval);
 	for (var r=0; r<final_ranges_to_evaluate.length; r++) {
 		var rng = final_ranges_to_evaluate[r];
-		info_msg(rng+" value is "+eval[rng].f());
+		var res = evaluate_node(rng, eval);
+		info_msg(rng+" value is "+JSON.stringify(res));
 	}
 }
 
-function append_depth_first_eval_function(input_id, input_expr, eval) {
-	info_msg("input_id: "+input_id);
-	info_msg("input_expr: "+JSON.stringify(input_expr));
+function create_on_the_fly_node(id) {
+	info_msg(arguments.callee.name+": id: "+id);
+	var rng = range_parser.parse_range(id);
+	///if (rng.end) {
+		return { rng: rng };
+	//} else {
+	//	throw new Error(arguments.callee.name+": "+id+" is not a multi-cell range");
+	//}
+}
 
-	var vars =  {}, fcts= {};
-	var expr = xlexpr.parse_and_transfrom(input_expr,vars,fcts);
-	var args = []; for (var addr in vars) args.push(vars[addr]);
-	var func = new Function(args, "var res="+expr+"; return res;");
-	info_msg("expr: "+expr);
+function evaluate_node(id, nodes) {
+	info_msg(arguments.callee.name+": "+id);
 
-	var f = function() {
-		// evaluate arguments first
-		var arg_vals = [];
-		for (var addr in vars) {
-			addr = addr.replace(/\$/g, "");
-			if (!(addr in eval))
-				throw new Error("evaluating "+input_id+": '"+expr+"', input '"+addr+"' unknown in "+Object.keys(eval));
-			if (!eval[addr].f)
-				throw new Error("evaluating "+input_id+": '"+expr+"', input '"+addr+"' has no menber 'f()'");
+	if (!(id in nodes)) 
+		nodes[id] = create_on_the_fly_node(id);
+	
+	var node = nodes[id];
+	var isValNode = node.fct===undefined && node.rng===undefined;
+	var isRngNode = node.fct===undefined && node.rng!==undefined;
+	var isFctNode = node.fct!==undefined && node.rng===undefined;
+
+	if (isValNode) 
+		return node.value;
+	else if (isRngNode)
+		return evaluate_range(id, nodes);
+	else if (isFctNode)
+		return evaluate_depth_first(id, nodes);
+	else 
+		throw new Error(arguments.callee.name+": "+id+" unknown node type. "+JSON.stringify(node));
+}
+
+function evaluate_range(id, nodes) {
+	info_msg(arguments.callee.name+": "+id);
+
+	// cached results
+	if (nodes[id].value)
+		return nodes[id].value;
+
+	var rng = nodes[id].rng;
+	var beg1 = rng;
+	var end1 = rng.end || rng;
+
+	// build list of dependencies
+	var deps = nodes[id].deps;
+	if (!deps) {
+		deps = [];
+		for (var n in nodes) {
+			var node = nodes[n];
+			if (!node.target)
+				continue;
 			
-			var v = eval[addr].f();
-			arg_vals.push(v);
+			var beg2 = node.target;
+			var end2 = node.target.end || node.target;
+
+			var inter = {
+				row : Math.max(beg1.row, beg2.row),
+				col : Math.max(beg1.col, beg2.col),
+				end :{
+					row : Math.min(end1.row, end2.row),
+					col : Math.min(end1.col, end2.col),
+				}};
+
+			if ( inter.row>inter.end.row || inter.col>inter.end.col)
+				inter = undefined;
+			else
+				deps[n] = inter;
 		}
-			
-		info_msg("evaluating "+input_id+": '"+expr+"'");
-		var res = func.apply(this, arg_vals);
-		return res;
+		nodes[id].deps = deps;
 	}
 
-	eval[input_id] = {
-		f: f,
-		expr: expr,
-		vars: vars };
+	// evaluate dependencies
+	//for (var n in deps) 
+	//	evaluate_node(n, nodes);
+
+	// assemble range 
+	var nb_row = end1.row - beg1.row + 1;
+	var nb_col = end1.col - beg1.col + 1;
+	var res = new Array(nb_row);
+	for (var i=0; i<nb_row; i++) {
+		res[i] = new Array(nb_col);
+	}
+		
+	for (var n in deps) {
+		var tmp = to_array_2d(evaluate_node(n, nodes));
+		info_msg(arguments.callee.name+": "+id+" subrange "+n+" value is "+JSON .stringify(tmp));
+		
+		var tmp_row = nodes[n].target.row;
+		var tmp_col = nodes[n].target.col;
+
+		var inter = deps[n];
+		info_msg(arguments.callee.name+": inter "+JSON .stringify(inter));
+		
+		for (var i=inter.row; i<=inter.end.row; i++) 
+			for (var j=inter.col; j<=inter.end.col; j++) 
+				res[i-rng.row][j-rng.col] = tmp[i-tmp_row][j-tmp_col];
+
+	}
+
+	// cache reuls 
+	nodes[id].value = res;
+
+	info_msg(arguments.callee.name+": "+id+" value is "+JSON .stringify(res));
+	return res;
+}
+
+function evaluate_depth_first(id, nodes) {
+	info_msg(arguments.callee.name+": "+id);
+	var node = nodes[id];
+
+	// cached results
+	if (node.value) {
+		info_msg(arguments.callee.name+": "+id+" cached "+JSON .stringify(node.value))
+		return node.value;
+	}
+
+	// evaluate arguments first
+	var args = []; 
+	var arg_map = {}; // for info only
+	if (node.args) {
+		args = new Array(node.args.length);
+		for (var a=0; a<node.args.length; a++) {
+			args[a] = evaluate_node(node.args[a], nodes)
+			arg_map[node.args[a]] = args[a];
+		}
+	}
+	
+	info_msg(arguments.callee.name+": evaluating "+id+": '"+node.expr+"' with args "+JSON .stringify(arg_map));
+	var res = node.fct.apply(this, args);
+
+	// cache reuls 
+	node.value = res;
+
+	return res;
+}
+
+function move_range(rng, i, j) {
+	var tmp = JSON.parse(JSON.stringify(rng));
+	if (tmp.row!==undefined && !tmp.abs_row) tmp.row += i;
+	if (tmp.col!==undefined && !tmp.abs_col) tmp.col += j;
+	if (tmp.end)
+		tmp.end = move_range(tmp.end, i, j)
+	return tmp;
+}
+
+function to_array_2d(v) {
+	if (!Array.isArray(v))
+		return to_array_2d([v]);
+	if (v.length==0 || !Array.isArray(v[0]))
+		return [v];
+	return v;		
 }
 
 function info_msg(msg) {
@@ -99,7 +264,7 @@ if (typeof module!="undefined") {
 	var xlexpr = require("./excel_formula_transform");
 
 	// run tests if this file is called directly
-	if (require.main === module)
+	//if (require.main === module)
 		spreadsheet_exec_test();
 
 }
