@@ -1,3 +1,4 @@
+var assert = require('assert');
 
 function parse_range_test() {
 	var ranges = [
@@ -32,6 +33,15 @@ function parse_range_test() {
 		var tmp = parse_range(ranges[r]);
 		info_msg(JSON.stringify(tmp,null,4));
 	}
+}
+
+function range_regression_tests() {
+	assert.equal(JSON.stringify(parse_range('R1')),
+		'{"arg":"R1","cell0":{"col":18,"col_abs":false,"row":1,"row_abs":false}}');
+	assert.equal(JSON.stringify(parse_range('R[1]')),
+		'{"arg":"R[1]","cell0":{"row":"1","row_abs":false,"col_abs":true}}');
+	assert.equal(JSON.stringify(parse_range('R[1]C[1]')),
+		'{"arg":"R[1]C[1]","cell0":{"row":"1","row_abs":false,"col":"1","col_abs":false}}');
 }
 
 function parse_range(arg) {
@@ -71,7 +81,7 @@ function parse_range(arg) {
 function parse_cell(cell) {
 	if (!cell) return cell;
 	
-	var r1c1 = /(R(\[?(-?[0-9]*)\]?))?(C(\[?(-?[0-9]*)\]?))?/.exec(cell);
+	var r1c1 = /(R(\[(-?[0-9]*)\]))?(C(\[(-?[0-9]*)\]))?/.exec(cell);
 	if (r1c1[3] || r1c1[6] ) {
 		return { 
 			row : r1c1[3],
@@ -114,6 +124,15 @@ function info_msg(msg) {
 		print(msg);
 }
 
-parse_range_test();
+function dbg(name, variable) {
+	info_msg(name+":\n"+JSON.stringify(variable,null,4));
+}
+
+
+if (module == require.main) {
+	range_regression_tests();
+}
+
+// parse_range_test();
 
 module.exports.parse_range = parse_range;
