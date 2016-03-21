@@ -10,14 +10,8 @@ var assert = require('assert');
 var exec 	= require('child_process').exec;
 var path	= require('path');
 
-
-function info_msg(msg) {
-	console.log(msg);
-}
-
-function dbg(name, variable) {
-	info_msg(name+":\n"+JSON.stringify(variable,null,4));
-}
+var info_msg = rng.info_msg;
+var dbg = rng.dbg;
 
 function deps_graph_test() {
 	
@@ -26,13 +20,14 @@ function deps_graph_test() {
 		['A3', '=50'],
 		['A4', '=50%']
 	];
-	var adjacency_list = formulas_list_to_adjacency_list(no_edges);
-	adjacency_list_to_dot(adjacency_list, 'C:/temp/graph1.svg');
-	assert.equal(JSON.stringify(adjacency_list),
+	var g1 = new Graph();
+	g1.create_from_formulas(no_edges);
+	g1.dot_display('C:/temp/graph1.svg');
+	assert.equal(JSON.stringify(g1.vertices),
 	JSON.stringify({
-		'{"cell0":{"col":1,"row":2}}': [],
-		'{"cell0":{"col":1,"row":3}}': [],
-		'{"cell0":{"col":1,"row":4}}': []
+	    "{\"cell0\":{\"col\":1,\"row\":2}}": [],
+	    "{\"cell0\":{\"col\":1,\"row\":3}}": [],
+	    "{\"cell0\":{\"col\":1,\"row\":4}}": []
 	}));
 	
 	var simple_directed_cells_only = [
@@ -40,113 +35,98 @@ function deps_graph_test() {
 		['U1', '=$B$2'],
 		['A1', '=$B$5']
 	];
-	var adjacency_list = formulas_list_to_adjacency_list(simple_directed_cells_only);
-	adjacency_list_to_dot(adjacency_list, 'C:/temp/graph2.svg');
-	assert.equal(JSON.stringify(adjacency_list),
+	var g2 = new Graph();
+	g2.create_from_formulas(simple_directed_cells_only);
+	g2.dot_display('C:/temp/graph2.svg');
+	assert.equal(JSON.stringify(g2.vertices),
 	JSON.stringify({
-		'{"cell0":{"col":23,"row":1}}': [ '{"cell0":{"col":1,"row":1}}' ],
-		'{"cell0":{"col":21,"row":1}}': [ '{"cell0":{"col":2,"row":2}}' ],
-		'{"cell0":{"col":1,"row":1}}': [ '{"cell0":{"col":2,"row":5}}' ]
+	    "{\"cell0\":{\"col\":23,\"row\":1}}": [],
+	    "{\"cell0\":{\"col\":1,\"row\":1}}": [
+		"{\"cell0\":{\"col\":23,\"row\":1}}"
+	    ],
+	    "{\"cell0\":{\"col\":21,\"row\":1}}": [],
+	    "{\"cell0\":{\"col\":2,\"row\":2}}": [
+		"{\"cell0\":{\"col\":21,\"row\":1}}"
+	    ],
+	    "{\"cell0\":{\"col\":2,\"row\":5}}": [
+		"{\"cell0\":{\"col\":1,\"row\":1}}"
+	    ]
 	}));
-
-	/*var all_formulas = [
-		['A1', '="a"+1.2+TRUE+A1+xyz+#VALUE!'], // all operands
-		['A2', '="a"&"b"'],	// & operator
-		['A3', '=50'],
-		['A4', '=50%'], 	// % operator
-		['A5', '=3.1E-24-2.1E-24'],
-		['A6', '=1+3+5'],
-		['A7', '=3 * 4 + \n\t 5'],
-		['A8', '=1-(3+5) '],
-		['A9', '=1=5'], 	// = operator
-		['B1', '=1<>5'],	// <> operator
-		['C1', '=2^8'], 	// ^ operator
-		['D1', '=TRUE'],
-		['E1', '=FALSE'],
-		['Q1', '={1.2,"s";TRUE,FALSE}'],	// array notation
-		['W1', '=$A1'],
-		['R1', '=$B$2'],
-		['T1', '=Sheet1!A1'],
-		['Y1', '=\'Another sheet\'!A1'],
-		['U1', '=[Book1]Sheet1!$A$1'],
-		['I1', '=[data.xls]sheet1!$A$1'],
-		['O1', '=\'[Book1]Another sheet\'!$A$1'],
-		['P1', '=\'[Book No2.xlsx]Sheet1\'!$A$1'],
-		['S1', '=\'[Book No2.xlsx]Another sheet\'!$A$1'],
-		['F1', '=[data.xls]sheet1!$A$1'],
-		//['A1', '=[\'my data.xls\'],\'my sheet\'!$A$1'],
-		['G1', '=SUM(B5:B15)'],
-		['H1', '=SUM(B5:B15,D5:D15)'],
-		['J1', '=SUM(B5:B15 A7:D7)'],
-		['K1', '=SUM(sheet1!$A$1:$B$2)'],
-		['L1', '=SUM((A:A 1:1))'],
-		['Z1', '=SUM((A:A,1:1))'],
-		['X1', '=SUM((A:A A1:B1))'],
-		['V1', '=SUM(D9:D11,E9:E11,F9:F11)'],
-		['N1', '=SUM((D9:D11,(E9:E11,F9:F11)))'],
-		['M1', '=IF(P5=1.0,"NA",IF(P5=2.0,"A",IF(P5=3.0,"B",IF(P5=4.0,"C",IF(P5=5.0,"D",IF(P5=6.0,"E",IF(P5=7.0,"F",IF(P5=8.0,"G"))))))))'],
-		['M2', '=SUM(B2:D2*B3:D3)'],  // array formula
-		['M3', '=SUM( 123 + SUM(456) + IF(DATE(2002,1,6), 0, IF(ISERROR(R[41]C[2]),0, IF(R13C3>=R[41]C[2],0, '
-			+'  IF(AND(R[23]C[11]>=55,R[24]C[11]>=20), R53C3, 0))))'],
-		['M4', '=IF("a"={"a","b";"c",#N/A;-1,TRUE}, "yes", "no") &   "  more ""test"" text"'],
-		['M5', '=+ AName- (-+-+-2^6) = {"A","B"} + @SUM(R1C1) + (@ERROR.TYPE(#VALUE!) = 2)'],
-		['M6', '=IF(R13C3>DATE(2002,1,6),0,IF(ISERROR(R[41]C[2]),0,IF(R13C3>=R[41]C[2],0, IF(AND(R[23]C[11]>=55,R[24]C[11]>=20),R53C3,0))))'],
-		['M7', '=IF(R[39]C[11]>65,R[25]C[42],ROUND((R[11]C[11]*IF(OR(AND(R[39]C[11]>=55, R[40]C[11]>=20),AND(R[40]C[11]>=20,R11C3="YES")),R[44]C[11],R[43]C[11]))+(R[14]C[11] *IF(OR(AND(R[39]C[11]>=55,R[40]C[11]>=20),AND(R[40]C[11]>=20,R11C3="YES")), R[45]C[11],R[43]C[11])),0))']
-	];
 	
-	var adjacency_list = formulas_list_to_adjacency_list(all_formulas);
+	var circular_deps = [
+		['A1', '=$A2'],
+		['A2', '=$A$3'],
+		['A3', '=A1']
+	];
+	var g3 = new Graph();
+	g3.create_from_formulas(circular_deps);
+	g3.dot_display('C:/temp/graph3.svg');
+	assert.equal(JSON.stringify(g3.vertices),
+	JSON.stringify({
+	    "{\"cell0\":{\"col\":1,\"row\":1}}": [
+		"{\"cell0\":{\"col\":1,\"row\":3}}"
+	    ],
+	    "{\"cell0\":{\"col\":1,\"row\":2}}": [
+		"{\"cell0\":{\"col\":1,\"row\":1}}"
+	    ],
+	    "{\"cell0\":{\"col\":1,\"row\":3}}": [
+		"{\"cell0\":{\"col\":1,\"row\":2}}"
+	    ]
+	}));
+}
 
-	adjacency_list_to_dot(adjacency_list, 'C:/temp/graph1.dot');*/
+function Graph() {
+	this.vertices = {};
+	this.size = function() {return Object.keys(this.vertices).length;}
+	this.create_from_formulas = function(formulas) {
+		this.vertices = formulas_list_to_adjacency_list(formulas)
+	}
+	this.dot_display = function(output_path) {adjacency_list_to_dot(this.vertices, output_path);}
 }
 
 function formulas_list_to_adjacency_list(formulas /* [ [cell, formula_in_cell], ...]*/) {
-	var adjacency_list = {};
+	var adjacency_dict = {};
 	for (var f=0; f<formulas.length; f++) {
 		var cell = formulas[f][0];
 		var xlformula = formulas[f][1];
 		try {
+			var child = range_to_key(rng.parse_range(cell));
+			if (adjacency_dict[child] === undefined) {
+				adjacency_dict[child] = [ ];
+			}
 			var tokens = parser.getTokens(xlformula);
-			// info_msg("TOKENS:\n"+JSON.stringify(tokens,null,4));
-			var cell_deps = tokens_to_adjacent_list(tokens["items"]);
-			var key = range_to_key(rng.parse_range(cell));
-			if (adjacency_list.hasOwnProperty(key))
-				throw "Dependencies of cell " + key + " read more than once !";
-			adjacency_list[key] = cell_deps;
-		} catch (e) {$
+			var parents = tokens_to_range_list(tokens["items"]);
+			//dbg('child', child);
+			//dbg('parents', parents);
+			for (var iParent=0; iParent<parents.length; ++iParent) {
+				var parent = parents[iParent];
+				if (adjacency_dict[parent] !== undefined) {
+					adjacency_dict[parent].push(child);
+				} else {
+					adjacency_dict[parent] = [child];
+				}
+			}
+		} catch (e) {
 			info_msg("ERROR: "+e+"\n"+e.stack);
 		}
 	}
-	//info_msg("adjacency_list:\n"+JSON.stringify(adjacency_list,null,4));
-	return adjacency_list;
+	//dbg("adjacency_dict", adjacency_dict);
+	return adjacency_dict;
 }
 
 
-function tokens_to_adjacent_list(tokens) {
-	var deps = []
+function tokens_to_range_list(tokens) {
+	var ranges = []
 	for (var i=0; i<tokens.length; ++i) {
 		var token = tokens[i];
 		if (token.subtype === "range") {
 			var range_as_key = range_to_key(rng.parse_range(token.value));
-			if (!contains(deps, range_as_key))
-				deps.push(range_as_key);
+			if (!contains(ranges, range_as_key))
+				ranges.push(range_as_key);
 		}
 	}
-	return deps;
+	return ranges;
 }
-
-/*function eq_range_obj(left, right) {
-	// no need for  (left.hasOwnProperty("workbook") && right.hasOwnProperty("workbook"))
-	// undefined !== undefined --> false
-	if (left["workbook"] !== right["workbook"])
-		return false;
-	if (left["sheet"] !== right["sheet"])
-		return false;
-	if (left["cell1"] !== right["cell1"])
-		return false;
-	if (left["cell0"] !== right["cell0"])
-		return false;
-	return true;
-}*/
 
 function range_to_key(range) {
 	var dict_to_print = range;
@@ -210,3 +190,4 @@ if (module == require.main) {
 	deps_graph_test();
 }
 
+module.exports.Graph = Graph;
