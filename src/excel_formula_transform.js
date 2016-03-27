@@ -1,6 +1,6 @@
 
 function parse_and_transfrom_test() {
-	var formulas = [
+	var xl_formulas = [
 		'="a"+1.2+TRUE+A1+xyz+#VALUE!', // all operands
 		'="a"&"b"',	// & operator
 		'=50',
@@ -45,36 +45,57 @@ function parse_and_transfrom_test() {
 		'=IF(R[39]C[11]>65,R[25]C[42],ROUND((R[11]C[11]*IF(OR(AND(R[39]C[11]>=55, R[40]C[11]>=20),AND(R[40]C[11]>=20,R11C3="YES")),R[44]C[11],R[43]C[11]))+(R[14]C[11] *IF(OR(AND(R[39]C[11]>=55,R[40]C[11]>=20),AND(R[40]C[11]>=20,R11C3="YES")), R[45]C[11],R[43]C[11])),0))',
 		];
 
-	var fcts={}, vars={};
-	for (var f=0; f<formulas.length; f++) {
-		var xlformula = formulas[f];
-		info_msg(f);
-		info_msg(xlformula);
-		var tokens, ast;
-		try {
-
-			var jsformula = "="+parse_and_transfrom(xlformula,vars,fcts);
-			info_msg(jsformula);
-
-		} catch (e) {
-			info_msg("ERROR: "+e+"\n"+e.stack);
-		}
-		info_msg("\n------\n");
-		//break;
-	}
+	var js_formulas = [
+		'="a string \\n\\t with a few escape chars"',
+		'="a string \\" with a tricky escape char"',
+		'=true && false',
+		];
 	
-	info_msg("vars:\n"+JSON.stringify(vars,null,4));
-	info_msg("fcts:\n"+JSON.stringify(fcts,null,4));
+	function test(formulas, prms){
+		var fcts={}, vars={};
+		for (var f=0; f<formulas.length; f++) {
+			var xlformula = formulas[f];
+			info_msg((f+1)+"/"+formulas.length);
+			info_msg(xlformula);
+			var tokens, ast;
+			try {
+
+				var jsformula = "="+parse_and_transfrom(xlformula,vars,fcts,prms);
+				info_msg(jsformula);
+
+			} catch (e) {
+				info_msg("ERROR: "+e+"\n"+e.stack);
+			}
+			info_msg("\n------\n");
+			//break;
+		}
+
+		info_msg("vars:\n"+JSON.stringify(vars,null,4));
+		info_msg("fcts:\n"+JSON.stringify(fcts,null,4));
+
+	}
+	test(xl_formulas, { xl: true });
+	test(js_formulas, { xjs: true });
+
 }
 
-function parse_and_transfrom(xlformula,vars,fcts) {
+function parse_and_transfrom(xlformula,vars,fcts,opt_prms) {
+	var prms = opt_prms || {};
+	
+	// ExtendedJS grammar (with range and vector operations)
+	// --or-- Excel grammar to plain JS grammar conversion 
+
 	var tokens = parser.getTokens(xlformula);
 	//info_msg("TOKENS:\n"+JSON.stringify(tokens,null,4));
 
-	var ast = build_token_tree(tokens);
+	try {
+		var ast = build_token_tree(tokens);
+	} catch (e) {
+		throw new Error(arguments.callee.name+": while parsing "+xlformula+"\n"+(e.stack||e));
+	}
 	//info_msg("TREE:\n"+JSON.stringify(ast,null,4));
 
-	var jsformula = excel_to_js_formula(ast,vars,fcts);
+	var jsformula = excel_to_js_formula(ast,vars,fcts,prms);
 	return jsformula;
 }
 
@@ -107,7 +128,8 @@ function build_token_tree(tokens) {
 	return stack_top.args[0];
 } 
 
-function excel_to_js_formula(tokens, opt_vars, opt_fcts) {
+function excel_to_js_formula(tokens, opt_vars, opt_fcts, opt_prms) {
+	var prms = opt_prms || {};
 	var vars = opt_vars || {};
 	var fcts = opt_fcts || {};
 	var vars_count = Object.keys(vars).length;
@@ -204,7 +226,10 @@ function excel_to_js_formula(tokens, opt_vars, opt_fcts) {
 
 			// operators
 			case "operator-infix":
-				res += excel_to_js_operator(token);
+				if (!prms.xjs)
+					res += excel_to_js_operator(token);
+				else 
+					res += token.value;
 				break;
 			case "operator-prefix":
 				res += token.value;
@@ -223,17 +248,17 @@ function excel_to_js_formula(tokens, opt_vars, opt_fcts) {
 		
 			case "function":
 			case "subexpression":
-				if (token.value=="ARRAY")
+				if (!prms.xjs && token.value=="ARRAY")
 					res += excel_to_js_array_operand(token);
-				else if (token.value=="IF")
+				else if (!prms.xjs && token.value=="IF")
 					res += excel_to_js_if_then_else_trigram(token);
 				else 
-					res += excel_to_js_function_call_formula(token,vars,fcts);
+					res += excel_to_js_function_call_formula(token,vars,fcts,prms);
 			
 				break;
-      case "white-space":
-        res += token.value;
-        break;
+			case "white-space":
+				res += token.value;
+				break;
 			default:
 				throw new Error(arguments.callee.name+": unhandled "+token.type);
 		}

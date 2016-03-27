@@ -16,19 +16,25 @@ function evaluate_formula(src, vars) {
 }
 
 function spreadsheet_exec_test() {
+	var fs = require('fs');
 	var path = require('path');
-	var filepath = path.resolve(__dirname+'/../work/music_theory.xjson');
-	info_msg("Executing "+filepath);
 
-	var txt = fs.readFileSync(filepath, 'utf8');
-	var data = JSON.parse(txt);
-	var sheet = data.input;
-	info_msg("sheet "+JSON.stringify(sheet, null, 4));
+	var folder_path = __dirname+'/../work/';
+	var filepaths = fs.readdirSync(folder_path);
+	for (var i=0; i<filepaths.length; i++) {
+		var filepath = path.resolve(folder_path+filepaths[i]);
+		info_msg("Executing "+filepath);
+		
+		var txt = fs.readFileSync(filepath, 'utf8');
+		var data = JSON.parse(txt);
+		var sheet = data.input;
+		info_msg("sheet "+JSON.stringify(sheet, null, 4));
 
-	sheet_exec(sheet)
+		sheet_exec(sheet, { xjs: true });
+	}
 }
 
-function sheet_exec(sheet) {
+function sheet_exec(sheet, prms) {
 	var eval = {};
 	for (var r in sheet) {
 		var val = sheet[r];
@@ -39,45 +45,52 @@ function sheet_exec(sheet) {
 		var isFormula = val.substr && val[0]=="=";
 		var isFormulaArray = val.substr && val[0]=="{" && val[0]=="=" && val[val.length]=="}";
 		if (isFormula || isFormulaArray) {
-			var formula = isFormula ? val.substr(1) : val.substr(2, val.length-2);
+			try {
+				var formula = isFormula ? val.substr(1) : val.substr(2, val.length-2);
 
-			var vars =  {}, fcts= {};
-			var expr = xlexpr.parse_and_transfrom(formula,vars,fcts);
-			
-			var ids = []; 
-			var args = []; 
-			for (var addr in vars) {
-				ids.push(vars[addr]);
-				args.push(addr);
-			}
+				var vars =  {}, fcts= {};
+				var expr = xlexpr.parse_and_transfrom(formula,vars,fcts,prms);
+				
+				var ids = []; 
+				var args = []; 
+				for (var addr in vars) {
+					ids.push(vars[addr]);
+					args.push(addr);
+				}
 
-			var func = new Function(ids, "var res="+expr+"; return res;");
-			info_msg("expr: "+expr);
+				var func = new Function(ids, "var res="+expr+"; return res;");
+				info_msg("expr: "+expr);
 
-			if (target.end && !isFormulaArray) {
-				for (var i=target.row; i<=target.end.row; i++)
-					for (var j=target.col; j<=target.end.col; j++) {
+				if (target.end && !isFormulaArray) {
+					for (var i=target.row; i<=target.end.row; i++)
+						for (var j=target.col; j<=target.end.col; j++) {
 
-						var tmp_args = new Array(args.length);
-						for (var a=0; a<args.length; a++) 
-							tmp_args[a] = range_parser.stringify_range(move_range(range_parser.parse_range(args[a]), i, j));
+							var tmp_args = new Array(args.length);
+							for (var a=0; a<args.length; a++) 
+								tmp_args[a] = range_parser.stringify_range(move_range(range_parser.parse_range(args[a]), i, j));
 
-						eval[r+"_"+i+"_"+j] = {
-							target: { row: i, col: j },
-							expr: expr,
-							fct: func,
-							args: tmp_args
-							};
-					}
-			} else {
+							eval[r+"_"+i+"_"+j] = {
+								target: { row: i, col: j },
+								expr: expr,
+								fct: func,
+								args: tmp_args
+								};
+						}
+				} else {
+					eval[r] = {
+						target: target,
+						expr: expr,
+						fct: func,
+						args: args
+						};
+				}
+			} catch (e) {
 				eval[r] = {
 					target: target,
-					expr: expr,
-					fct: func,
-					args: args
+					value: null,
+					error: e.stack || (""+e)
 					};
 			}
-			
 		} else {
 
 			eval[r] = {
