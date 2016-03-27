@@ -4,7 +4,7 @@
     "github://kljh/grid/demos/demo-fibonacci.xjson"
   ],
   "input": {
-    "A1": "sdfsdgdklsj",
+    "A1": "Test Status",
     "B1": "=A18==0 && F4==0",
     "C1": "<< grey = not yet calculated",
     "D1": "(press F5, shortcut in column K)",
@@ -36,7 +36,6 @@
     "C11": "depends on C1:D5 (D3)",
     "D11": "=E9",
     "F11": "=E9",
-    "C13": "d",
     "A14:A15": "=sum(A4:A12)",
     "A17": "depends on Fibonacci (A2)",
     "C17": "=f(1,2",
