@@ -30,7 +30,11 @@ function spreadsheet_exec_test() {
 		var sheet = data.input;
 		info_msg("sheet "+JSON.stringify(sheet, null, 4));
 
-		sheet_exec(sheet, { xjs: true });
+		try {
+			sheet_exec(sheet, { xjs: true });
+		} catch (e) {
+			throw new Error("evaluating "+filepath+"\n"+(e.stack||e)+"\n");
+		}
 	}
 }
 
@@ -43,10 +47,10 @@ function sheet_exec(sheet, prms) {
 		var target = range_parser.parse_range(r);
 		
 		var isFormula = val.substr && val[0]=="=";
-		var isFormulaArray = val.substr && val[0]=="{" && val[0]=="=" && val[val.length]=="}";
+		var isFormulaArray = val.substr && val[0]=="{" && val[1]=="=" && val[val.length-1]=="}";
 		if (isFormula || isFormulaArray) {
 			try {
-				var formula = isFormula ? val.substr(1) : val.substr(2, val.length-2);
+				var formula = isFormula ? val.substr(1) : val.substr(2, val.length-3);
 
 				var vars =  {}, fcts= {};
 				var expr = xlexpr.parse_and_transfrom(formula,vars,fcts,prms);
@@ -58,6 +62,9 @@ function sheet_exec(sheet, prms) {
 					args.push(addr);
 				}
 
+				//var func = new Function(ids, "try { var res="+expr+"; return res; } catch(e) { throw new Error('"+r+" '+(e.stack||e)+'\\n'); }");
+				//var func = new Function(ids, "try { var res="+expr+"; return res; } catch(e) { throw new Error('"+r+" '+(e)+'\\n'); }");
+				//var func = Function(ids, "try { var res="+expr+"; return res; } catch(e) { throw new Error('"+r+" '+(e)+'\\n'); }");
 				var func = new Function(ids, "var res="+expr+"; return res;");
 				info_msg("expr: "+expr);
 
@@ -67,7 +74,7 @@ function sheet_exec(sheet, prms) {
 
 							var tmp_args = new Array(args.length);
 							for (var a=0; a<args.length; a++) 
-								tmp_args[a] = range_parser.stringify_range(move_range(range_parser.parse_range(args[a]), i, j));
+								tmp_args[a] = range_parser.stringify_range(move_range(range_parser.parse_range(args[a]), i-target.row, j-target.col));
 
 							eval[r+"_"+i+"_"+j] = {
 								target: { row: i, col: j },
@@ -87,7 +94,8 @@ function sheet_exec(sheet, prms) {
 			} catch (e) {
 				eval[r] = {
 					target: target,
-					value: null,
+					expr: val,
+					fct: function(x) { return function() { throw new Error("ill formated expression"+x); }; },
 					error: e.stack || (""+e)
 					};
 			}
@@ -125,6 +133,9 @@ function create_on_the_fly_node(id) {
 
 function evaluate_node(id, nodes) {
 	info_msg(arguments.callee.name+": "+id);
+
+	if (id.split('.').shift()=="Math")
+		return (Function("return "+id+";"))();
 
 	if (!(id in nodes)) 
 		nodes[id] = create_on_the_fly_node(id);
@@ -197,7 +208,7 @@ function evaluate_range(id, nodes) {
 		
 	for (var n in deps) {
 		var tmp = to_array_2d(evaluate_node(n, nodes));
-		info_msg(arguments.callee.name+": "+id+" subrange "+n+" value is "+JSON .stringify(tmp));
+		info_msg(arguments.callee.name+": "+id+" subrange "+n+" value is "+JSON.stringify(tmp));
 		
 		var tmp_row = nodes[n].target.row;
 		var tmp_col = nodes[n].target.col;
@@ -209,6 +220,9 @@ function evaluate_range(id, nodes) {
 			for (var j=inter.col; j<=inter.end.col; j++) 
 				res[i-rng.row][j-rng.col] = tmp[i-tmp_row][j-tmp_col];
 
+		// if asked for a scalar, then return a scalar
+		if (!rng.end && res.length==1 && res[0].length==1)
+			res = res[0][0];
 	}
 
 	// cache reuls 
@@ -275,6 +289,7 @@ if (typeof module!="undefined") {
 	var parser = require("./excel_formula_parse");
 	var range_parser = require("./excel_range_parse");
 	var xlexpr = require("./excel_formula_transform");
+	var global_scope = require("./global_scope");
 
 	// run tests if this file is called directly
 	//if (require.main === module)
