@@ -23,6 +23,8 @@ function spreadsheet_exec_test() {
 	var filepaths = fs.readdirSync(folder_path);
 	for (var i=0; i<filepaths.length; i++) {
 		var filepath = path.resolve(folder_path+filepaths[i]);
+		if (filepath.indexOf(".xjson")==-1) continue;
+
 		info_msg("Executing "+filepath);
 		
 		var txt = fs.readFileSync(filepath, 'utf8');
@@ -31,7 +33,17 @@ function spreadsheet_exec_test() {
 		info_msg("sheet "+JSON.stringify(sheet, null, 4));
 
 		try {
-			sheet_exec(sheet, { xjs: true });
+			var node_values = sheet_exec(sheet, { xjs: true });
+
+			var tmp = filepath.split('/');
+			tmp[tmp.length-2] = "ref";
+			var filepath_out = tmp.join('/');
+			tmp.pop();
+			var folder_out = tmp.join('/');
+
+			if (!fs.existsSync(folder_out)) fs.mkdirSync(folder_out);
+			fs.writeFileSync(filepath_out, JSON.stringify({input: node_values},null,4));
+
 		} catch (e) {
 			throw new Error("evaluating "+filepath+"\n"+(e.stack||e)+"\n");
 		}
@@ -40,6 +52,7 @@ function spreadsheet_exec_test() {
 
 function sheet_exec(sheet, prms) {
 	var eval = {};
+	var node_values = {};
 	for (var r in sheet) {
 		var val = sheet[r];
 		if (val==="") continue;
@@ -117,8 +130,11 @@ function sheet_exec(sheet, prms) {
 	for (var r=0; r<final_ranges_to_evaluate.length; r++) {
 		var rng = final_ranges_to_evaluate[r];
 		var res = evaluate_node(rng, eval);
+		node_values[rng] = res;
 		info_msg(rng+" value is "+JSON.stringify(res));
 	}
+
+	return node_values;
 }
 
 function create_on_the_fly_node(id) {
