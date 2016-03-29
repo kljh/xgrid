@@ -23,12 +23,22 @@ function deps_graph_test() {
 	var g1 = new Graph();
 	g1.create_from_formulas(no_edges);
 	g1.dot_display('C:/temp/graph1.svg');
+	dbg("g1.vertices", g1.vertices);
 	assert.equal(JSON.stringify(g1.vertices),
 	JSON.stringify({
-	    "{\"cell0\":{\"col\":1,\"row\":2}}": [],
-	    "{\"cell0\":{\"col\":1,\"row\":3}}": [],
-	    "{\"cell0\":{\"col\":1,\"row\":4}}": []
+	    "{\"col\":1,\"row\":2}": [],
+	    "{\"col\":1,\"row\":3}": [],
+	    "{\"col\":1,\"row\":4}": []
 	}));
+	g1.begin();
+	var i=1;
+	while (!g1.isEnd()) {
+		g1.next();
+		++i;
+	}
+	assert.equal(i, g1.size());
+	var deps = circular_deps_check(g1);
+	assert.equal(deps, null);
 	
 	var simple_directed_cells_only = [
 		['W1', '=$A1'],
@@ -38,41 +48,109 @@ function deps_graph_test() {
 	var g2 = new Graph();
 	g2.create_from_formulas(simple_directed_cells_only);
 	g2.dot_display('C:/temp/graph2.svg');
+	dbg("g2.vertices", g2.vertices);
 	assert.equal(JSON.stringify(g2.vertices),
 	JSON.stringify({
-	    "{\"cell0\":{\"col\":23,\"row\":1}}": [],
-	    "{\"cell0\":{\"col\":1,\"row\":1}}": [
-		"{\"cell0\":{\"col\":23,\"row\":1}}"
+	    "{\"col\":23,\"row\":1}": [],
+	    "{\"col\":1,\"row\":1}": [
+		"{\"col\":23,\"row\":1}"
 	    ],
-	    "{\"cell0\":{\"col\":21,\"row\":1}}": [],
-	    "{\"cell0\":{\"col\":2,\"row\":2}}": [
-		"{\"cell0\":{\"col\":21,\"row\":1}}"
+	    "{\"col\":21,\"row\":1}": [],
+	    "{\"col\":2,\"row\":2}": [
+		"{\"col\":21,\"row\":1}"
 	    ],
-	    "{\"cell0\":{\"col\":2,\"row\":5}}": [
-		"{\"cell0\":{\"col\":1,\"row\":1}}"
+	    "{\"col\":2,\"row\":5}": [
+		"{\"col\":1,\"row\":1}"
 	    ]
 	}));
+	g2.beginAt("{\"col\":2,\"row\":5}");
+	var i=1;
+	while (!g2.isEnd()) {
+		g2.next();
+		++i;
+	}
+	assert.equal(i, g2.size()+1);
+	var deps = circular_deps_check(g2);
+	assert.equal(deps, null);
 	
 	var circular_deps = [
 		['A1', '=$A2'],
 		['A2', '=$A$3'],
-		['A3', '=A1']
+		['A3', '=A1'],
+		['AX5', '=3*A1'],
+		['A2', '=2-T21']
 	];
 	var g3 = new Graph();
 	g3.create_from_formulas(circular_deps);
 	g3.dot_display('C:/temp/graph3.svg');
-	assert.equal(JSON.stringify(g3.vertices),
-	JSON.stringify({
-	    "{\"cell0\":{\"col\":1,\"row\":1}}": [
-		"{\"cell0\":{\"col\":1,\"row\":3}}"
+	dbg("g3.vertices", g3.vertices);
+	assert.equal(JSON.stringify(g3.vertices), JSON.stringify({
+	    "{\"col\":1,\"row\":1}": [
+		"{\"col\":1,\"row\":3}",
+		"{\"col\":50,\"row\":5}"
 	    ],
-	    "{\"cell0\":{\"col\":1,\"row\":2}}": [
-		"{\"cell0\":{\"col\":1,\"row\":1}}"
+	    "{\"col\":1,\"row\":2}": [
+		"{\"col\":1,\"row\":1}"
 	    ],
-	    "{\"cell0\":{\"col\":1,\"row\":3}}": [
-		"{\"cell0\":{\"col\":1,\"row\":2}}"
+	    "{\"col\":1,\"row\":3}": [
+		"{\"col\":1,\"row\":2}"
+	    ],
+	    "{\"col\":50,\"row\":5}": [],
+	    "{\"col\":20,\"row\":21}": [
+		"{\"col\":1,\"row\":2}"
 	    ]
 	}));
+	var deps = circular_deps_check(g3);
+	dbg('deps', deps);
+	assert.equal(JSON.stringify(deps), JSON.stringify(
+		[
+		    "{\"col\":1,\"row\":1}",
+		    "{\"col\":1,\"row\":3}",
+		    "{\"col\":1,\"row\":2}",
+		    "{\"col\":1,\"row\":1}"
+		]
+	));
+	
+	var diamond = [
+		['A1', '=B1'],
+		['W1', '=A1+A2'],
+		['A2', '=B2'],
+		['B2', '=C1'],
+		['B1', '=C1']
+	];
+	var g4 = new Graph();
+	g4.create_from_formulas(diamond);
+	g4.dot_display('C:/temp/graph4.svg');
+	dbg("g4.vertices", g4.vertices);
+	assert.equal(JSON.stringify(g4.vertices),
+		JSON.stringify({
+		    "{\"col\":1,\"row\":1}": [
+			"{\"col\":23,\"row\":1}"
+		    ],
+		    "{\"col\":2,\"row\":1}": [
+			"{\"col\":1,\"row\":1}"
+		    ],
+		    "{\"col\":23,\"row\":1}": [],
+		    "{\"col\":1,\"row\":2}": [
+			"{\"col\":23,\"row\":1}"
+		    ],
+		    "{\"col\":2,\"row\":2}": [
+			"{\"col\":1,\"row\":2}"
+		    ],
+		    "{\"col\":3,\"row\":1}": [
+			"{\"col\":2,\"row\":2}",
+			"{\"col\":2,\"row\":1}"
+		    ]
+	}));
+	g4.beginAt("{\"col\":3,\"row\":1}");
+	var i=1;
+	while (!g4.isEnd()) {
+		g4.next();
+		++i;
+	}
+	assert.equal(i, g4.size());
+	var deps = circular_deps_check(g4);
+	assert.equal(deps, null);
 }
 
 function Graph() {
@@ -82,7 +160,95 @@ function Graph() {
 		this.vertices = formulas_list_to_adjacency_list(formulas)
 	}
 	this.dot_display = function(output_path) {adjacency_list_to_dot(this.vertices, output_path);}
+	
+	//
+	//graph iteration functions
+	//
+	// current is the index of the current node in Object.keys(vertices)
+	this.current = null;
+	// use of a hashmap to check for missing vertices
+	// retrieval O(1), worst-case (when collisions happen) O(N) (to be verified)
+	this.visited = {};
+	this.queue = new Queue();
+	this.begin = function() {
+		this.current = 0;
+		this.visited = {};
+		this.queue.flush();
+		var vertex = Object.keys(this.vertices)[0];
+		if (this.vertices[vertex].length > 0) {
+			for (var i=0; i<this.vertices[vertex].length; ++i) {
+				var child_vertex = this.vertices[vertex][i];
+				if (!contains(this.queue.elements, child_vertex))
+					this.queue.enqueue(child_vertex);
+			}
+		}
+		this.visited[vertex] = true;
+		return vertex;
+	}
+	this.beginAt = function(root) {
+		if (this.vertices[root] === undefined)
+			throw root + " not in this graph";
+		this.current = Object.keys(this.vertices).indexOf(root);
+		this.visited = {};
+		this.queue.flush();
+		if (this.vertices[root].length > 0) {
+			for (var i=0; i<this.vertices[root].length; ++i) {
+				var child_vertex = this.vertices[root][i];
+				if (!contains(this.queue.elements, child_vertex))
+					this.queue.enqueue(child_vertex);
+			}
+		}
+		this.visited[root] = true;
+		return root;
+	}
+	this.next = function() {
+		var debug = false;
+		// new 'loosely' connected vertex
+		if (this.queue.empty()) {
+			this.current = (this.current + 1) % this.size();
+			if (debug)	dbg('current', this.current);
+			var vertex = Object.keys(this.vertices)[this.current];
+			// already visited
+			if (this.visited[vertex] !== undefined) {
+				if (debug)	info_msg("Already visited " + vertex);
+				return this.next();
+			}
+		} else {		
+			// we need to traverse some connected vertices first
+			if (debug)	dbg("State of the queue", this.queue.elements);
+			var vertex = this.queue.dequeue();
+		}
+
+		if (this.vertices[vertex].length === 0) {
+			if (debug)	dbg("Childless vertex", vertex);
+		} else {
+			// new sub-graph
+			if (debug)	dbg('Starting search from root', vertex);
+			for (var i=0; i<this.vertices[vertex].length; ++i) {
+				var child_vertex = this.vertices[vertex][i];
+				if (!contains(this.queue.elements, child_vertex))
+					this.queue.enqueue(child_vertex);
+			}
+		}
+
+		this.visited[vertex] = true;
+		return vertex;
+	}
+	this.isEnd = function() {
+		return this.queue.empty() && Object.keys(this.visited).length === this.size();
+	}
+	
 }
+
+// FIFO Queue class
+function Queue() {
+	this.elements = [];
+	this.enqueue = function(elem) {this.elements.push(elem);}
+	this.dequeue = function() {return this.elements.shift();}
+	this.empty = function() {return this.elements.length === 0;}
+	this.repr = function() {return JSON.stringify(this.elements);}
+	this.flush = function() {this.elements = [];}
+ }
 
 function formulas_list_to_adjacency_list(formulas /* [ [cell, formula_in_cell], ...]*/) {
 	var adjacency_dict = {};
@@ -141,6 +307,8 @@ function range_to_key(range) {
 		dict_to_print["cell1"].row_abs = undefined;
 		dict_to_print["cell1"].col_abs = undefined;
 	}
+	dict_to_print["abs_row"] = undefined;
+	dict_to_print["abs_col"] = undefined;
 	return JSON.stringify(dict_to_print);
 }
 
@@ -176,14 +344,50 @@ function adjacency_list_to_dot(adj_list, output_path) {
 	});
 }
 
+function circular_deps_check(graph) {
+	var visited = {};
+	var vertex = graph.begin();
+	var index = 0;
+	var journey = [vertex];
+	visited[vertex] = index;
+	while (!graph.isEnd()) {
+		vertex = graph.next();
+		// new strongly-connected graph
+		if (graph.queue.empty()) {
+			visited = {};
+			index = 0;
+			journey = [vertex];
+		} else {
+			++index;
+			journey.push(vertex);
+			if (visited[vertex] !== undefined) {
+				var full_journey = journey.slice(visited[vertex], index+1);
+				// direct_journey is the direct path of the circular dependency
+				var direct_journey = [];
+				var current_node = full_journey[0];
+				for (var i=0; i<full_journey.length-1; ++i) {
+					var next_node = full_journey[i+1];
+					var children = graph.vertices[current_node];
+					if (contains(children, next_node)) {
+						direct_journey.push(current_node);
+						current_node = next_node;
+					}
+				}
+				direct_journey.push(full_journey[full_journey.length-1]);
+				return direct_journey;
+			}
+		}
+		visited[vertex] = index;
+	}
+	return null;
+}
+
 function contains(array, obj) {
-    var i = this.length;
-    while (i--) {
-        if (this[i] === obj) {
-            return true;
-        }
-    }
-    return false;
+	var i = array.length;
+	while (i--)
+		if (array[i] === obj)
+			return true;
+	return false;
 }
 
 if (module == require.main) {
