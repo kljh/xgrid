@@ -15,21 +15,23 @@ var dbg = rng.dbg;
 
 function deps_graph_test() {
 	
-	var no_edges = [
-		['A2', '="a"&"b"'],
-		['A3', '=50'],
-		['A4', '=50%']
-	];
+	/*var file_path = path.resolve(__dirname+'/../work/gearshape.xjson');
+	var g = new Graph();
+	g.from_xjson_file(file_path);
+	g.dot_display('C:/temp/graph_gearshape.svg');
+	var deps = circular_deps_check(g);
+	assert.equal(deps, null);*/
+	
+	/*var no_edges = {
+		'A2': '="a"&"b"',
+		'A3': '=50',
+		'A4': '=50%'
+	};
 	var g1 = new Graph();
 	g1.create_from_formulas(no_edges);
 	g1.dot_display('C:/temp/graph1.svg');
-	dbg("g1.vertices", g1.vertices);
 	assert.equal(JSON.stringify(g1.vertices),
-	JSON.stringify({
-	    "{\"col\":1,\"row\":2}": [],
-	    "{\"col\":1,\"row\":3}": [],
-	    "{\"col\":1,\"row\":4}": []
-	}));
+		'{"A2":[],"A3":[],"A4":[]}');
 	g1.begin();
 	var i=1;
 	while (!g1.isEnd()) {
@@ -38,32 +40,20 @@ function deps_graph_test() {
 	}
 	assert.equal(i, g1.size());
 	var deps = circular_deps_check(g1);
-	assert.equal(deps, null);
+	assert.equal(deps, null);*/
 	
-	var simple_directed_cells_only = [
-		['W1', '=$A1'],
-		['U1', '=$B$2'],
-		['A1', '=$B$5']
-	];
+	var simple_directed_cells_only = {
+		'W1': '=$A1',
+		'U1': '=$B$2',
+		'A1': '=$B$5'
+	};
 	var g2 = new Graph();
 	g2.create_from_formulas(simple_directed_cells_only);
 	g2.dot_display('C:/temp/graph2.svg');
-	dbg("g2.vertices", g2.vertices);
 	assert.equal(JSON.stringify(g2.vertices),
-	JSON.stringify({
-	    "{\"col\":23,\"row\":1}": [],
-	    "{\"col\":1,\"row\":1}": [
-		"{\"col\":23,\"row\":1}"
-	    ],
-	    "{\"col\":21,\"row\":1}": [],
-	    "{\"col\":2,\"row\":2}": [
-		"{\"col\":21,\"row\":1}"
-	    ],
-	    "{\"col\":2,\"row\":5}": [
-		"{\"col\":1,\"row\":1}"
-	    ]
-	}));
-	g2.beginAt("{\"col\":2,\"row\":5}");
+		'{"W1":[],"A1":["W1"],"U1":[],"B2":["U1"],"B5":["A1"]}');
+	// iterate from the top of a directed sub-graph thanks to prior knowledge
+	g2.beginAt("B5");
 	var i=1;
 	while (!g2.isEnd()) {
 		g2.next();
@@ -72,44 +62,23 @@ function deps_graph_test() {
 	assert.equal(i, g2.size()+1);
 	var deps = circular_deps_check(g2);
 	assert.equal(deps, null);
+	g2.refresh_vertex('B5');
 	
-	var circular_deps = [
+	/*var circular_deps = [
 		['A1', '=$A2'],
 		['A2', '=$A$3'],
 		['A3', '=A1'],
-		['AX5', '=3*A1'],
+		['AB5', '=3*A1'],
 		['A2', '=2-T21']
 	];
 	var g3 = new Graph();
 	g3.create_from_formulas(circular_deps);
 	g3.dot_display('C:/temp/graph3.svg');
-	dbg("g3.vertices", g3.vertices);
-	assert.equal(JSON.stringify(g3.vertices), JSON.stringify({
-	    "{\"col\":1,\"row\":1}": [
-		"{\"col\":1,\"row\":3}",
-		"{\"col\":50,\"row\":5}"
-	    ],
-	    "{\"col\":1,\"row\":2}": [
-		"{\"col\":1,\"row\":1}"
-	    ],
-	    "{\"col\":1,\"row\":3}": [
-		"{\"col\":1,\"row\":2}"
-	    ],
-	    "{\"col\":50,\"row\":5}": [],
-	    "{\"col\":20,\"row\":21}": [
-		"{\"col\":1,\"row\":2}"
-	    ]
-	}));
+	assert.equal(JSON.stringify(g3.vertices),
+		'{"A1":["A3","BB5"],"A2":["A1"],"A3":["A2"],"BB5":[],"T21":["A2"]}');
 	var deps = circular_deps_check(g3);
-	dbg('deps', deps);
-	assert.equal(JSON.stringify(deps), JSON.stringify(
-		[
-		    "{\"col\":1,\"row\":1}",
-		    "{\"col\":1,\"row\":3}",
-		    "{\"col\":1,\"row\":2}",
-		    "{\"col\":1,\"row\":1}"
-		]
-	));
+	assert.equal(JSON.stringify(deps),
+		'["A1","A3","A2","A1"]');
 	
 	var diamond = [
 		['A1', '=B1'],
@@ -121,28 +90,9 @@ function deps_graph_test() {
 	var g4 = new Graph();
 	g4.create_from_formulas(diamond);
 	g4.dot_display('C:/temp/graph4.svg');
-	dbg("g4.vertices", g4.vertices);
 	assert.equal(JSON.stringify(g4.vertices),
-		JSON.stringify({
-		    "{\"col\":1,\"row\":1}": [
-			"{\"col\":23,\"row\":1}"
-		    ],
-		    "{\"col\":2,\"row\":1}": [
-			"{\"col\":1,\"row\":1}"
-		    ],
-		    "{\"col\":23,\"row\":1}": [],
-		    "{\"col\":1,\"row\":2}": [
-			"{\"col\":23,\"row\":1}"
-		    ],
-		    "{\"col\":2,\"row\":2}": [
-			"{\"col\":1,\"row\":2}"
-		    ],
-		    "{\"col\":3,\"row\":1}": [
-			"{\"col\":2,\"row\":2}",
-			"{\"col\":2,\"row\":1}"
-		    ]
-	}));
-	g4.beginAt("{\"col\":3,\"row\":1}");
+		'{"A1":["W1"],"B1":["A1"],"W1":[],"A2":["W1"],"B2":["A2"],"C1":["B2","B1"]}');
+	g4.beginAt("C1");
 	var i=1;
 	while (!g4.isEnd()) {
 		g4.next();
@@ -150,16 +100,54 @@ function deps_graph_test() {
 	}
 	assert.equal(i, g4.size());
 	var deps = circular_deps_check(g4);
-	assert.equal(deps, null);
+	assert.equal(deps, null);*/
 }
 
 function Graph() {
 	this.vertices = {};
+	this.formulas_dict = {};
 	this.size = function() {return Object.keys(this.vertices).length;}
+	
+	//
+	//constructors
+	//
 	this.create_from_formulas = function(formulas) {
-		this.vertices = formulas_list_to_adjacency_list(formulas)
+		this.vertices = formulas_dict_to_adjacency_list(formulas);
+		this.formulas_dict = formulas;
 	}
 	this.dot_display = function(output_path) {adjacency_list_to_dot(this.vertices, output_path);}
+	this.from_xjson_file = function(file_path) {
+		var txt = fs.readFileSync(file_path, 'utf8');
+		var data = JSON.parse(txt);
+		var sheet = data.input;
+		var adjacency_dict = {};
+		
+		for (var cell in sheet) {
+			var xlformula = sheet[cell];
+			var isFormula = xlformula.substr && xlformula[0]=="=";
+			// no dependency whatsoever if no formula
+			if (!isFormula)
+				continue;
+			var child = range_to_key(rng.parse_range(cell));
+			//dbg('cell', cell);
+			//dbg('xlformula', xlformula);
+			if (adjacency_dict[child] === undefined) {
+				adjacency_dict[child] = [];
+			}
+
+			var tokens = parser.getTokens(xlformula);
+			var parents = tokens_to_range_list(tokens["items"]);
+			for (var iParent=0; iParent<parents.length; ++iParent) {
+				var parent = parents[iParent];
+				if (adjacency_dict[parent] !== undefined) {
+					adjacency_dict[parent].push(child);
+				} else {
+					adjacency_dict[parent] = [child];
+				}
+			}
+		}
+		this.vertices = adjacency_dict;
+	}
 	
 	//
 	//graph iteration functions
@@ -238,6 +226,33 @@ function Graph() {
 		return this.queue.empty() && Object.keys(this.visited).length === this.size();
 	}
 	
+	this.refresh_vertex = function(vertex) {
+		var root = this.beginAt(vertex);
+		dbg('root', root);
+		while (!this.isEnd() && !this.queue.empty()) {
+			var current_cell = this.next();
+			dbg('refreshing cell', current_cell);
+			var formula = this.formulas_dict[current_cell];
+			if (formula === undefined)
+				continue
+			formula = formula.substr(1);
+			dbg('eval_formula', eval_formula(formula));
+		}
+	}
+	
+	
+}
+
+function eval_formula(formula) {
+	var vars =  {}, fcts= {};
+	var expr = transf.parse_and_transfrom(formula,vars,fcts);
+	dbg('expr', expr);
+	var ids = []; 
+	var args = []; 
+	for (var addr in vars) {
+		ids.push(vars[addr]);
+		args.push(addr);
+	}
 }
 
 // FIFO Queue class
@@ -250,11 +265,11 @@ function Queue() {
 	this.flush = function() {this.elements = [];}
  }
 
-function formulas_list_to_adjacency_list(formulas /* [ [cell, formula_in_cell], ...]*/) {
+function formulas_dict_to_adjacency_list(formulas_dict) {
+	this.formulas_dict = formulas_dict;
 	var adjacency_dict = {};
-	for (var f=0; f<formulas.length; f++) {
-		var cell = formulas[f][0];
-		var xlformula = formulas[f][1];
+	for (var cell in formulas_dict) {
+		var xlformula = formulas_dict[cell];
 		try {
 			var child = range_to_key(rng.parse_range(cell));
 			if (adjacency_dict[child] === undefined) {
@@ -295,21 +310,12 @@ function tokens_to_range_list(tokens) {
 }
 
 function range_to_key(range) {
-	var dict_to_print = range;
-	// remove key arg
-	dict_to_print.arg = undefined;
-	// remove keys col_abs and row_abs
-	if (dict_to_print["cell0"] !== undefined) {
-		dict_to_print["cell0"].row_abs = undefined;
-		dict_to_print["cell0"].col_abs = undefined;
-	}
-	if (dict_to_print["cell1"] !== undefined) {
-		dict_to_print["cell1"].row_abs = undefined;
-		dict_to_print["cell1"].col_abs = undefined;
-	}
-	dict_to_print["abs_row"] = undefined;
-	dict_to_print["abs_col"] = undefined;
-	return JSON.stringify(dict_to_print);
+	// temporary fix
+	if (range === 'Math.PI')
+		return range;
+	var key =	rng.stringify_range(range);
+	key = key.replace(/\$/g, "");
+	return key;
 }
 
 function adjacency_list_to_dot(adj_list, output_path) {
@@ -345,22 +351,27 @@ function adjacency_list_to_dot(adj_list, output_path) {
 }
 
 function circular_deps_check(graph) {
+	var debug = false;
+	
 	var visited = {};
 	var vertex = graph.begin();
 	var index = 0;
 	var journey = [vertex];
-	visited[vertex] = index;
 	while (!graph.isEnd()) {
-		vertex = graph.next();
+		if (debug)	dbg('vertex', vertex);
+		if (debug)	dbg('queue', graph.queue.elements);
+		if (debug)	dbg('visited', visited);
 		// new strongly-connected graph
 		if (graph.queue.empty()) {
 			visited = {};
 			index = 0;
+			vertex = graph.next();
 			journey = [vertex];
 		} else {
-			++index;
 			journey.push(vertex);
+			++index;
 			if (visited[vertex] !== undefined) {
+				if (debug)	dbg('visited[vertex] !== undefined', visited);
 				var full_journey = journey.slice(visited[vertex], index+1);
 				// direct_journey is the direct path of the circular dependency
 				var direct_journey = [];
@@ -376,8 +387,9 @@ function circular_deps_check(graph) {
 				direct_journey.push(full_journey[full_journey.length-1]);
 				return direct_journey;
 			}
+			visited[vertex] = index;
+			vertex = graph.next();
 		}
-		visited[vertex] = index;
 	}
 	return null;
 }

@@ -52,13 +52,8 @@ function parse_and_transfrom_test() {
 		info_msg(xlformula);
 		var tokens, ast;
 		try {
-			var tokens = parser.getTokens(xlformula);
-			//info_msg("TOKENS:\n"+JSON.stringify(tokens,null,4));
-			var ast = build_token_tree(tokens);
-			if (f==6)
-				info_msg("TREE:\n"+JSON.stringify(ast,null,4));
 
-			var jsformula = "="+excel_to_js_formula(ast,vars,fcts);
+			var jsformula = "="+parse_and_transfrom(xlformula,vars,fcts);
 			info_msg(jsformula);
 
 		} catch (e) {
@@ -70,6 +65,17 @@ function parse_and_transfrom_test() {
 	
 	info_msg("vars:\n"+JSON.stringify(vars,null,4));
 	info_msg("fcts:\n"+JSON.stringify(fcts,null,4));
+}
+
+function parse_and_transfrom(xlformula,vars,fcts) {
+	var tokens = parser.getTokens(xlformula);
+	//info_msg("TOKENS:\n"+JSON.stringify(tokens,null,4));
+
+	var ast = build_token_tree(tokens);
+	//info_msg("TREE:\n"+JSON.stringify(ast,null,4));
+
+	var jsformula = excel_to_js_formula(ast,vars,fcts);
+	return jsformula;
 }
 
 function build_token_tree(tokens) {
@@ -239,5 +245,15 @@ function info_msg(msg) {
 	console.log(msg);
 }
 
-var parser = require("./excel_formula_parse")
-parse_and_transfrom_test();
+// Nodejs stuff
+if (typeof module!="undefined") {
+
+	var parser = require("./excel_formula_parse")
+
+	// run tests if this file is called directly
+	if (require.main === module)
+		parse_and_transfrom_test();
+
+	module.exports.parse_and_transfrom = parse_and_transfrom;
+
+}

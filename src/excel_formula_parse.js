@@ -527,29 +527,35 @@ function getTokens(formula) {
 	return tokens;
 }
 
-module.exports.getTokens = getTokens;
 
-module.exports.TOK_TYPE_NOOP = TOK_TYPE_NOOP;
-module.exports.TOK_TYPE_OPERAND = TOK_TYPE_OPERAND;
-module.exports.TOK_TYPE_FUNCTION = TOK_TYPE_FUNCTION;
-module.exports.TOK_TYPE_SUBEXPR = TOK_TYPE_SUBEXPR;
-module.exports.TOK_TYPE_ARGUMENT = TOK_TYPE_ARGUMENT;
-module.exports.TOK_TYPE_OP_PRE = TOK_TYPE_OP_PRE;
-module.exports.TOK_TYPE_OP_IN = TOK_TYPE_OP_IN;
-module.exports.TOK_TYPE_OP_POST = TOK_TYPE_OP_POST;
-module.exports.TOK_TYPE_WSPACE = TOK_TYPE_WSPACE;
-module.exports.TOK_TYPE_UNKNOWN = TOK_TYPE_UNKNOWN;
+// Nodejs stuff
+if (typeof module!="undefined") {
 
-module.exports.TOK_SUBTYPE_START = TOK_SUBTYPE_START;
-module.exports.TOK_SUBTYPE_STOP = TOK_SUBTYPE_STOP;
+	module.exports.getTokens = getTokens;
 
-module.exports.TOK_SUBTYPE_TEXT = TOK_SUBTYPE_TEXT;
-module.exports.TOK_SUBTYPE_NUMBER = TOK_SUBTYPE_NUMBER;
-module.exports.TOK_SUBTYPE_LOGICAL = TOK_SUBTYPE_LOGICAL;
-module.exports.TOK_SUBTYPE_ERROR = TOK_SUBTYPE_ERROR;
-module.exports.TOK_SUBTYPE_RANGE = TOK_SUBTYPE_RANGE;
+	module.exports.TOK_TYPE_NOOP = TOK_TYPE_NOOP;
+	module.exports.TOK_TYPE_OPERAND = TOK_TYPE_OPERAND;
+	module.exports.TOK_TYPE_FUNCTION = TOK_TYPE_FUNCTION;
+	module.exports.TOK_TYPE_SUBEXPR = TOK_TYPE_SUBEXPR;
+	module.exports.TOK_TYPE_ARGUMENT = TOK_TYPE_ARGUMENT;
+	module.exports.TOK_TYPE_OP_PRE = TOK_TYPE_OP_PRE;
+	module.exports.TOK_TYPE_OP_IN = TOK_TYPE_OP_IN;
+	module.exports.TOK_TYPE_OP_POST = TOK_TYPE_OP_POST;
+	module.exports.TOK_TYPE_WSPACE = TOK_TYPE_WSPACE;
+	module.exports.TOK_TYPE_UNKNOWN = TOK_TYPE_UNKNOWN;
 
-module.exports.TOK_SUBTYPE_MATH = TOK_SUBTYPE_MATH;
-module.exports.TOK_SUBTYPE_CONCAT = TOK_SUBTYPE_CONCAT;
-module.exports.TOK_SUBTYPE_INTERSECT = TOK_SUBTYPE_INTERSECT;
-module.exports.TOK_SUBTYPE_UNION = TOK_SUBTYPE_UNION;
+	module.exports.TOK_SUBTYPE_START = TOK_SUBTYPE_START;
+	module.exports.TOK_SUBTYPE_STOP = TOK_SUBTYPE_STOP;
+
+	module.exports.TOK_SUBTYPE_TEXT = TOK_SUBTYPE_TEXT;
+	module.exports.TOK_SUBTYPE_NUMBER = TOK_SUBTYPE_NUMBER;
+	module.exports.TOK_SUBTYPE_LOGICAL = TOK_SUBTYPE_LOGICAL;
+	module.exports.TOK_SUBTYPE_ERROR = TOK_SUBTYPE_ERROR;
+	module.exports.TOK_SUBTYPE_RANGE = TOK_SUBTYPE_RANGE;
+
+	module.exports.TOK_SUBTYPE_MATH = TOK_SUBTYPE_MATH;
+	module.exports.TOK_SUBTYPE_CONCAT = TOK_SUBTYPE_CONCAT;
+	module.exports.TOK_SUBTYPE_INTERSECT = TOK_SUBTYPE_INTERSECT;
+	module.exports.TOK_SUBTYPE_UNION = TOK_SUBTYPE_UNION;
+
+}
