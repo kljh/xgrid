@@ -1,5 +1,4 @@
-
-
+import * as rp from "./excel_range_parse"
 
 function evaluate_formula(src, vars) {
 	var var_names=[], var_values=[];
@@ -15,7 +14,7 @@ function evaluate_formula(src, vars) {
 	return res;
 }
 
-function spreadsheet_exec_test() {
+export function spreadsheet_exec_test() {
 	var fs = require('fs');
 	var path = require('path');
 
@@ -45,19 +44,19 @@ function spreadsheet_exec_test() {
 			fs.writeFileSync(filepath_out, JSON.stringify({input: node_values},null,4));
 
 		} catch (e) {
-			throw new Error("evaluating "+filepath+"\n"+(e.stack||e)+"\n");
+			throw new Error("Error evaluating "+filepath+"\n"+(e.stack||e)+"\n");
 		}
 	}
 }
 
 function sheet_exec(sheet, prms) {
-	var eval = {};
+	var node_eval = {};
 	var node_values = {};
 	for (var r in sheet) {
 		var val = sheet[r];
 		if (val==="") continue;
 
-		var target = range_parser.parse_range(r);
+		var target = range_parser.parse_range(r, rp.RangeAddressStyle.A1);
 		
 		var isFormula = val.substr && val[0]=="=";
 		var isFormulaArray = val.substr && val[0]=="{" && val[1]=="=" && val[val.length-1]=="}";
@@ -66,6 +65,7 @@ function sheet_exec(sheet, prms) {
 				var formula = isFormula ? val.substr(1) : val.substr(2, val.length-3);
 
 				var vars =  {}, fcts= {};
+				lexer.lexer(formula)
 				var expr = xlexpr.parse_and_transfrom(formula,vars,fcts,prms);
 				
 				var ids = []; 
@@ -78,7 +78,7 @@ function sheet_exec(sheet, prms) {
 				//var func = new Function(ids, "try { var res="+expr+"; return res; } catch(e) { throw new Error('"+r+" '+(e.stack||e)+'\\n'); }");
 				//var func = new Function(ids, "try { var res="+expr+"; return res; } catch(e) { throw new Error('"+r+" '+(e)+'\\n'); }");
 				//var func = Function(ids, "try { var res="+expr+"; return res; } catch(e) { throw new Error('"+r+" '+(e)+'\\n'); }");
-				var func = new Function(ids, "var res="+expr+"; return res;");
+				var func = new Function(ids.join(","), "var res="+expr+"; return res;");
 				info_msg("expr: "+expr);
 
 				if (target.end && !isFormulaArray) {
@@ -87,9 +87,9 @@ function sheet_exec(sheet, prms) {
 
 							var tmp_args = new Array(args.length);
 							for (var a=0; a<args.length; a++) 
-								tmp_args[a] = range_parser.stringify_range(move_range(range_parser.parse_range(args[a]), i-target.row, j-target.col));
+								tmp_args[a] = range_parser.stringify_range(move_range(range_parser.parse_range(args[a], rp.RangeAddressStyle.A1), i-target.row, j-target.col));
 
-							eval[r+"_"+i+"_"+j] = {
+							node_eval[r+"_"+i+"_"+j] = {
 								target: { row: i, col: j },
 								expr: expr,
 								fct: func,
@@ -97,7 +97,7 @@ function sheet_exec(sheet, prms) {
 								};
 						}
 				} else {
-					eval[r] = {
+					node_eval[r] = {
 						target: target,
 						expr: expr,
 						fct: func,
@@ -105,31 +105,31 @@ function sheet_exec(sheet, prms) {
 						};
 				}
 			} catch (e) {
-				eval[r] = {
+				node_eval[r] = {
 					target: target,
 					expr: val,
-					fct: function(x) { return function() { throw new Error("ill formated expression"+x); }; },
+					fct: function(x) { return function() { throw new Error("ill formated expression: "+x); }; },
 					error: e.stack || (""+e)
 					};
 			}
 		} else {
 
-			eval[r] = {
+			node_eval[r] = {
 				target: target,
 				value: val,
 				};
 		}
 	}
 
-	info_msg("evaluation: "+JSON.stringify(eval, null, 4));
+	info_msg("evaluation: "+JSON.stringify(node_eval, null, 4));
 
 	//return ;
 
 	var final_ranges_to_evaluate = [ "G32", "G30", "H32" ];
-	var final_ranges_to_evaluate = Object.keys(eval);
-	for (var r=0; r<final_ranges_to_evaluate.length; r++) {
-		var rng = final_ranges_to_evaluate[r];
-		var res = evaluate_node(rng, eval);
+	var final_ranges_to_evaluate = Object.keys(node_eval);
+	for (var iRng=0; iRng<final_ranges_to_evaluate.length; iRng++) {
+		var rng = final_ranges_to_evaluate[iRng];
+		var res = evaluate_node(rng, node_eval);
 		node_values[rng] = res;
 		info_msg(rng+" value is "+JSON.stringify(res));
 	}
@@ -138,17 +138,17 @@ function sheet_exec(sheet, prms) {
 }
 
 function create_on_the_fly_node(id) {
-	info_msg(arguments.callee.name+": id: "+id);
-	var rng = range_parser.parse_range(id);
+	info_msg(fct_name(arguments)+": id: "+id);
+	var rng = range_parser.parse_range(id, rp.RangeAddressStyle.A1);
 	///if (rng.end) {
 		return { rng: rng };
 	//} else {
-	//	throw new Error(arguments.callee.name+": "+id+" is not a multi-cell range");
+	//	throw new Error(id+" is not a multi-cell range");
 	//}
 }
 
 function evaluate_node(id, nodes) {
-	info_msg(arguments.callee.name+": "+id);
+	info_msg(fct_name(arguments)+": "+id);
 
 	if (id.split('.').shift()=="Math")
 		return (Function("return "+id+";"))();
@@ -168,11 +168,11 @@ function evaluate_node(id, nodes) {
 	else if (isFctNode)
 		return evaluate_depth_first(id, nodes);
 	else 
-		throw new Error(arguments.callee.name+": "+id+" unknown node type. "+JSON.stringify(node));
+		throw new Error(id+" unknown node type. "+JSON.stringify(node));
 }
 
 function evaluate_range(id, nodes) {
-	info_msg(arguments.callee.name+": "+id);
+	info_msg(fct_name(arguments)+": "+id);
 
 	// cached results
 	if (nodes[id].value)
@@ -183,7 +183,7 @@ function evaluate_range(id, nodes) {
 	var end1 = rng.end || rng;
 
 	// build list of dependencies
-	var deps = nodes[id].deps;
+	var deps : Array<rp.RangeAddress> = nodes[id].deps;
 	if (!deps) {
 		deps = [];
 		for (var n in nodes) {
@@ -194,7 +194,7 @@ function evaluate_range(id, nodes) {
 			var beg2 = node.target;
 			var end2 = node.target.end || node.target;
 
-			var inter = {
+			var inter  : rp.RangeAddress = {
 				row : Math.max(beg1.row, beg2.row),
 				col : Math.max(beg1.col, beg2.col),
 				end :{
@@ -224,13 +224,13 @@ function evaluate_range(id, nodes) {
 		
 	for (var n in deps) {
 		var tmp = to_array_2d(evaluate_node(n, nodes));
-		info_msg(arguments.callee.name+": "+id+" subrange "+n+" value is "+JSON.stringify(tmp));
+		info_msg(fct_name(arguments)+": "+id+" subrange "+n+" value is "+JSON.stringify(tmp));
 		
 		var tmp_row = nodes[n].target.row;
 		var tmp_col = nodes[n].target.col;
 
-		var inter = deps[n];
-		info_msg(arguments.callee.name+": inter "+JSON .stringify(inter));
+		var inter : rp.RangeAddress = deps[n];
+		info_msg(fct_name(arguments)+": inter "+JSON .stringify(inter));
 		
 		for (var i=inter.row; i<=inter.end.row; i++) 
 			for (var j=inter.col; j<=inter.end.col; j++) 
@@ -244,17 +244,17 @@ function evaluate_range(id, nodes) {
 	// cache reuls 
 	nodes[id].value = res;
 
-	info_msg(arguments.callee.name+": "+id+" value is "+JSON .stringify(res));
+	info_msg(fct_name(arguments)+": "+id+" value is "+JSON .stringify(res));
 	return res;
 }
 
 function evaluate_depth_first(id, nodes) {
-	info_msg(arguments.callee.name+": "+id);
+	info_msg(fct_name(arguments)+": "+id);
 	var node = nodes[id];
 
 	// cached results
 	if (node.value) {
-		info_msg(arguments.callee.name+": "+id+" cached "+JSON .stringify(node.value))
+		info_msg(fct_name(arguments)+": "+id+" cached "+JSON .stringify(node.value))
 		return node.value;
 	}
 
@@ -269,7 +269,7 @@ function evaluate_depth_first(id, nodes) {
 		}
 	}
 	
-	info_msg(arguments.callee.name+": evaluating "+id+": '"+node.expr+"' with args "+JSON .stringify(arg_map));
+	info_msg(fct_name(arguments)+": evaluating "+id+": '"+node.expr+"' with args "+JSON .stringify(arg_map));
 	var res = node.fct.apply(this, args);
 
 	// cache reuls 
@@ -299,6 +299,10 @@ function info_msg(msg) {
 	console.log(msg);
 }
 
+function fct_name(f) {
+	return f.name;
+}
+
 // Nodejs stuff
 if (typeof module!="undefined") {
 	var fs = require("fs");
@@ -306,7 +310,8 @@ if (typeof module!="undefined") {
 	var range_parser = require("./excel_range_parse");
 	var xlexpr = require("./excel_formula_transform");
 	var global_scope = require("./global_scope");
-
+	var lexer = require("./lexer");
+	
 	// run tests if this file is called directly
 	//if (require.main === module)
 		spreadsheet_exec_test();

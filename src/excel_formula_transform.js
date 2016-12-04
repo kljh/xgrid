@@ -91,7 +91,7 @@ function parse_and_transfrom(xlformula,vars,fcts,opt_prms) {
 	try {
 		var ast = build_token_tree(tokens);
 	} catch (e) {
-		throw new Error(arguments.callee.name+": while parsing "+xlformula+"\n"+(e.stack||e));
+		throw new Error("Error while parsing "+xlformula+"\n"+(e.stack||e));
 	}
 	//info_msg("TREE:\n"+JSON.stringify(ast,null,4));
 
@@ -124,7 +124,7 @@ function build_token_tree(tokens) {
 		}
 	}
 	if (stack_top.args.length!=1)
-		throw new Error(arguments.callee.name+": root formula contains multiple expressions.\n"+JSON.stringify(stack_top,null,4));
+		throw new Error("root formula contains multiple expressions.\n"+JSON.stringify(stack_top,null,4));
 	return stack_top.args[0];
 } 
 
@@ -151,7 +151,7 @@ function excel_to_js_formula(tokens, opt_vars, opt_fcts, opt_prms) {
 				}
 				return vars[token.value];
 			default:
-				throw new Error(arguments.callee.name+": unhandled subtype "+token.subtype+"\n"+JSON.stringify(token,null,4));
+				throw new Error("unhandled subtype "+token.subtype+"\n"+JSON.stringify(token,null,4));
 		}
 	}
 	
@@ -159,7 +159,7 @@ function excel_to_js_formula(tokens, opt_vars, opt_fcts, opt_prms) {
 		var arr = new Array(token.args.length);
 		for (var i=0; i<arr.length; i++) {
 			if (token.args[i].length!=1)
-				throw new Error(arguments.callee.name+": ARRAY is expected to be a list of ARRAYROW but found an expressions");
+				throw new Error("ARRAY is expected to be a list of ARRAYROW but found an expressions");
 
 			arr[i] = new Array(token.args[i][0].args.length);
 			for (var j=0; j<arr[i].length; j++) {
@@ -185,7 +185,7 @@ function excel_to_js_formula(tokens, opt_vars, opt_fcts, opt_prms) {
 	function excel_to_js_if_then_else_trigram(token) {
 		var nb_args = token.args.length;
 		if (nb_args<2 || nb_args>3) 
-		throw new Error(arguments.callee.name+": expect 2 or 3 arguments");
+		throw new Error("expect 2 or 3 arguments");
 
 		var res = 
 			"(" + excel_to_js_formula(token.args[0],vars,fcts) +
@@ -199,7 +199,6 @@ function excel_to_js_formula(tokens, opt_vars, opt_fcts, opt_prms) {
 		switch (token.subtype) {
 			case parser.TOK_SUBTYPE_MATH:
 				return token.value;
-				break;
 			case parser.TOK_SUBTYPE_LOGICAL:
 				if (token.value=="=")
 					return "==";
@@ -207,14 +206,12 @@ function excel_to_js_formula(tokens, opt_vars, opt_fcts, opt_prms) {
 					return "!=";
 				else 
 					return token.value;
-				break;
 			case parser.TOK_SUBTYPE_CONCAT:
 				return "+"; // instead of &
-				break;
 			case parser.TOK_SUBTYPE_INTERSECT:
 			case parser.TOK_SUBTYPE_UNION:
 			default:
-				throw new Error(arguments.callee.name+": unhandled subtype "+token.subtype+"\n"+JSON.stringify(token));
+				throw new Error("unhandled subtype "+token.subtype+"\n"+JSON.stringify(token));
 		}
 	}
 
@@ -233,11 +230,11 @@ function excel_to_js_formula(tokens, opt_vars, opt_fcts, opt_prms) {
 				break;
 			case "operator-prefix":
 				res += token.value;
-				//throw new Error(arguments.callee.name+": unhandled "+token.type);
+				//throw new Error("unhandled token "+token.type);
 				break;
 			case "operator-postfix":
 				if (token.value!="%")
-					throw new Error(arguments.callee.name+": unhandled "+token.type+" "+token.value);
+					throw new Error("unhandled token "+token.type+" "+token.value);
 				res += "/100";
 				break;
 			
@@ -260,7 +257,7 @@ function excel_to_js_formula(tokens, opt_vars, opt_fcts, opt_prms) {
 				res += token.value;
 				break;
 			default:
-				throw new Error(arguments.callee.name+": unhandled "+token.type);
+				throw new Error("unhandled "+token.type);
 		}
 	}
 	return res;

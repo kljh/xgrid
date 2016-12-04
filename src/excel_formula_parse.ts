@@ -82,7 +82,7 @@ function f_tokens() {
 	
 	this.items = new Array();
 	
-	this.add = function(value, type, subtype) { if (!subtype) subtype = ""; token = new f_token(value, type, subtype); this.addRef(token); return token; };
+	this.add = function(value, type, subtype) { if (!subtype) subtype = ""; var token = new f_token(value, type, subtype); this.addRef(token); return token; };
 	this.addRef = function(token) { this.items.push(token); };
 	
 	this.index = -1;
@@ -411,13 +411,22 @@ function getTokens(formula) {
 	// dump remaining accumulation
 	
 	if (token.length > 0) tokens.add(token, TOK_TYPE_OPERAND);
-	
+
+	var tokens2 = exclude_ws(tokens);
+	var tokens3 = infix_to_prefix_operator(tokens2);
+	var tokens4 = exclude_noops(tokens3);
+	return tokens4;
+}
+
+function exclude_ws(tokens) {
 	// move all tokens to a new collection, excluding all unnecessary white-space tokens
 	
 	var bKeepWs = false;
-	var tokens2 = bKeepWs ? tokens : new f_tokens();
+	if (bKeepWs) return tokens;
+
+	var tokens2 = new f_tokens();
 	
-	if (!bKeepWs)
+	var token;
 	while (tokens.moveNext()) {
 
 		token = tokens.current();
@@ -444,10 +453,15 @@ function getTokens(formula) {
 		tokens2.addRef(token);
 
 	}
+	return tokens2;
+}
+
+function infix_to_prefix_operator(tokens2) {
 
 	// switch infix "-" operator to prefix when appropriate, switch infix "+" operator to noop when appropriate, identify operand 
 	// and infix-operator subtypes, pull "@" from in front of function names
 	
+	var token;
 	while (tokens2.moveNext()) {
 
 		token = tokens2.current();
@@ -513,9 +527,13 @@ function getTokens(formula) {
 	
 	tokens2.reset();
 
+	return tokens2;
+}
+
+function exclude_noops(tokens2) {
 	// move all tokens to a new collection, excluding all noops
 	
-	tokens = new f_tokens();
+	var tokens = new f_tokens();
 	
 	while (tokens2.moveNext()) {
 		if (tokens2.current().type != TOK_TYPE_NOOP)

@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs", // none ou commonjs ou amd ou es6
+        "sourceMap": true,
+        "allowJs": false,
+        "strictNullChecks": false
+    }
+}

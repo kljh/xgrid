@@ -1,0 +1,3 @@
+
+npm install typings --global
+typings install dt~node --global --save
