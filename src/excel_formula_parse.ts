@@ -311,16 +311,17 @@ function getTokens(formula) {
 		
 		// trim white-space
 		
-		if (currentChar() == " ") {
+		if (currentChar() == " " || currentChar() == "\t" || currentChar() == "\n") {
 			if (token.length > 0) {
 				tokens.add(token, TOK_TYPE_OPERAND);
-				token = "";
 			}
-			tokens.add("", TOK_TYPE_WSPACE);
-			offset += 1;
-			while ((currentChar() == " ") && (!EOF())) { 
+			token = "";
+			while ((currentChar() == " " || currentChar() == "\t" || currentChar() == "\n") && (!EOF())) { 
+				token += currentChar();
 				offset += 1; 
 			}
+			tokens.add(token, TOK_TYPE_WSPACE);
+			token = "";
 			continue;     
 		}
 		
@@ -426,23 +427,25 @@ function exclude_ws(tokens) {
 
 	var tokens2 = new f_tokens();
 	
-	var token;
+	var token, token_prev, token_next;
 	while (tokens.moveNext()) {
 
 		token = tokens.current();
-		
+		token_prev = tokens.previous();
+		token_next = tokens.next();
+
 		if (token.type == TOK_TYPE_WSPACE) {
 			if ((tokens.BOF()) || (tokens.EOF())) {}
 			else if (!(
-								 ((tokens.previous().type == TOK_TYPE_FUNCTION) && (tokens.previous().subtype == TOK_SUBTYPE_STOP)) || 
-								 ((tokens.previous().type == TOK_TYPE_SUBEXPR) && (tokens.previous().subtype == TOK_SUBTYPE_STOP)) || 
-								 (tokens.previous().type == TOK_TYPE_OPERAND)
+								 ((token_prev.type == TOK_TYPE_FUNCTION) && (token_prev.subtype == TOK_SUBTYPE_STOP)) || 
+								 ((token_prev.type == TOK_TYPE_SUBEXPR) && (token_prev.subtype == TOK_SUBTYPE_STOP)) || 
+								 (token_prev.type == TOK_TYPE_OPERAND)
 								)
 							) {}
 			else if (!(
-								 ((tokens.next().type == TOK_TYPE_FUNCTION) && (tokens.next().subtype == TOK_SUBTYPE_START)) || 
-								 ((tokens.next().type == TOK_TYPE_SUBEXPR) && (tokens.next().subtype == TOK_SUBTYPE_START)) ||
-								 (tokens.next().type == TOK_TYPE_OPERAND)
+								 ((token_next.type == TOK_TYPE_FUNCTION) && (token_next.subtype == TOK_SUBTYPE_START)) || 
+								 ((token_next.type == TOK_TYPE_SUBEXPR) && (token_next.subtype == TOK_SUBTYPE_START)) ||
+								 (token_next.type == TOK_TYPE_OPERAND)
 								 )
 							 ) {}
 			else 

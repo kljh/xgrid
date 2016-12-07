@@ -1,0 +1,6 @@
+
+*.map
+.DS_Store
+typings.json
+typings/
+
