@@ -3,6 +3,7 @@
     "localstorage://grid/work/countdown.xjson",
     "github://kljh/grid/work/sheet_countdown.xjson"
   ],
+  "input_syntax": "javascript",
   "input": {
     "C1": "",
     "C2": "Kodo One Earth Tour 2014 ",
