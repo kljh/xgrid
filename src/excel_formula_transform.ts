@@ -86,11 +86,11 @@ export function parse_and_transfrom_test() {
 				nb_errors++;
 		
 		}
-		if (false) {
-			info_msg("formula_xl_js:\n"+JSON.stringify(formula_xl_js,null,4));
-			info_msg("vars:\n"+JSON.stringify(vars,null,4));
-			info_msg("fcts:\n"+JSON.stringify(fcts,null,4));
-		}
+		/*
+		info_msg("formula_xl_js:\n"+JSON.stringify(formula_xl_js,null,4));
+		info_msg("vars:\n"+JSON.stringify(vars,null,4));
+		info_msg("fcts:\n"+JSON.stringify(fcts,null,4));
+		*/
 	}
 	test(xl_formulas, { xl: true });
 	//test(js_formulas, { xjs: true });
