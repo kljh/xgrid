@@ -62,84 +62,50 @@ function operator_override_ast(ast) {
 }
 
 
-function extract_variables_and_functions(ast, vars, fcts, excl) : void {
-    
-    function extract_member_expression_object(ast) {
-        //console.log("ast (MemberExpression): " + JSON.stringify(ast));
+function extract_variables_and_functions(ast, vars, fcts, excl, isProperty, isFct) : void {
 
-        // we recurse on object path..
-        if (ast.type=="MemberExpression")
-            return extract_member_expression_object(ast.object);
-            
-        // until we find the root object
-        var root_name; 
-        if (ast.type=="Identifier") {
-            // root object is expected to be an Identifier (workbook, Math, ... )
-            root_name = ast.name;
-        } else if (ast.type=="CallExpression") { 
-            // root object can also be a function (JQuery, Moment, ... )
-            extract_variables_and_functions({ arguments: ast.arguments }, vars, fcts, excl);
-            root_name = extract_member_expression_object(ast.callee);
-        } else if(ast.type=="FunctionExpression") {
-            return; // root_name undefined
-        } else {
-            assert(false); // unhandled member root type
-        }
-        assert(root_name); // unhandled member root name
-
+    if (ast.type=="Identifier") {
+        var id = ast.name;
         
-        // while we walk to the root,
-        // we also check the property part: 
-        // - in case it is a dereferencement of an array of object with [] operator, we need to check the arguments
-        // - in case it is a function, we need to check the arguments
-        if (ast.type=="MemberExpression") {
-            if (ast.computed) 
-                extract_variables_and_functions(ast.property, vars, fcts, excl);
-            if (ast.property.type=="CallExpression") 
-                extract_variables_and_functions(ast.property, vars, fcts, excl);
-        }
-        return root_name;
-    }
+        if (isProperty) 
+            return; 
 
-    if (ast.type=="CallExpression") {
-        // increment fct usage counter
-        var fct_name = extract_member_expression_object(ast.callee);
-        if (fct_name) {
-            fcts[fct_name] = (fcts[fct_name]||0) + 1;
-            excl[fct_name] = true;
-        }        
-    }
-    else if (ast.type=="VariableDeclarator") {
-        var var_name = ast.id.name
-        excl[var_name] = true;        
-    }
-    else if (ast.type=="Identifier" || ast.type=="MemberExpression") {
-        // save variable name mapping from original name
-        if (excl[ast.name]===undefined) {
-            var original_id = extract_member_expression_object(ast);
-            if (original_id) {
-                var valid_id = original_id;
-                vars[original_id] = valid_id;
-            }
-            return; // no need to go deeper 
+        if (excl[id])
+            return;
+
+        if (isFct) { 
+            fcts[id] = (fcts[id]||0) + 1;
+        } else {
+            var valid_id = id;
+            vars[id] = valid_id;
         }
+
+    } else if (ast.type=="CallExpression") {
+        // callee can be any expression
+        extract_variables_and_functions(ast.callee, vars, fcts, excl, isProperty, true);
+        // and arguments
+        extract_variables_and_functions({ arguments: ast.arguments }, vars, fcts, excl, false, false);
+    } else if (ast.type=="MemberExpression") {
+        // we recurse on object part..
+        extract_variables_and_functions(ast.object, vars, fcts, excl, isProperty, false);
+        // and property part
+        extract_variables_and_functions(ast.property, vars, fcts, excl, !ast.computed, false);  
     } else if(ast.type=="FunctionExpression") {
         return; // no need to go deeper 
-    }
-    
-    for (var k in ast) {
-        if (k=="callee") 
-            continue; // no need to go deeper 
-        
-        if (Array.isArray(ast[k])) {
-            for (var i=0; i<ast[k].length; i++)
-                extract_variables_and_functions(ast[k][i], vars, fcts, excl);
-        } else if (ast[k]===null) {
-            // do nothing (null is an object)
-        } else if (typeof ast[k]=="object") {
-            extract_variables_and_functions(ast[k], vars, fcts, excl);
-        } else {
-            // do nothing 
+    } else if (ast.type=="VariableDeclarator") {
+        extract_variables_and_functions(ast.init, vars, fcts, excl, isProperty, isFct);       
+    } else {
+        for (var k in ast) {
+            if (Array.isArray(ast[k])) {
+                for (var i=0; i<ast[k].length; i++)
+                    extract_variables_and_functions(ast[k][i], vars, fcts, excl, isProperty, isFct);
+            } else if (ast[k]===null) {
+                // do nothing (null is an object)
+            } else if (typeof ast[k]=="object") {
+                extract_variables_and_functions(ast[k], vars, fcts, excl, isProperty, isFct);
+            } else {
+                // do nothing 
+            }
         }
     }
 }
@@ -156,8 +122,8 @@ export function parse_and_transfrom(expr, opt_vars?, opt_fcts?, opt_prms?) {
     var ast = acorn.parse(expr, { ranges: false });
     //console.log(JSON.stringify(ast, null, 4));
 
-    var excl = {};
-    extract_variables_and_functions(ast, vars, fcts, excl);
+    var excl = { "Math":1, "setInterval":1 };
+    extract_variables_and_functions(ast, vars, fcts, excl, false, false);
     //console.log("expr: " + expr);
     //console.log("vars: " + JSON.stringify(vars, null, 4));
     //console.log("fcts: " + JSON.stringify(fcts, null, 4));
@@ -174,17 +140,23 @@ export function parse_and_transfrom(expr, opt_vars?, opt_fcts?, opt_prms?) {
 
 export function parse_and_transfrom_test() {
     var expressions = [
-        [ "o.a[i].f(x).c", undefined, 
+        [ "o.a[i].f(x).c;", undefined, 
           { o: "o", i: "i", x: "x" } ],
+        [ "f(x).g(y).a[i];", undefined, 
+          { x: "x", y: "y", i: "i" }, { f:1 } ],
+        [ "a[i].b[j].c(x);", undefined, 
+          { a: "a", i: "i", j: "j", x: "x" } ],
+        [ "f(x)[i].g[j](y);", undefined, 
+          { x: "x", i: "i", j: "j", y: "y" }, { f:1 } ],
         [ "$F$3.replace('views.js', $F$6.views[$I4].file);",
           "$F$3.replace('views.js', $F$6.views[$I4].file);",
-          { $F$3: "$F$3" }],
+          { $F$3: "$F$3", $F$6: "$F$6", $I4: "$I4" }],
         [ "var a = { ref: true, src: 123 }",
           "var a = {\n    ref: true,\n    src: 123\n};",
-          ], // { "ref": "ref", "src": "src" }],
+          { "ref": "ref", "src": "src" }],
         [ "{ ref: true, src: 123 }", // same as above without assignment, fails in Acorn if not surrounded by parentheses
           "({\n    ref: true,\n    src: 123\n});",
-          ], // {}],
+          { "ref": "ref", "src": "src" }],
         [ "[ 1.2, abc, true ]", // same as above without assignment, fails in Acorn if not surrounded by parentheses
           "[\n    1.2,\n    abc,\n    true\n];",
           { "abc": "abc" }],
@@ -202,10 +174,10 @@ export function parse_and_transfrom_test() {
           { "a": "a", "b": "b" }],
         [ '42 + 3 + f( 5 + g( 77+99)); // answer', 
           'op_add(op_add(42, 3), f(op_add(5, g(op_add(77, 99)))));',
-          {}],
+          {}, { f:1, g:1 }],
         [ 'moment(C3).hours.ago(C5).fromNow();',
           'moment(C3).hours.ago(C5).fromNow();',
-          { "C5": "C5", "C3": "C3" }] // arguments order does not matter
+          { "C3": "C3", "C5": "C5" }, { moment:1 }] // arguments order does not matter
     ]
 
     var nb_errors = 0;
@@ -214,15 +186,15 @@ export function parse_and_transfrom_test() {
         var expr_ref = expressions[e][1] || expr_in;
         var vars_ref = expressions[e][2] || undefined;
         var vars_out = {};
-        var fcts_ref = expressions[e][3] || undefined;
+        var fcts_ref = expressions[e][3] || {};
         var fcts_out = {};
         var expr_out = parse_and_transfrom(expr_in, vars_out, fcts_out);
         if (expr_out!=expr_ref) {
-            console.log(expr_ref);
-            console.log(expr_out);
             nb_errors++;
         }
         if (vars_ref && JSON.stringify(vars_out)!=JSON.stringify(vars_ref))
+            nb_errors++;
+        if (fcts_ref && JSON.stringify(fcts_out)!=JSON.stringify(fcts_ref))
             nb_errors++;
     }
 

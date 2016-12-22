@@ -39,7 +39,7 @@
     "C13": "d",
     "A14:A15": "=sum(A4:A12)",
     "A17": "depends on Fibonacci (A2)",
-    "C17": "=f(1,2",
+    "C17": "'=f(1,2",
     "D17": "<< error expected",
     "A18": "=A14-A15"
   },

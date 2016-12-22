@@ -76,11 +76,11 @@ export function lexer_test() {
 		var expr_in = expressions[i];
 		var expr_tok = lexer(expr_in);
 		var expr_out = rebuild_source_text(expr_tok);
-		if (expr_out!=expr_in)
+		if (expr_out!=expr_in) {
 			nb_errors++;
-		info_msg(JSON.stringify(expr_in));
-		info_msg(JSON.stringify(expr_tok));
-			
+			info_msg(JSON.stringify(expr_in));
+			info_msg(JSON.stringify(expr_tok));
+		}
 	}
 	assert(nb_errors==0);
 }
