@@ -126,10 +126,10 @@ function sheet_exec(sheet, prms) {
 							for (var a=0; a<args.length; a++) 
 								tmp_args[a] = range_parser.stringify_range(move_range(range_parser.parse_range(args[a], rp.RangeAddressStyle.A1), i-target.row, j-target.col));
 
-							
-							let rng_out = range_parser.stringify_range({ row: i, col: j }, rp.RangeAddressStyle.A1);
-							node_eval[rng_out] = {
-								target: target,
+							let tmp_target = { row: i, col: j }
+							let tmp_id = range_parser.stringify_range(tmp_target, rp.RangeAddressStyle.A1);
+							node_eval[tmp_id] = {
+								target: tmp_target,
 								expr: expr,
 								fct: func,
 								args: tmp_args
