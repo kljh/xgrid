@@ -1,6 +1,6 @@
 
-*.map
 .DS_Store
-typings.json
+src/*.map
+src/*.js
 typings/
 
