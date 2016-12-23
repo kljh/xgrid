@@ -94,6 +94,12 @@ function extract_variables_and_functions(ast, vars, fcts, excl, isProperty, isFc
         return; // no need to go deeper 
     } else if (ast.type=="VariableDeclarator") {
         extract_variables_and_functions(ast.init, vars, fcts, excl, isProperty, isFct);       
+    } else if (ast.type=="Property") {
+        assert(!ast.computed); // what does it mean a computed key-value pair 
+
+        // ignore the key which can appear as an id rather as a string in the shorthand syntax { a: 123 }
+        // just process the value
+        extract_variables_and_functions(ast.value, vars, fcts, excl, isProperty, isFct);       
     } else {
         for (var k in ast) {
             if (Array.isArray(ast[k])) {
@@ -151,12 +157,12 @@ export function parse_and_transfrom_test() {
         [ "$F$3.replace('views.js', $F$6.views[$I4].file);",
           "$F$3.replace('views.js', $F$6.views[$I4].file);",
           { $F$3: "$F$3", $F$6: "$F$6", $I4: "$I4" }],
-        [ "var a = { ref: true, src: 123 }",
-          "var a = {\n    ref: true,\n    src: 123\n};",
-          { "ref": "ref", "src": "src" }],
-        [ "{ ref: true, src: 123 }", // same as above without assignment, fails in Acorn if not surrounded by parentheses
-          "({\n    ref: true,\n    src: 123\n});",
-          { "ref": "ref", "src": "src" }],
+        [ "var a = { ref: abc, src: 123 }",
+          "var a = {\n    ref: abc,\n    src: 123\n};",
+          { "abc": "abc" }],
+        [ "{ ref: abc, src: 123+456 }", // same as above without assignment, fails in Acorn if not surrounded by parentheses
+          "({\n    ref: abc,\n    src: op_add(123, 456)\n});",
+          { "abc": "abc" }],
         [ "[ 1.2, abc, true ]", // same as above without assignment, fails in Acorn if not surrounded by parentheses
           "[\n    1.2,\n    abc,\n    true\n];",
           { "abc": "abc" }],
@@ -189,9 +195,8 @@ export function parse_and_transfrom_test() {
         var fcts_ref = expressions[e][3] || {};
         var fcts_out = {};
         var expr_out = parse_and_transfrom(expr_in, vars_out, fcts_out);
-        if (expr_out!=expr_ref) {
+        if (expr_out!=expr_ref) 
             nb_errors++;
-        }
         if (vars_ref && JSON.stringify(vars_out)!=JSON.stringify(vars_ref))
             nb_errors++;
         if (fcts_ref && JSON.stringify(fcts_out)!=JSON.stringify(fcts_ref))
