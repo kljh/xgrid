@@ -10,7 +10,7 @@ interface CellAddress {
 }
 
 export interface RangeAddress extends CellAddress {
-	named_range? : string;
+	reference_to_named_range? : string;
 	end? : CellAddress;
 	book? : string;
 	sheet? : string;
@@ -179,7 +179,7 @@ function parse_cell_range(range : string, mode : RangeAddressStyle, rng_ref? : R
 	else 
 	{
 		// named range
-		return { named_range: range };
+		return { reference_to_named_range: range };
 	}
 		
 }
@@ -256,7 +256,7 @@ function parse_column_name_to_index(col : string) : number|undefined {
 }
 
 export function stringify_range(rng, mode : RangeAddressStyle, rng_ref? : RangeAddress) {
-	if (rng.named_range) return rng.named_range; // named range
+	if (rng.reference_to_named_range) return rng.reference_to_named_range; // named range
 
 	var scope = "";
 	var bNeedQuotes = false;

@@ -104,7 +104,7 @@ function sheet_exec(sheet, prms) {
 				var ids = []; 
 				var args = []; 
 				for (var addr in vars) {
-					if ([ "Math", "JSON", "this", "window", "arguments", "caller", "graph_nodes" ].indexOf(addr)!=-1) {
+					if ([ "Array", "Date", "Math", "Number", "Object", "String", "arguments", "caller", "this", "JSON", "window" ].indexOf(addr)!=-1) {
 						warn_msg("WARN: reserved keyword '"+addr+"' used in "+r);
 						continue;
 					}
@@ -243,10 +243,13 @@ function evaluate_node(id: string, nodes, indent: string) {
 function get_range_dependencies(id:string, nodes) {
 	var rng = nodes[id].rng;
 
+	if (rng.reference_to_named_range) 
+		throw new Error("get_range_dependencies called on '"+id+"' named range (should only be called on A1:B2 style addresses)");
+
 	// build list of dependencies
-	var deps : Array<rp.RangeAddress> = nodes[id].deps;
+	var deps = nodes[id].deps;
 	if (!deps) {
-		deps = [];
+		deps = {};
 		for (var n in nodes) {
 			var node = nodes[n];
 			if (!node.target)
@@ -295,11 +298,12 @@ function evaluate_range(id: string, nodes, indent: string) {
 		return nodes[id].value;
 	}
 
-	nodes[id].deps = get_range_dependencies(id, nodes);
+	var deps = get_range_dependencies(id, nodes);
+	nodes[id].deps = deps;
 
 	// evaluate dependencies
-	//for (var n in deps) 
-	//	evaluate_node(n, nodes, indent+" ");
+	for (var n in deps) 
+		evaluate_node(n, nodes, indent+" ");
 
 	// assemble range 
 	var rng = nodes[id].rng;
@@ -307,9 +311,13 @@ function evaluate_range(id: string, nodes, indent: string) {
 	var end1 = rng.end || rng;
 	var nb_row = end1.row - beg1.row + 1;
 	var nb_col = end1.col - beg1.col + 1;
+
+	// create an empty range
 	var res = new Array(nb_row);
 	for (var i=0; i<nb_row; i++) {
 		res[i] = new Array(nb_col);
+		for (var j=0; j<nb_col; j++) 
+			res[i][j] = null;
 	}
 		
 	for (var n in nodes[id].deps) {
@@ -328,10 +336,11 @@ function evaluate_range(id: string, nodes, indent: string) {
 			for (var j=inter.col; j<=inter.end.col; j++) 
 				res[i-rng.row][j-rng.col] = tmp[i-tmp_row][j-tmp_col];
 
-		// if asked for a scalar, then return a scalar
-		if (!rng.end && res.length==1 && res[0].length==1)
-			res = res[0][0];
 	}
+
+	// if asked for a scalar, then return a scalar
+	if (!rng.end && res.length==1 && res[0].length==1)
+		res = res[0][0];
 
 	// cache results 
 	nodes[id].value = res;
