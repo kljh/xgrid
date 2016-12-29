@@ -51,6 +51,9 @@ export function spreadsheet_exec_test() {
 			if (!fs.existsSync(folder_out)) fs.mkdirSync(folder_out);
 			fs.writeFileSync(filepath_out, JSON.stringify({input: node_values},null,4));
 
+			data.ref_output = node_values;
+			fs.writeFileSync(filepath, JSON.stringify(data,null,2));
+
 		//} catch (e) {
 		//	info_msg("sheet "+JSON.stringify(sheet, null, 4));
 		//	throw new Error("Error evaluating "+filepath+"\n"+(e.stack||e)+"\n");

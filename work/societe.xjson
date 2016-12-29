@@ -1286,5 +1286,21 @@
     "AH26": {},
     "AI26": {},
     "AJ26": {}
+  },
+  "ref_output": {
+    "B2": "Liberté, justice, fraternité",
+    "B3": "L'égalité est la relation entre deux choses ne présentant aucune différence de grandeur, ni de qualité.",
+    "B4": "Nous ne sommes pas plus égaux que nous sommes identiques. A moins de restreindre ce qui est comparé: \"égaux en droit\", \"égaux à competences égales\".",
+    "B5": "L'idée du droit à l'égalité est naïve ou hypocrite. Le droit à la justice est raisonnable.",
+    "B7": "Injustices en Europe et aux USA",
+    "B8": "La justice suppose que l'on ne regarde pas que la où se trouve la lumiere.",
+    "B9": "La jeunesse est l'avenir mais quel avenir a-t'elle? Exclue du travail, du logement, et endettée par ses parents ?",
+    "B12": "<a href=\"http://www.assemblee-nationale.fr/qui/\">Composition assemblée Nationale</a>",
+    "B13": "<a href=\"http://www.vie-publique.fr/decouverte-institutions/institutions/approfondissements/quelques-elements-statistiques-elus-locaux.html\">Stats élus locaux</a>",
+    "B14": "<a href=\"http://www.metropolitiques.eu/Les-elus-municipaux-representent.html\">Stats élus locaux</a>",
+    "B15": "<a href=\"http://femmes.gouv.fr/wp-content/uploads/2012/03/Chiffres_cles-egalite-2011.pdf\">femmes.gouv.fr</a>",
+    "B17": "INSEE",
+    "B18": "<a href=\"http://www.insee.fr/fr/themes/detail.asp?reg_id=99&ref_id=base-cc-emploi-pop-active-2010\">base complete 2010</a>",
+    "B19": "<a href=\"http://www.insee.fr/fr/themes/tableau.asp?reg_id=0&ref_id=NATCCF03338\">emploi 2010</a>"
   }
 }

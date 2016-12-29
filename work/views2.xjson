@@ -3,61 +3,49 @@
     "localstorage://grid/work/views.xjson",
     "github://kljh/grid/work/views2.xjson"
   ],
-  "import_script" : [
+  "import_script": [
     {
-      "src" : "../../../vision/vision/textedit/formulas/formula-std.js",
-      "fcts" : [ "async_load_script", "make_checkboxes" ]
+      "src": "../../../vision/vision/textedit/formulas/formula-std.js",
+      "fcts": [
+        "async_load_script",
+        "make_checkboxes"
+      ]
     }
   ],
-  "input_syntax" : "javascript",
-  "named_ranges" : {
-    "views" : "=C3",
-    "view_data" : "=F5",
-    "nb_views" : "=C4",
-    "view_name" : "=F2",
-    "view_path" : "=F3",
-    "view_info" : "=I4"
+  "input_syntax": "javascript",
+  "named_ranges": {
+    "views": "=C3",
+    "view_data": "=F5",
+    "nb_views": "=C4",
+    "view_name": "=F2",
+    "view_path": "=F3",
+    "view_info": "=I4"
   },
   "input": {
     "B2": "define callback",
     "C2": "=(function() { setViews=function(v) { views = v; }; return true; })()",
-      
     "B3": "load views.js (the script calls setViews function)",
     "C3": "=( C2 ? async_load_script(\"../views/views.js\") : undefined )",
-    
     "B4": "#views",
     "C4": "=($C$3?Object.keys(views).length:\"-\")",
-    
     "B6": "=($C$3?make_checkboxes(Object.keys(views),@I3.ref,caller,true):\"-\")",
-    
-
     "E2": "view selection",
-    "F2": "=@I3.value",    
-    
+    "F2": "=@I3.value",
     "E3": "view path",
     "F3": "=views[F2]",
-    
     "E4": "define callback",
     "F4": "=(function() { setViewData=function(v) { view_data = v; }; return true; })()",
-    
     "E5": "load selected view (the script calls setViewData function)",
     "F5": "=( F4 ? async_load_script(F3) : undefined )",
-    
-    
     "I2": "=\"This cell is in column \"+caller.col",
     "I3": "={ ref: caller, value: \"-\" }",
     "I4": "=($F$5?JSON.parse(view_data):\"\")",
     "I5": "=@$I$4.views.length",
-    
-
     "K2": "view",
     "K3": 1,
     "K4": "=JSON.stringify(Object.keys(@$I$4.views[$K$3]))",
-
-
     "M2": "=$F$3.replace(\"views.js\",@$I$4.views[$K$3].file)",
     "M3:O5": "{=@$I$4.views[$K$3].mtx}",
-    
     "E6": "='<img src=\"'+$M$2+'\">'"
   },
   "format": {
@@ -94,5 +82,24 @@
     "E6": {
       "overflow": "overflow"
     }
+  },
+  "ref_output": {
+    "B2": "define callback",
+    "C2": true,
+    "B3": "load views.js (the script calls setViews function)",
+    "B4": "#views",
+    "C4": "-",
+    "B6": "-",
+    "E2": "view selection",
+    "E3": "view path",
+    "E4": "define callback",
+    "F4": true,
+    "E5": "load selected view (the script calls setViewData function)",
+    "I4": "",
+    "K2": "view",
+    "K3": 1,
+    "E6": "<img src=\"undefined\">",
+    "nb_views": "-",
+    "view_info": ""
   }
 }

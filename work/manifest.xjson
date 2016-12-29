@@ -164,5 +164,33 @@
       "align": "left",
       "overflow": "overflow"
     }
+  },
+  "ref_output": {
+    "B2": "Keep control of your data",
+    "B3": "- your data is yours, now and tomorrow",
+    "B4": "- files are stored in your account, your machine or your server",
+    "B5": "- file format is simple enough to be compatible with all spreadsheet programs",
+    "B8": "Keep complexity under control",
+    "B9": "- circular references are correctly spotted and accurately reported",
+    "B10": "- use standard diff tools to compare different version of spreadsheets (use github as file storage)",
+    "B11": "- multithreaded and asynchronous evaluation (for responsive spreadsheets)",
+    "B12": "- complexity of evaluation algorithm are at linear in number of cells",
+    "B15": "Keep thing simple, leverage modern technlogy",
+    "B16": "- you have access to all modern web technologies (Ajax, HTML5, HighCharts, D3Js, EMScripten, ...)",
+    "B19": "However...",
+    "B20": "- still miss a few shortcuts that make life easier (Ctrl-Arrow, Ctrl-D, Ctrl-R, ...)",
+    "B21": "- but you get things that should work in leading spreadsheet but don't (inserting a row in the middle of an array formula)",
+    "B23": "To do:",
+    "B24": "- refresh with bottom up algorithm",
+    "B25": "- export dependency graph",
+    "B26": "- chat mode",
+    "B27": "- auto border",
+    "B28": "- thread display ",
+    "B29": "- notifications",
+    "B30": "-insert row accross repeated formula",
+    "B31": "- bug with cut paste",
+    "B32": "- bug with edit mode sometimes not exiting as expected",
+    "B33": "- minor cosmetic changes",
+    "B34": "- throttle github save"
   }
 }

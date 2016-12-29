@@ -171,5 +171,65 @@
       "css": "input",
       "border": "border-left border-bottom border-right "
     }
+  },
+  "ref_output": {
+    "A1": "Test status",
+    "B1": true,
+    "C1": "<< grey = not yet calculated",
+    "D1": "(press F5, shortcut in column K)",
+    "H1": "うさぎどうどうはほんとう一番かわいいいいいです。",
+    "A3": "Fibonacci",
+    "C3": "Raw",
+    "D3": "data",
+    "E3": "matrix",
+    "F3": "Zero",
+    "H3": "うさぎ",
+    "A4": 0,
+    "C4": true,
+    "D4": 2,
+    "E4": 3,
+    "F4": 0,
+    "H4": "ひつじ",
+    "A5": 1,
+    "C5": false,
+    "D5": 4,
+    "E5": 5,
+    "A6": 1,
+    "A7": 2,
+    "A8": 3,
+    "A9": 5,
+    "A10": 8,
+    "A11": 13,
+    "A12": 21,
+    "C6": "maybe",
+    "D6": 7,
+    "E6": 8,
+    "H6": "うさぎ et ひつじ野ぬいぐるみはたくさんいます。",
+    "C8:F9": [
+      [
+        "Raw",
+        true,
+        false,
+        "maybe",
+        null
+      ],
+      [
+        "data",
+        2,
+        4,
+        7,
+        null
+      ]
+    ],
+    "C11": "depends on C1:D5 (D3)",
+    "D11": 4,
+    "F11": 4,
+    "C13": "d",
+    "A14": 54,
+    "A15": 54,
+    "A17": "depends on Fibonacci (A2)",
+    "C17": "'=f(1,2",
+    "D17": "<< error expected",
+    "A18": 0
   }
 }
