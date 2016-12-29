@@ -3,6 +3,12 @@
     "localstorage://grid/work/views.xjson",
     "github://kljh/grid/work/views.xjson"
   ],
+  "import_script" : [
+    {
+      "src" : "../../../vision/vision/textedit/formulas/formula-std.js",
+      "fcts" : [ "async_load_script", "set_range_input_and_fire" ]
+    }
+  ],
   "input_syntax" : "javascript",
   "input": {
     "B1": "URL",

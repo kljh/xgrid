@@ -3,6 +3,12 @@
     "localstorage://grid/work/countdown.xjson",
     "github://kljh/grid/work/sheet_countdown.xjson"
   ],
+  "import_script" : [
+    {
+      "src" : "../../../vision/vision/textedit/formulas/formula-std.js",
+      "fcts" : [ "set_range_input_and_fire" ]
+    }
+  ],
   "input_syntax": "javascript",
   "input": {
     "C1": "",

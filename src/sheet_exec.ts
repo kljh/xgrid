@@ -32,6 +32,9 @@ export function spreadsheet_exec_test() {
 		var txt = fs.readFileSync(filepath, 'utf8');
 		var data = JSON.parse(txt);
 		var sheet = data.input;
+		if (data.named_ranges)
+			for (var k in data.named_ranges) 
+				sheet[k] = data.named_ranges[k];
 		
 		//try {
 			var node_values = sheet_exec(sheet, { 
@@ -53,6 +56,7 @@ export function spreadsheet_exec_test() {
 		//	throw new Error("Error evaluating "+filepath+"\n"+(e.stack||e)+"\n");
 		//}
 	}
+	info_msg("\nspreadsheet_exec_test DONE.")
 }
 
 export interface NodeInfo  {
@@ -104,7 +108,7 @@ function sheet_exec(sheet, prms) {
 				var ids = []; 
 				var args = []; 
 				for (var addr in vars) {
-					if ([ "Array", "Date", "Math", "Number", "Object", "String", "arguments", "caller", "this", "JSON", "window" ].indexOf(addr)!=-1) {
+					if ([ "Array", "Date", "Math", "Number", "Object", "String", "arguments", "caller", "this", "undefined", "JSON", "window" ].indexOf(addr)!=-1) {
 						warn_msg("WARN: reserved keyword '"+addr+"' used in "+r);
 						continue;
 					}
@@ -169,7 +173,6 @@ function sheet_exec(sheet, prms) {
 	info_msg("  formula_missing : #"+formula_missing.length+" "+formula_missing);
 	
 	info_msg("sheet evaluate...")
-	
 	/*
 	info_msg("evaluation: "+JSON.stringify(node_eval, null, 4));
 	*/
@@ -264,6 +267,11 @@ function get_range_dependencies(id:string, nodes) {
 }
 
 function ranges_intersection(rng1:rp.RangeAddress, rng2:rp.RangeAddress) : rp.RangeAddress {
+	if (rng1.reference_to_named_range || rng2.reference_to_named_range) { 
+		warn_msg("ranges_intersection called on named range (should only be called on A1:B2 style addresses)");
+		return undefined;
+	}
+
 	var beg1 = rng1;
 	var end1 = rng1.end || rng1;
 	
