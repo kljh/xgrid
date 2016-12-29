@@ -1,4 +1,4 @@
-function test() {
+function excel_automation_test() {
 	// npm install -g win32ole
 	var win32ole = require('win32ole');
 
@@ -18,7 +18,7 @@ function test() {
 	rng.Interior.ColorIndex = 6; // Yellow 
 
 	//var result = book.SaveAs('testfileutf8.xls');
-	console.log(result);
+	//console.log(result);
 
 	xl.ScreenUpdating = true;
 	xl.Workbooks.Close();
@@ -86,7 +86,7 @@ fs.readdir(folder, function(err, files) {
 							console.log(rng.Address+"    "+rng.FormulaR1C1);
 						}
 					} else if (rng.Text!="") {
-						// Value2 property doesn’t use the Currency and Date 
+						// Value2 property doesn't use the Currency and Date 
 						console.log(rng.Address+" VAL "+rng.Text);
 					}
 				}

@@ -112,7 +112,7 @@ function formulas_list_to_adjacency_list(formulas /* [ [cell, formula_in_cell], 
 			if (adjacency_list.hasOwnProperty(key))
 				throw "Dependencies of cell " + key + " read more than once !";
 			adjacency_list[key] = cell_deps;
-		} catch (e) {$
+		} catch (e) {
 			info_msg("ERROR: "+e+"\n"+e.stack);
 		}
 	}
