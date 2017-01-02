@@ -48,8 +48,8 @@ export function spreadsheet_exec_test() {
 			tmp.pop();
 			var folder_out = tmp.join('/');
 
-			if (!fs.existsSync(folder_out)) fs.mkdirSync(folder_out);
-			fs.writeFileSync(filepath_out, JSON.stringify({input: node_values},null,4));
+			//if (!fs.existsSync(folder_out)) fs.mkdirSync(folder_out);
+			//fs.writeFileSync(filepath_out, JSON.stringify({input: node_values},null,4));
 
 			data.ref_output = node_values;
 			fs.writeFileSync(filepath, JSON.stringify(data,null,2));
@@ -190,9 +190,55 @@ function sheet_exec(sheet, prms) {
 		}
 	}
 
+	let adjacency_list = extract_adjacency_list(node_eval);
+	let calculation_order = static_calculation_order(adjacency_list);
+
 	return node_values;
 }
 
+function extract_adjacency_list(nodes) {
+	let adjacency_list = {};
+	for (let n in nodes) {
+		if (!nodes[n]) 
+			continue;
+		info_msg("extract_adjacency_list node "+JSON.stringify(n));
+		let args = nodes[n].args || [];
+		let deps = nodes[n].deps ? Object.keys(nodes[n].deps) : [];
+		if (JSON.stringify(args)!=JSON.stringify(deps) && args.length && deps.length)
+			throw new Error("args (for formula) and deps (for range aggregation) both present and inconsistent");
+		adjacency_list[n] = deps.length ? deps : args;
+	}
+	return adjacency_list;
+}
+
+function static_calculation_order(adjacency_list) {
+	let calculation_order = [];
+	let adjacency_list_length = Object.keys(adjacency_list).length;
+	for (let it=0; ; it++) {
+		let nb_added_at_this_iteration = 0;		
+		for (let n in adjacency_list) {
+			if (calculation_order.indexOf(n)!=-1)
+				continue;
+
+			var deps = adjacency_list[n];
+			let depsOk = true;
+			for (let d=0; d<deps.length; d++) {
+				if (calculation_order.indexOf(deps[d])==-1) {
+					depsOk = false;
+					break;
+				}
+			}
+			if (!depsOk)
+				continue;
+			calculation_order.push(n);
+			nb_added_at_this_iteration++;
+		}
+		if (calculation_order.length==adjacency_list_length)
+			return calculation_order;
+		if (nb_added_at_this_iteration===0)
+			throw new Error("circular reference detected");
+	}
+}
 
 function sheet_static_dependencies(nodes, bCreateMissing) : string[] {
 	var missing_deps = {};
@@ -441,4 +487,5 @@ if (typeof module!="undefined") {
 	if (require.main === module)
 		spreadsheet_exec_test();
 
+	global["spreadsheet_exec_test"] = spreadsheet_exec_test;
 }

@@ -2,6 +2,8 @@
  * Created by Charles on 13/03/2016.
  */
 
+import * as rp from "./excel_range_parse.js"
+
 var transf  = require('./excel_formula_transform');
 var parser = require('./excel_formula_parse');
 var rng	= require('./excel_range_parse');
@@ -19,7 +21,7 @@ function dbg(name, variable) {
 	info_msg(name+":\n"+JSON.stringify(variable,null,4));
 }
 
-function deps_graph_test() {
+export function deps_graph_test() {
 	
 	var no_edges = [
 		['A2', '="a"&"b"'],
@@ -28,12 +30,13 @@ function deps_graph_test() {
 	];
 	var adjacency_list = formulas_list_to_adjacency_list(no_edges);
 	adjacency_list_to_dot(adjacency_list, 'C:/temp/graph1.svg');
-	assert.equal(JSON.stringify(adjacency_list),
-	JSON.stringify({
-		'{"cell0":{"col":1,"row":2}}': [],
-		'{"cell0":{"col":1,"row":3}}': [],
-		'{"cell0":{"col":1,"row":4}}': []
-	}));
+	assert.equal(
+		JSON.stringify(adjacency_list),
+		JSON.stringify({
+			'{"cell0":{"col":1,"row":2}}': [],
+			'{"cell0":{"col":1,"row":3}}': [],
+			'{"cell0":{"col":1,"row":4}}': []
+		}));
 	
 	var simple_directed_cells_only = [
 		['W1', '=$A1'],
@@ -104,17 +107,17 @@ function formulas_list_to_adjacency_list(formulas /* [ [cell, formula_in_cell], 
 	for (var f=0; f<formulas.length; f++) {
 		var cell = formulas[f][0];
 		var xlformula = formulas[f][1];
-		try {
+		//try {
 			var tokens = parser.getTokens(xlformula);
 			// info_msg("TOKENS:\n"+JSON.stringify(tokens,null,4));
 			var cell_deps = tokens_to_adjacent_list(tokens["items"]);
-			var key = range_to_key(rng.parse_range(cell));
+			var key = range_to_key(rng.parse_range(cell, rp.RangeAddressStyle.A1));
 			if (adjacency_list.hasOwnProperty(key))
 				throw "Dependencies of cell " + key + " read more than once !";
 			adjacency_list[key] = cell_deps;
-		} catch (e) {
-			info_msg("ERROR: "+e+"\n"+e.stack);
-		}
+		//} catch (e) {
+		//	info_msg("ERROR: "+e+"\n"+e.stack);
+		//}
 	}
 	//info_msg("adjacency_list:\n"+JSON.stringify(adjacency_list,null,4));
 	return adjacency_list;
@@ -126,8 +129,8 @@ function tokens_to_adjacent_list(tokens) {
 	for (var i=0; i<tokens.length; ++i) {
 		var token = tokens[i];
 		if (token.subtype === "range") {
-			var range_as_key = range_to_key(rng.parse_range(token.value));
-			if (!contains(deps, range_as_key))
+			var range_as_key = range_to_key(rng.parse_range(token.value, rp.RangeAddressStyle.A1));
+			if (deps.indexOf(range_as_key)!=-1)
 				deps.push(range_as_key);
 		}
 	}
@@ -164,12 +167,12 @@ function range_to_key(range) {
 	return JSON.stringify(dict_to_print);
 }
 
-function adjacency_list_to_dot(adj_list, output_path) {
+export function adjacency_list_to_dot(adj_list, output_path) {
 	var output = 'digraph G {\n'
 	for (var vertex in adj_list) {
-		//dbg("vertex", vertex);
-		var parents = adj_list[vertex];
 		output += '\t"' + vertex.replace(/"/g, "'") + '"';
+		
+		var parents = adj_list[vertex];
 		for (var i=0; i<parents.length; ++i)
 			output += ' -> "' + parents[i].replace(/"/g, "'") + '"';
 		output += ';\n';
@@ -183,6 +186,7 @@ function adjacency_list_to_dot(adj_list, output_path) {
 	fs.writeFile(dot_file, output, function (err) {
 		if (err)  throw err;
 	});
+
 	var path_to_dot = '"C:\\Program Files (x86)\\Graphviz2.38\\bin\\dot.exe"'
 	var cmd = path_to_dot + " -T" + extension + ' ' + dot_file + ' -o ' + output_path;
 	exec(cmd, function(error, stdout, stderr) {
@@ -204,9 +208,5 @@ function contains(array, obj) {
         }
     }
     return false;
-}
-
-if (module == require.main) {
-	deps_graph_test();
 }
 
