@@ -5,9 +5,8 @@
      - transform AND and OR pseudo-functions into && and || operators (to respect lazy evaluation of boolean expressions)
 */
 
-var acorn = require("acorn");
-var escodegen = require("escodegen");
-var assert = require("assert");
+import * as acorn from "acorn";
+import * as escodegen from "escodegen";
 
 // if an object is a infix + operator
 function operator_override_ast(ast) {
@@ -95,7 +94,7 @@ function extract_variables_and_functions(ast, vars, fcts, excl, isProperty, isFc
     } else if (ast.type=="VariableDeclarator") {
         extract_variables_and_functions(ast.init, vars, fcts, excl, isProperty, isFct);       
     } else if (ast.type=="Property") {
-        assert(!ast.computed); // what does it mean a computed key-value pair 
+        if (ast.computed) throw new Error("unhandled computed property"); // what does it mean a computed key-value pair 
 
         // ignore the key which can appear as an id rather as a string in the shorthand syntax { a: 123 }
         // just process the value
@@ -203,5 +202,5 @@ export function parse_and_transfrom_test() {
             nb_errors++;
     }
 
-    assert(nb_errors==0);
+    if (nb_errors) throw new Error("parse_and_transfrom_test: "+nb_errors+" errors.");
 }

@@ -1,6 +1,5 @@
 
-var assert = require("assert");
-function sum(rng) {
+export function sum(rng) {
 	var total = 0;
 	for (var i=0; i<rng.length; i++) 
 		for (var j=0; j<rng[i].length; j++) 
@@ -8,7 +7,7 @@ function sum(rng) {
 	return total;
 }
 
-function trsp(rng) {
+export function trsp(rng) {
 	var n = rng.length;
 	var m = n==0 ? 0 : rng[0].length;
 
@@ -21,24 +20,19 @@ function trsp(rng) {
 	return res;
 }
 
-// Nodejs stuff
-if (typeof module!="undefined") {
-	global["sum"] = sum;
-	global["trsp"] = trsp;
-}
-
 function op_gen(f, a, b) {
 	if (!Array.isArray(a) && !Array.isArray(b)) {
 		// scalar-scalar operation
 		return f(a,b);
 	} else if (Array.isArray(a) && Array.isArray(b)) {
 		// array-array operation
-		assert(false);
+		throw new Error("op_gen: array-array operation not implemented");
 	} else {
-		assert(false);
+		throw new Error("op_gen: array-scalar operation not implemented");
 	}	
 }
 
+/*
 function op_add(a,b)  { return op_gen((a,b) => a+b, a, b); };     global["op_add"] = op_add;
 function op_sub(a,b)  { return op_gen((a,b) => a-b, a, b); };     global["op_sub"] = op_sub;
 function op_mult(a,b) { return op_gen((a,b) => a*b, a, b); };     global["op_mult"] = op_mult;
@@ -50,4 +44,5 @@ function op_gt(a,b)   { return op_gen((a,b) => a>b, a, b); };     global["op_gt"
 function op_lt(a,b)   { return op_gen((a,b) => a<b, a, b); };     global["op_lt"] = op_lt;
 function op_gte(a,b)  { return op_gen((a,b) => a>=b, a, b); };    global["op_gte"] = op_gte;
 function op_lte(a,b)  { return op_gen((a,b) => a<=b, a, b); };    global["op_lte"] = op_lte;
-
+*/
+ 

@@ -8,8 +8,7 @@
 	 - little known range union and intersection operator are handled
 */
 
-
-var assert = require("assert");
+import * as parser from "./excel_formula_parse";
 
 export function parse_and_transfrom_test() {
 	var xl_formulas = [
@@ -94,7 +93,7 @@ export function parse_and_transfrom_test() {
 	}
 	test(xl_formulas, { xl: true });
 	//test(js_formulas, { xjs: true });
-	assert(nb_errors==0);
+    if (nb_errors) throw new Error("parse_and_transfrom_test: "+nb_errors+" errors.");
 }
 
 export function parse_and_transfrom(xlformula,vars,fcts,opt_prms) {
@@ -294,15 +293,4 @@ function info_msg(msg) {
 	console.log(msg);
 }
 
-// Nodejs stuff
-if (typeof module!="undefined") {
-
-	var parser = require("./excel_formula_parse")
-
-	// run tests if this file is called directly
-	if (require.main === module)
-		parse_and_transfrom_test();
-
-	module.exports.parse_and_transfrom = parse_and_transfrom;
-
-}
+parse_and_transfrom_test();

@@ -1,4 +1,3 @@
-var assert = require('assert');
 
 export enum RangeAddressStyle { A1, R1C1 };
 
@@ -95,7 +94,8 @@ export function parse_range_bijection_test() {
 			//info_msg(JSON.stringify(tmp,null,4));
 			
 			// make sure everything is parsed
-			assert(typeof tmp == "object" || rng_in=="named_cell" || rng_in=="alpha0" || rng_in=="radio_control_c1" || (rng_in=="R1C1"&&mode==RangeAddressStyle.A1)); 
+			var bOk = typeof tmp == "object" || rng_in=="named_cell" || rng_in=="alpha0" || rng_in=="radio_control_c1" || (rng_in=="R1C1"&&mode==RangeAddressStyle.A1);
+			if (!bOk) throw new Error("parse_range_bijection_test"); 
 			// and bijective
 			// assert.equal(rng_in,rng_out);
 			if (rng_in!=rng_out) {
@@ -107,7 +107,10 @@ export function parse_range_bijection_test() {
 	var rng_ref = parse_range("A1", RangeAddressStyle.A1);
 	test(ranges_a1, RangeAddressStyle.A1, rng_ref);
 	test(ranges_r1c1, RangeAddressStyle.R1C1, rng_ref);
-	assert(nb_errors==0);
+	if (nb_errors) throw new Error("parse_range_bijection_test");
+	
+	function assert_equal(a, b) { if (a!==b) throw new Error("parse_range_bijection_test"); }
+	var assert = { equal: assert_equal };
 
 	assert.equal(JSON.stringify(parse_range('R1', RangeAddressStyle.A1, rng_ref)),
 		'{"col":18,"abs_col":false,"row":1,"abs_row":false}');
@@ -193,7 +196,7 @@ function parse_cell(cell : string, mode : RangeAddressStyle, rng_ref? : RangeAdd
 		case RangeAddressStyle.R1C1:
 			return parse_cell_R1C1(cell, rng_ref);
 		default:
-			assert(false);
+			throw new Error("parse_cell: unknown mode "+mode);
 	}
 }
 

@@ -9,6 +9,5 @@ lex.lexer_test();
 rp.parse_range_bijection_test();
 xlf.parse_and_transfrom_test();
 jsf.parse_and_transfrom_test();
-shx.spreadsheet_exec_test();
-deps.deps_graph_test();
-
+//shx.spreadsheet_exec_test();
+//deps.deps_graph_test();

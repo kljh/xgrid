@@ -1,4 +1,8 @@
-var assert = require("assert");
+
+import * as parser from "./excel_formula_parse";
+import * as range_parser from "./excel_range_parse";
+import * as xlexpr from "./excel_formula_transform";
+import * as global_scope from "./global_scope";
 
 var dflt_token_re = {
 	string: /^("([^"\\]|""|\\.)*"|'([^'\\]|''|\\.)*')/,
@@ -82,22 +86,11 @@ export function lexer_test() {
 			info_msg(JSON.stringify(expr_tok));
 		}
 	}
-	assert(nb_errors==0);
+	if (nb_errors) throw new Error("lexer_test: "+nb_errors+" errors.");
 }
 
 function info_msg(msg) {
 	console.log(msg);
 }
 
-// Nodejs stuff
-if (typeof module!="undefined") {
-	var fs = require("fs");
-	var parser = require("./excel_formula_parse");
-	var range_parser = require("./excel_range_parse");
-	var xlexpr = require("./excel_formula_transform");
-	var global_scope = require("./global_scope");
-
-	// run tests if this file is called directly
-	if (require.main === module)
-		lexer_test();
-}
+lexer_test();

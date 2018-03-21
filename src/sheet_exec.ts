@@ -1,5 +1,11 @@
 import * as rp from "./excel_range_parse"
-var glbl = require("./global_scope.js");
+import * as range_parser from "./excel_range_parse";
+import * as parser from "./excel_formula_parse";
+import * as xlfx from "./excel_formula_transform";
+import * as jsfx from "./js_formula_transform";
+import * as global_scope from "./global_scope";
+import * as lexer from "./lexer";
+	
 
 /*
 function evaluate_formula(src, vars) {
@@ -472,20 +478,6 @@ function warn_msg(msg) {
 	console.warn(msg);
 }
 
-// Nodejs stuff
-if (typeof module!="undefined") {
-	var fs = require("fs");
-	var parser = require("./excel_formula_parse");
-	var range_parser = require("./excel_range_parse");
-	var xlfx = require("./excel_formula_transform");
-	var jsfx = require("./js_formula_transform");
-	var global_scope = require("./global_scope");
-	var lexer = require("./lexer");
-	//var moment = require('moment');
-	
-	// run tests if this file is called directly
-	if (require.main === module)
-		spreadsheet_exec_test();
-
-	global["spreadsheet_exec_test"] = spreadsheet_exec_test;
-}
+// run tests if this file is called directly
+// if (require.main === module)
+//	spreadsheet_exec_test();

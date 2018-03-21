@@ -4,3 +4,5 @@ src/*.map
 src/*.js
 typings/
 
+/node_modules
+*.bak

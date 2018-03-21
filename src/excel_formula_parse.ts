@@ -44,32 +44,32 @@ $ 	Next component of an A1 reference is absolute
 
 */
 
-var TOK_TYPE_NOOP      = "noop";
-var TOK_TYPE_OPERAND   = "operand";
-var TOK_TYPE_FUNCTION  = "function";
-var TOK_TYPE_SUBEXPR   = "subexpression";
-var TOK_TYPE_ARGUMENT  = "argument";
-var TOK_TYPE_OP_PRE    = "operator-prefix";
-var TOK_TYPE_OP_IN     = "operator-infix";
-var TOK_TYPE_OP_POST   = "operator-postfix";
-var TOK_TYPE_WSPACE    = "white-space";
-var TOK_TYPE_UNKNOWN   = "unknown"
+export const TOK_TYPE_NOOP      = "noop";
+export const TOK_TYPE_OPERAND   = "operand";
+export const TOK_TYPE_FUNCTION  = "function";
+export const TOK_TYPE_SUBEXPR   = "subexpression";
+export const TOK_TYPE_ARGUMENT  = "argument";
+export const TOK_TYPE_OP_PRE    = "operator-prefix";
+export const TOK_TYPE_OP_IN     = "operator-infix";
+export const TOK_TYPE_OP_POST   = "operator-postfix";
+export const TOK_TYPE_WSPACE    = "white-space";
+export const TOK_TYPE_UNKNOWN   = "unknown"
 
-var TOK_SUBTYPE_START       = "start";
-var TOK_SUBTYPE_STOP        = "stop";
+export const TOK_SUBTYPE_START       = "start";
+export const TOK_SUBTYPE_STOP        = "stop";
 
 // TOK_TYPE_OPERAND
-var TOK_SUBTYPE_TEXT        = "text";
-var TOK_SUBTYPE_NUMBER      = "number";
-var TOK_SUBTYPE_LOGICAL     = "logical";
-var TOK_SUBTYPE_ERROR       = "error";
-var TOK_SUBTYPE_RANGE       = "range";
+export const TOK_SUBTYPE_TEXT        = "text";
+export const TOK_SUBTYPE_NUMBER      = "number";
+export const TOK_SUBTYPE_LOGICAL     = "logical";
+export const TOK_SUBTYPE_ERROR       = "error";
+export const TOK_SUBTYPE_RANGE       = "range";
 
 // TOK_TYPE_OP_IN
-var TOK_SUBTYPE_MATH        = "math";  // also TOK_SUBTYPE_LOGICAL
-var TOK_SUBTYPE_CONCAT      = "concatenate";
-var TOK_SUBTYPE_INTERSECT   = "intersect";
-var TOK_SUBTYPE_UNION       = "union";
+export const TOK_SUBTYPE_MATH        = "math";  // also TOK_SUBTYPE_LOGICAL
+export const TOK_SUBTYPE_CONCAT      = "concatenate";
+export const TOK_SUBTYPE_INTERSECT   = "intersect";
+export const TOK_SUBTYPE_UNION       = "union";
 
 
 function f_token(value, type, subtype) {
@@ -113,7 +113,7 @@ function f_tokenStack() {
 
 }
 
-function getTokens(formula) {
+export function getTokens(formula) {
 
 	var tokens = new f_tokens();
 	var tokenStack = new f_tokenStack();
@@ -546,37 +546,4 @@ function exclude_noops(tokens2) {
 	tokens.reset();
 
 	return tokens;
-}
-
-
-// Nodejs stuff
-if (typeof module!="undefined") {
-
-	module.exports.getTokens = getTokens;
-
-	module.exports.TOK_TYPE_NOOP = TOK_TYPE_NOOP;
-	module.exports.TOK_TYPE_OPERAND = TOK_TYPE_OPERAND;
-	module.exports.TOK_TYPE_FUNCTION = TOK_TYPE_FUNCTION;
-	module.exports.TOK_TYPE_SUBEXPR = TOK_TYPE_SUBEXPR;
-	module.exports.TOK_TYPE_ARGUMENT = TOK_TYPE_ARGUMENT;
-	module.exports.TOK_TYPE_OP_PRE = TOK_TYPE_OP_PRE;
-	module.exports.TOK_TYPE_OP_IN = TOK_TYPE_OP_IN;
-	module.exports.TOK_TYPE_OP_POST = TOK_TYPE_OP_POST;
-	module.exports.TOK_TYPE_WSPACE = TOK_TYPE_WSPACE;
-	module.exports.TOK_TYPE_UNKNOWN = TOK_TYPE_UNKNOWN;
-
-	module.exports.TOK_SUBTYPE_START = TOK_SUBTYPE_START;
-	module.exports.TOK_SUBTYPE_STOP = TOK_SUBTYPE_STOP;
-
-	module.exports.TOK_SUBTYPE_TEXT = TOK_SUBTYPE_TEXT;
-	module.exports.TOK_SUBTYPE_NUMBER = TOK_SUBTYPE_NUMBER;
-	module.exports.TOK_SUBTYPE_LOGICAL = TOK_SUBTYPE_LOGICAL;
-	module.exports.TOK_SUBTYPE_ERROR = TOK_SUBTYPE_ERROR;
-	module.exports.TOK_SUBTYPE_RANGE = TOK_SUBTYPE_RANGE;
-
-	module.exports.TOK_SUBTYPE_MATH = TOK_SUBTYPE_MATH;
-	module.exports.TOK_SUBTYPE_CONCAT = TOK_SUBTYPE_CONCAT;
-	module.exports.TOK_SUBTYPE_INTERSECT = TOK_SUBTYPE_INTERSECT;
-	module.exports.TOK_SUBTYPE_UNION = TOK_SUBTYPE_UNION;
-
 }

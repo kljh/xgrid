@@ -2,15 +2,10 @@
  * Created by Charles on 13/03/2016.
  */
 
-import * as rp from "./excel_range_parse.js"
-
-var transf  = require('./excel_formula_transform');
-var parser = require('./excel_formula_parse');
-var rng	= require('./excel_range_parse');
-var fs 	= require('fs');
-var assert = require('assert');
-var exec 	= require('child_process').exec;
-var path	= require('path');
+import * as rp from "./excel_range_parse.js";
+import * as transf from './excel_formula_transform';
+import * as parser from './excel_formula_parse';
+import * as rng from './excel_range_parse';
 
 
 function info_msg(msg) {
@@ -22,6 +17,7 @@ function dbg(name, variable) {
 }
 
 export function deps_graph_test() {
+	var assert = require('assert');
 	
 	var no_edges = [
 		['A2', '="a"&"b"'],
@@ -168,6 +164,10 @@ function range_to_key(range) {
 }
 
 export function adjacency_list_to_dot(adj_list, output_path) {
+	var fs = require('fs');
+	var path = require('path');
+	var child_process = require('child_process'); // to call dotty
+
 	var output = 'digraph G {\n'
 	for (var vertex in adj_list) {
 		output += '\t"' + vertex.replace(/"/g, "'") + '"';
@@ -189,7 +189,7 @@ export function adjacency_list_to_dot(adj_list, output_path) {
 
 	var path_to_dot = '"C:\\Program Files (x86)\\Graphviz2.38\\bin\\dot.exe"'
 	var cmd = path_to_dot + " -T" + extension + ' ' + dot_file + ' -o ' + output_path;
-	exec(cmd, function(error, stdout, stderr) {
+	child_process.exec(cmd, function(error, stdout, stderr) {
 		//dbg('stdout', stdout);
 		//dbg('stderr', stderr);
 		if (stderr) {

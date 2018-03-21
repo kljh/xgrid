@@ -1,0 +1,17 @@
+{
+  "name": "grid",
+  "description": "lightweight spreadsheet",
+  "email": "code@main2.fr",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kljh/grid"
+  },
+  "license": "UNLICENSED",
+  "version": "0.0.0",
+  "dependencies": {
+    "@types/node": "^9.4.7",
+    "acorn": "^5.5.3",
+    "escodegen": "^1.9.1",
+    "typescript": "^2.7.2"
+  }
+}

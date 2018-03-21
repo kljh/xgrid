@@ -1,3 +1,6 @@
 
-npm install typings --global
-typings install dt~node --global --save
+:: npm config set strict-ssl false
+npm install typescript --global
+npm install --save @types/node
+npm install --save acorn
+npm install --save escodegen
