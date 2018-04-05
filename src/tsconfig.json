@@ -1,9 +1,18 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "module": "commonjs", // none ou commonjs ou amd ou es6
+        "module": "amd", // none or commonjs (Node style) or amd (require.js) or es6 (ECMAScript 2015 native modules)
+        "outDir": "../build",
+        "outFile": "../build/build.js", // amd and system modules only
         "sourceMap": true,
         "allowJs": false,
-        "strictNullChecks": false
-    }
+        "strictNullChecks": false,
+        //"noImplicitAny" : true, 
+    },
+    "include": [
+        "**/*.ts"
+    ],
+    "exclude": [
+        "excel_com.ts"
+    ]
 }

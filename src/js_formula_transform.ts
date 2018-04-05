@@ -5,8 +5,8 @@
      - transform AND and OR pseudo-functions into && and || operators (to respect lazy evaluation of boolean expressions)
 */
 
-import * as acorn from "acorn";
-import * as escodegen from "escodegen";
+const acorn = require("acorn");
+const escodegen = require("escodegen");
 
 // if an object is a infix + operator
 function operator_override_ast(ast) {

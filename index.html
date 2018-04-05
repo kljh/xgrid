@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="require.js"></script>
+<!--script src="build/build.js"></script-->
+<script>
+function init() {
+    console.log("init();");
+    require(["build/build"], function(build) {
+        console.log("with lexer");
+        require(["lexer"], function(lexer) {
+            console.log("with lexer");
+            lexer.lexer_test();
+        });
+    });
+}
+</script>
+</head>
+<body onload="init();">
+<p>Typescript</p>
+</body>
+</html>

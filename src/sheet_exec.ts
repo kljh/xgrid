@@ -137,7 +137,7 @@ function sheet_exec(sheet, prms) {
 
 							var tmp_args = new Array(args.length);
 							for (var a=0; a<args.length; a++) 
-								tmp_args[a] = range_parser.stringify_range(move_range(range_parser.parse_range(args[a], rp.RangeAddressStyle.A1), i-target.row, j-target.col));
+								tmp_args[a] = range_parser.stringify_range(move_range(range_parser.parse_range(args[a], rp.RangeAddressStyle.A1), i-target.row, j-target.col), rp.RangeAddressStyle.A1);
 
 							let tmp_target = { row: i, col: j }
 							let tmp_id = range_parser.stringify_range(tmp_target, rp.RangeAddressStyle.A1);
