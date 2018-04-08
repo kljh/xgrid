@@ -2,7 +2,9 @@
 .DS_Store
 src/*.map
 src/*.js
+build/
 typings/
 
 /node_modules
 *.bak
+**/.*
