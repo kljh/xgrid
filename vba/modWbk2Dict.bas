@@ -2,7 +2,7 @@ Attribute VB_Name = "modWbk2Dict"
 Option Explicit
 
 ' Options
-Const bExportAllValuesAsSingleRange = True
+Const bExportAllValuesAsSingleRange = False
 
 ' Validation
 Const xlValidateList = 3   ' Value must be present in a specified list.
@@ -19,7 +19,7 @@ Const xlCellTypeSameFormatConditions = -4173 ' Cells having the same format
 Const xlCellTypeAllValidation = -4174 ' Cells having validation criteria
 Const xlCellTypeSameValidation = -4175 ' Cells having the same validation criteria
 
-Sub export_format_test()
+Sub export_workbook_to_file_test()
     Dim wbk As Workbook
     Set wbk = ActiveWorkbook
     
