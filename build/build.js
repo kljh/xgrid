@@ -1,11 +1,12 @@
 define("excel_range_parse", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var RangeAddressStyle;
-    (function (RangeAddressStyle) {
-        RangeAddressStyle[RangeAddressStyle["A1"] = 0] = "A1";
-        RangeAddressStyle[RangeAddressStyle["R1C1"] = 1] = "R1C1";
-    })(RangeAddressStyle = exports.RangeAddressStyle || (exports.RangeAddressStyle = {}));
+    var ReferenceStyle;
+    (function (ReferenceStyle) {
+        ReferenceStyle[ReferenceStyle["Auto"] = 0] = "Auto";
+        ReferenceStyle[ReferenceStyle["A1"] = 1] = "A1";
+        ReferenceStyle[ReferenceStyle["R1C1"] = 2] = "R1C1";
+    })(ReferenceStyle = exports.ReferenceStyle || (exports.ReferenceStyle = {}));
     ;
     function parse_range_bijection_test() {
         var ranges_a1 = [
@@ -69,7 +70,7 @@ define("excel_range_parse", ["require", "exports"], function (require, exports) 
                 //info_msg(JSON.stringify(rng_out));
                 //info_msg(JSON.stringify(tmp,null,4));
                 // make sure everything is parsed
-                var bOk = typeof tmp == "object" || rng_in == "named_cell" || rng_in == "alpha0" || rng_in == "radio_control_c1" || (rng_in == "R1C1" && mode == RangeAddressStyle.A1);
+                var bOk = typeof tmp == "object" || rng_in == "named_cell" || rng_in == "alpha0" || rng_in == "radio_control_c1" || (rng_in == "R1C1" && mode == ReferenceStyle.A1);
                 if (!bOk)
                     throw new Error("parse_range_bijection_test");
                 // and bijective
@@ -80,17 +81,17 @@ define("excel_range_parse", ["require", "exports"], function (require, exports) 
                 }
             }
         }
-        var rng_ref = parse_range("A1", RangeAddressStyle.A1);
-        test(ranges_a1, RangeAddressStyle.A1, rng_ref);
-        test(ranges_r1c1, RangeAddressStyle.R1C1, rng_ref);
+        var rng_ref = parse_range("A1", ReferenceStyle.A1);
+        test(ranges_a1, ReferenceStyle.A1, rng_ref);
+        test(ranges_r1c1, ReferenceStyle.R1C1, rng_ref);
         if (nb_errors)
             throw new Error("parse_range_bijection_test");
         function assert_equal(a, b) { if (a !== b)
             throw new Error("parse_range_bijection_test"); }
         var assert = { equal: assert_equal };
-        assert.equal(JSON.stringify(parse_range('R1', RangeAddressStyle.A1, rng_ref)), '{"col":18,"abs_col":false,"row":1,"abs_row":false}');
-        assert.equal(JSON.stringify(parse_range('R[1]C[1]', RangeAddressStyle.R1C1, rng_ref)), '{"row":2,"abs_row":false,"col":2,"abs_col":false}');
-        //assert.equal(JSON.stringify(parse_range('R[1]', RangeAddressStyle.R1C1, rng_ref)),
+        assert.equal(JSON.stringify(parse_range('R1', ReferenceStyle.A1, rng_ref)), '{"col":18,"abs_col":false,"row":1,"abs_row":false}');
+        assert.equal(JSON.stringify(parse_range('R[1]C[1]', ReferenceStyle.R1C1, rng_ref)), '{"row":2,"abs_row":false,"col":2,"abs_col":false}');
+        //assert.equal(JSON.stringify(parse_range('R[1]', ReferenceStyle.R1C1, rng_ref)),
         //	'{"row":1,"abs_row":false,"abs_col":false,"end":{"row":1,"abs_row":false,"abs_col":false}');
         assert.equal(parse_column_name_to_index("A"), 1);
         assert.equal(parse_column_name_to_index("Z"), 26);
@@ -151,16 +152,23 @@ define("excel_range_parse", ["require", "exports"], function (require, exports) 
         if (!cell)
             return;
         switch (mode) {
-            case RangeAddressStyle.A1:
+            case ReferenceStyle.Auto:
+                var isA1 = A1.test(cell), isR1C1 = R1C1.test(cell);
+                if (isA1 && !isR1C1)
+                    return parse_cell_A1(cell, rng_ref);
+                if (!isA1 && isR1C1)
+                    return parse_cell_R1C1(cell, rng_ref);
+                return { reference_to_named_range: cell };
+            case ReferenceStyle.A1:
                 return parse_cell_A1(cell, rng_ref);
-            case RangeAddressStyle.R1C1:
+            case ReferenceStyle.R1C1:
                 return parse_cell_R1C1(cell, rng_ref);
             default:
-                throw new Error("parse_cell: unknown mode " + mode);
+                throw new Error("parse_cell: unknown reference style " + cell + " " + mode);
         }
     }
+    var R1C1 = /^(R(\[?(-?[0-9]*)\]?))?(C(\[?(-?[0-9]*)\]?))?$/;
     function parse_cell_R1C1(cell, rng_ref) {
-        var R1C1 = /^(R(\[?(-?[0-9]*)\]?))?(C(\[?(-?[0-9]*)\]?))?$/;
         var r1c1 = R1C1.exec(cell);
         if (r1c1) {
             if (r1c1[3] || r1c1[6] || cell == "RC") {
@@ -178,10 +186,10 @@ define("excel_range_parse", ["require", "exports"], function (require, exports) 
             }
         }
     }
+    var A1 = /^(\$?([A-Z]{0,3}))?(\$?([0-9]*))?$/;
     function parse_cell_A1(cell, rng_ref) {
         if (!cell)
             return;
-        var A1 = /^(\$?([A-Z]{0,3}))?(\$?([0-9]*))?$/;
         var a1 = A1.exec(cell);
         if (a1) {
             if (a1[2] || a1[4]) {
@@ -234,7 +242,7 @@ define("excel_range_parse", ["require", "exports"], function (require, exports) 
                 scope = "'" + scope + "'";
             scope += "!";
         }
-        if (mode === RangeAddressStyle.R1C1)
+        if (mode === ReferenceStyle.R1C1)
             return scope
                 + (rng.row ? "R" + (rng.abs_row ? rng.row : (rng_ref.row == rng.row ? "" : "[" + (rng.row - rng_ref.row) + "]")) : "")
                 + (rng.col ? "C" + (rng.abs_col ? rng.col : (rng_ref.col == rng.col ? "" : "[" + (rng.col - rng_ref.col) + "]")) : "")
@@ -760,6 +768,7 @@ define("excel_formula_transform", ["require", "exports", "excel_formula_parse"],
     function parse_and_transfrom_test() {
         var xl_formulas = [
             ['=A1:B2', '=A1_B2'],
+            ['{=A1+C2}', '=A1+C2'],
             ['="a"+1.2+TRUE+A1+xyz+#VALUE!', '="a"+1.2+true+A1+xyz+null'],
             ['="a"&"b"', '="a"+"b"'],
             ['=50', '=50'],
@@ -837,6 +846,9 @@ define("excel_formula_transform", ["require", "exports", "excel_formula_parse"],
     exports.parse_and_transfrom_test = parse_and_transfrom_test;
     function parse_and_transfrom(xlformula, vars, fcts, opt_prms) {
         var prms = opt_prms || {};
+        var n = xlformula.length;
+        if (n > 3 && xlformula[0] == "{" && xlformula[n - 1] == "}")
+            xlformula = xlformula.substr(1, n - 2);
         // ExtendedJS grammar (with range and vector operations)
         // --or-- Excel grammar to plain JS grammar conversion 
         var tokens = parser.getTokens(xlformula);
@@ -1109,7 +1121,7 @@ define("deps_graph", ["require", "exports", "excel_range_parse", "excel_formula_
             var tokens = parser.getTokens(xlformula);
             // info_msg("TOKENS:\n"+JSON.stringify(tokens,null,4));
             var cell_deps = tokens_to_adjacent_list(tokens["items"]);
-            var key = range_to_key(rng.parse_range(cell, rp.RangeAddressStyle.A1));
+            var key = range_to_key(rng.parse_range(cell, rp.ReferenceStyle.A1));
             if (adjacency_list.hasOwnProperty(key))
                 throw "Dependencies of cell " + key + " read more than once !";
             adjacency_list[key] = cell_deps;
@@ -1125,7 +1137,7 @@ define("deps_graph", ["require", "exports", "excel_range_parse", "excel_formula_
         for (var i = 0; i < tokens.length; ++i) {
             var token = tokens[i];
             if (token.subtype === "range") {
-                var range_as_key = range_to_key(rng.parse_range(token.value, rp.RangeAddressStyle.A1));
+                var range_as_key = range_to_key(rng.parse_range(token.value, rp.ReferenceStyle.A1));
                 if (deps.indexOf(range_as_key) != -1)
                     deps.push(range_as_key);
             }
@@ -1264,8 +1276,6 @@ function op_lte(a,b)  { return op_gen((a,b) => a<=b, a, b); };    global["op_lte
 define("js_formula_transform", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    //import * as acorn from "acorn";
-    //import * as escodegen from "escodegen";
     var acorn = require("acorn");
     var escodegen = require("escodegen");
     // if an object is a infix + operator
@@ -1647,7 +1657,7 @@ define("sheet_exec", ["require", "exports", "excel_range_parse", "excel_range_pa
             var val = sheet[r];
             if (val === "")
                 continue;
-            var target = range_parser.parse_range(r, rp.RangeAddressStyle.A1);
+            var target = range_parser.parse_range(r, rp.ReferenceStyle.A1);
             var isFormula = val.substr && val[0] == "=";
             var isFormulaArray = val.substr && val[0] == "{" && val[1] == "=" && val[val.length - 1] == "}";
             if (isFormula || isFormulaArray) {
@@ -1686,9 +1696,9 @@ define("sheet_exec", ["require", "exports", "excel_range_parse", "excel_range_pa
                         for (var j = target.col; j <= target.end.col; j++) {
                             var tmp_args = new Array(args.length);
                             for (var a = 0; a < args.length; a++)
-                                tmp_args[a] = range_parser.stringify_range(move_range(range_parser.parse_range(args[a], rp.RangeAddressStyle.A1), i - target.row, j - target.col), rp.RangeAddressStyle.A1);
+                                tmp_args[a] = range_parser.stringify_range(move_range(range_parser.parse_range(args[a], rp.ReferenceStyle.A1), i - target.row, j - target.col), rp.ReferenceStyle.A1);
                             var tmp_target = { row: i, col: j };
-                            var tmp_id = range_parser.stringify_range(tmp_target, rp.RangeAddressStyle.A1);
+                            var tmp_id = range_parser.stringify_range(tmp_target, rp.ReferenceStyle.A1);
                             node_eval[tmp_id] = {
                                 target: tmp_target,
                                 expr: expr,
@@ -1801,7 +1811,7 @@ define("sheet_exec", ["require", "exports", "excel_range_parse", "excel_range_pa
     }
     function create_on_the_fly_node(id, indent) {
         info_msg(indent + "create_on_the_fly_node: id=" + id);
-        var rng = range_parser.parse_range(id, rp.RangeAddressStyle.A1);
+        var rng = range_parser.parse_range(id, rp.ReferenceStyle.A1);
         //if (rng.end && (rng.end.row!=rng.row || rng.end.col!=rng.col || rng.end.row_abs || rng.col_abs)) {
         return { rng: rng };
         //} else {
@@ -1986,15 +1996,15 @@ define("sheet_exec", ["require", "exports", "excel_range_parse", "excel_range_pa
 // run tests if this file is called directly
 // if (require.main === module)
 //	spreadsheet_exec_test();
-define("run_tests", ["require", "exports", "lexer", "excel_range_parse", "excel_formula_transform", "js_formula_transform"], function (require, exports, lex, rp, xlf, jsf) {
+define("run_tests", ["require", "exports", "lexer", "excel_range_parse", "excel_formula_transform", "js_formula_transform", "sheet_exec"], function (require, exports, lex, rp, xlf, jsf, shx) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     lex.lexer_test();
     rp.parse_range_bijection_test();
     xlf.parse_and_transfrom_test();
     jsf.parse_and_transfrom_test();
+    shx.spreadsheet_exec_test();
 });
-//shx.spreadsheet_exec_test();
 //deps.deps_graph_test();
 /*
 function spreadsheet_scope() {

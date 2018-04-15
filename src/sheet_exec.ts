@@ -92,7 +92,7 @@ function sheet_exec(sheet, prms) {
 		var val = sheet[r];
 		if (val==="") continue;
 
-		var target = range_parser.parse_range(r, rp.RangeAddressStyle.A1);
+		var target = range_parser.parse_range(r, rp.ReferenceStyle.A1);
 		
 		var isFormula = val.substr && val[0]=="=";
 		var isFormulaArray = val.substr && val[0]=="{" && val[1]=="=" && val[val.length-1]=="}";
@@ -137,10 +137,10 @@ function sheet_exec(sheet, prms) {
 
 							var tmp_args = new Array(args.length);
 							for (var a=0; a<args.length; a++) 
-								tmp_args[a] = range_parser.stringify_range(move_range(range_parser.parse_range(args[a], rp.RangeAddressStyle.A1), i-target.row, j-target.col), rp.RangeAddressStyle.A1);
+								tmp_args[a] = range_parser.stringify_range(move_range(range_parser.parse_range(args[a], rp.ReferenceStyle.A1), i-target.row, j-target.col), rp.ReferenceStyle.A1);
 
 							let tmp_target = { row: i, col: j }
-							let tmp_id = range_parser.stringify_range(tmp_target, rp.RangeAddressStyle.A1);
+							let tmp_id = range_parser.stringify_range(tmp_target, rp.ReferenceStyle.A1);
 							node_eval[tmp_id] = {
 								target: tmp_target,
 								expr: expr,
@@ -262,7 +262,7 @@ function sheet_static_dependencies(nodes, bCreateMissing) : string[] {
 
 function create_on_the_fly_node(id, indent: string) {
 	info_msg(indent+"create_on_the_fly_node: id="+id);
-	var rng = range_parser.parse_range(id, rp.RangeAddressStyle.A1);
+	var rng = range_parser.parse_range(id, rp.ReferenceStyle.A1);
 	//if (rng.end && (rng.end.row!=rng.row || rng.end.col!=rng.col || rng.end.row_abs || rng.col_abs)) {
  		return { rng: rng };
 	//} else {

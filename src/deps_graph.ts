@@ -107,7 +107,7 @@ function formulas_list_to_adjacency_list(formulas /* [ [cell, formula_in_cell], 
 			var tokens = parser.getTokens(xlformula);
 			// info_msg("TOKENS:\n"+JSON.stringify(tokens,null,4));
 			var cell_deps = tokens_to_adjacent_list(tokens["items"]);
-			var key = range_to_key(rng.parse_range(cell, rp.RangeAddressStyle.A1));
+			var key = range_to_key(rng.parse_range(cell, rp.ReferenceStyle.A1));
 			if (adjacency_list.hasOwnProperty(key))
 				throw "Dependencies of cell " + key + " read more than once !";
 			adjacency_list[key] = cell_deps;
@@ -125,7 +125,7 @@ function tokens_to_adjacent_list(tokens) {
 	for (var i=0; i<tokens.length; ++i) {
 		var token = tokens[i];
 		if (token.subtype === "range") {
-			var range_as_key = range_to_key(rng.parse_range(token.value, rp.RangeAddressStyle.A1));
+			var range_as_key = range_to_key(rng.parse_range(token.value, rp.ReferenceStyle.A1));
 			if (deps.indexOf(range_as_key)!=-1)
 				deps.push(range_as_key);
 		}

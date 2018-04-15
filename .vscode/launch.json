@@ -8,7 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceRoot}/src/run_tests.js",
+            "program": "${workspaceRoot}/build/run_tests.js",
             "cwd": "${workspaceRoot}",
             "sourceMaps": true
         },

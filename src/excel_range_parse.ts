@@ -1,5 +1,5 @@
 
-export enum RangeAddressStyle { A1, R1C1 };
+export enum ReferenceStyle { Auto, A1, R1C1 };
 
 interface CellAddress {
 	col? : number;
@@ -83,7 +83,7 @@ export function parse_range_bijection_test() {
 		];
 
 	let nb_errors = 0;
-	function test(ranges, mode : RangeAddressStyle, rng_ref? : RangeAddress) {
+	function test(ranges, mode : ReferenceStyle, rng_ref? : RangeAddress) {
 		for (var r=0; r<ranges.length; r++) {
 			var rng_in = ranges[r]; 
 			var tmp = parse_range(rng_in, mode, rng_ref);
@@ -94,7 +94,7 @@ export function parse_range_bijection_test() {
 			//info_msg(JSON.stringify(tmp,null,4));
 			
 			// make sure everything is parsed
-			var bOk = typeof tmp == "object" || rng_in=="named_cell" || rng_in=="alpha0" || rng_in=="radio_control_c1" || (rng_in=="R1C1"&&mode==RangeAddressStyle.A1);
+			var bOk = typeof tmp == "object" || rng_in=="named_cell" || rng_in=="alpha0" || rng_in=="radio_control_c1" || (rng_in=="R1C1"&&mode==ReferenceStyle.A1);
 			if (!bOk) throw new Error("parse_range_bijection_test"); 
 			// and bijective
 			// assert.equal(rng_in,rng_out);
@@ -104,19 +104,19 @@ export function parse_range_bijection_test() {
 			} 
 		}
 	}
-	var rng_ref = parse_range("A1", RangeAddressStyle.A1);
-	test(ranges_a1, RangeAddressStyle.A1, rng_ref);
-	test(ranges_r1c1, RangeAddressStyle.R1C1, rng_ref);
+	var rng_ref = parse_range("A1", ReferenceStyle.A1);
+	test(ranges_a1, ReferenceStyle.A1, rng_ref);
+	test(ranges_r1c1, ReferenceStyle.R1C1, rng_ref);
 	if (nb_errors) throw new Error("parse_range_bijection_test");
 	
 	function assert_equal(a, b) { if (a!==b) throw new Error("parse_range_bijection_test"); }
 	var assert = { equal: assert_equal };
 
-	assert.equal(JSON.stringify(parse_range('R1', RangeAddressStyle.A1, rng_ref)),
+	assert.equal(JSON.stringify(parse_range('R1', ReferenceStyle.A1, rng_ref)),
 		'{"col":18,"abs_col":false,"row":1,"abs_row":false}');
-	assert.equal(JSON.stringify(parse_range('R[1]C[1]', RangeAddressStyle.R1C1, rng_ref)),
+	assert.equal(JSON.stringify(parse_range('R[1]C[1]', ReferenceStyle.R1C1, rng_ref)),
 		'{"row":2,"abs_row":false,"col":2,"abs_col":false}');
-	//assert.equal(JSON.stringify(parse_range('R[1]', RangeAddressStyle.R1C1, rng_ref)),
+	//assert.equal(JSON.stringify(parse_range('R[1]', ReferenceStyle.R1C1, rng_ref)),
 	//	'{"row":1,"abs_row":false,"abs_col":false,"end":{"row":1,"abs_row":false,"abs_col":false}');
 
 	assert.equal(parse_column_name_to_index("A"),1);
@@ -137,7 +137,7 @@ export function parse_range_bijection_test() {
 }
 
 
-export function parse_range(arg, mode : RangeAddressStyle, rng_ref? : RangeAddress) {
+export function parse_range(arg, mode : ReferenceStyle, rng_ref? : RangeAddress) {
 
 	var rex = /((.*!)?)([^!]*)/.exec(arg);
 	var book_and_sheet = rex[2];
@@ -162,7 +162,7 @@ export function parse_range(arg, mode : RangeAddressStyle, rng_ref? : RangeAddre
 }
 
 
-function parse_cell_range(range : string, mode : RangeAddressStyle, rng_ref? : RangeAddress) : RangeAddress {
+function parse_cell_range(range : string, mode : ReferenceStyle, rng_ref? : RangeAddress) : RangeAddress {
 	let cells = range.split(":");
 
 	if (cells.length>2) throw new Error("range address invalid, contains more than on colons. "+range);
@@ -188,21 +188,28 @@ function parse_cell_range(range : string, mode : RangeAddressStyle, rng_ref? : R
 }
 
 
-function parse_cell(cell : string, mode : RangeAddressStyle, rng_ref? : RangeAddress) : RangeAddress {
+function parse_cell(cell : string, mode : ReferenceStyle, rng_ref? : RangeAddress) : RangeAddress {
 	if (!cell) return;
 	switch (mode) {
-		case RangeAddressStyle.A1:
+		case ReferenceStyle.Auto:
+			var isA1 = A1.test(cell),
+				isR1C1 = R1C1.test(cell);
+			if (isA1 && !isR1C1)
+				return parse_cell_A1(cell, rng_ref);
+			if (!isA1 && isR1C1)
+				return parse_cell_R1C1(cell, rng_ref);
+			return { reference_to_named_range: cell };
+		case ReferenceStyle.A1:
 			return parse_cell_A1(cell, rng_ref);
-		case RangeAddressStyle.R1C1:
+		case ReferenceStyle.R1C1:
 			return parse_cell_R1C1(cell, rng_ref);
 		default:
-			throw new Error("parse_cell: unknown mode "+mode);
+			throw new Error("parse_cell: unknown reference style "+cell+" "+mode);
 	}
 }
 
+const R1C1 = /^(R(\[?(-?[0-9]*)\]?))?(C(\[?(-?[0-9]*)\]?))?$/;
 function parse_cell_R1C1(cell : string, rng_ref? : RangeAddress) : RangeAddress {
-	
-	const R1C1 = /^(R(\[?(-?[0-9]*)\]?))?(C(\[?(-?[0-9]*)\]?))?$/;
 	const r1c1 = R1C1.exec(cell);
 	if (r1c1) {
 		if (r1c1[3] || r1c1[6] || cell=="RC") {
@@ -219,10 +226,10 @@ function parse_cell_R1C1(cell : string, rng_ref? : RangeAddress) : RangeAddress 
 	}
 }
 
+const A1 = /^(\$?([A-Z]{0,3}))?(\$?([0-9]*))?$/;
 function parse_cell_A1(cell : string, rng_ref? : RangeAddress) : RangeAddress {
 	if (!cell) return;
 
-	const A1 = /^(\$?([A-Z]{0,3}))?(\$?([0-9]*))?$/;
 	const a1 = A1.exec(cell);
 	if (a1) {
 		if (a1[2] || a1[4]) {
@@ -258,7 +265,7 @@ function parse_column_name_to_index(col : string) : number|undefined {
 	return pos;
 }
 
-export function stringify_range(rng, mode : RangeAddressStyle, rng_ref? : RangeAddress) {
+export function stringify_range(rng, mode : ReferenceStyle, rng_ref? : RangeAddress) {
 	if (rng.reference_to_named_range) return rng.reference_to_named_range; // named range
 
 	var scope = "";
@@ -277,7 +284,7 @@ export function stringify_range(rng, mode : RangeAddressStyle, rng_ref? : RangeA
 		scope += "!";
 	}
 
-	if (mode===RangeAddressStyle.R1C1)
+	if (mode===ReferenceStyle.R1C1)
 		return scope
 			+ (rng.row ? "R"+(rng.abs_row ? rng.row : (rng_ref.row==rng.row ? "" : "["+(rng.row-rng_ref.row)+"]")) : "")
 			+ (rng.col ? "C"+(rng.abs_col ? rng.col : (rng_ref.col==rng.col ? "" : "["+(rng.col-rng_ref.col)+"]")) : "")

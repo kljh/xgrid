@@ -13,6 +13,7 @@ import * as parser from "./excel_formula_parse";
 export function parse_and_transfrom_test() {
 	var xl_formulas = [
 		[ '=A1:B2', '=A1_B2' ],
+		[ '{=A1+C2}', '=A1+C2' ],
 		[ '="a"+1.2+TRUE+A1+xyz+#VALUE!', '="a"+1.2+true+A1+xyz+null' ], // all operands
 		[ '="a"&"b"', '="a"+"b"' ],	// & operator
 		[ '=50', '=50' ],
@@ -99,6 +100,10 @@ export function parse_and_transfrom_test() {
 export function parse_and_transfrom(xlformula,vars,fcts,opt_prms) {
 	var prms = opt_prms || {};
 	
+	var n = xlformula.length;
+	if (n>3 && xlformula[0]=="{" && xlformula[n-1]=="}") 
+		xlformula = xlformula.substr(1, n-2);
+
 	// ExtendedJS grammar (with range and vector operations)
 	// --or-- Excel grammar to plain JS grammar conversion 
 

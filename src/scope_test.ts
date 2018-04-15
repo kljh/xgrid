@@ -1,3 +1,4 @@
+/*
 function spreadsheet_scope() {
 	this.A1 = 13
 	this.f = function() { info_msg(this.A1); }
@@ -48,3 +49,5 @@ function info_msg(msg) {
 	console.log(msg);
 }
 scope_test();
+
+*/
