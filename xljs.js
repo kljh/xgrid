@@ -230,12 +230,12 @@ function pop_formula(wbk) {
     return Promise.resolve(arg_values)
         .then(arg_values => {
             var res = node.fct.apply(null, arg_values);
-            if ((""+res)=="NaN")
-                console.log("  NaN with args", arg_values, node.arg_ranges);
+            if ((""+res)=="NaN")  // !!
+                console.warn("  NaN with args", arg_values, node.arg_ranges);
             return res;
         })
         .then(data => { 
-            console.log("ok", xl_range_parse.stringify_range(node.target), node.formula_text, node.target, data); 
+            // console.log("ok", xl_range_parse.stringify_range(node.target), node.formula_text, node.target, data); 
             update_range_values(node.target, data, wsh.last_changed); // , node.offset 
             add_range_to_html(node.target); 
         })
@@ -279,13 +279,13 @@ var wsh = {
 
 function set_range_values(rng, data) {
     wsh.last_changed = (new Date())*1;
-    console.log("set_range_values now", rng, wsh.last_changed)
+    //console.log("set_range_values now", rng, wsh.last_changed)
     update_range_values(rng, data, null);
 } 
 
 function update_range_values(rng, data, opt_update_time) {
     var now = opt_update_time!==undefined ? opt_update_time : (new Date())*1;
-    console.log("update_range_values now", now, opt_update_time<0 ? "" : ((new Date())*1-opt_update_time))
+    //console.log("update_range_values now", now, opt_update_time<0 ? "" : ((new Date())*1-opt_update_time))
     var end = rng.end || rng;
     for (var ii=0, io=rng.row; io<=end.row; ii++, io++) {
         for (var ji=0, jo=rng.col; jo<=end.col; ji++, jo++) {
