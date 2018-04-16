@@ -78,7 +78,35 @@ function diag_jacobi(A) {
 	var diag = D.map((row, i) => row[i]);
 	// var checkA = mmult(P, mmult(D, trsp(P)));
 	
-	return  { diag: diag, D: D, P: P };
+	// reorder by eigen value
+	function argmax(v) {
+		var imax, vmax = 0;
+		for (var i=0; i<v.length; i++) 
+			if (v[i]!==undefined && Math.abs(v[i])>=vmax) { 
+				imax = i;  vmax = Math.abs(v[i]);  }
+		return imax;
+	}
+	
+	function reorder_eigen(diag, P) {
+		var Pt = trsp(P);
+		var eigen_permutation = [];
+		var tmp = diag.slice();
+		for (var i=0; i<n; i++) {
+			var imax = argmax(tmp);
+			eigen_permutation.push(imax);
+			tmp[imax] = undefined;
+		}
+		
+		var ordered_diag = eigen_permutation.map(pos => diag[pos]);
+		var ordered_Pt = eigen_permutation.map(pos => Pt[pos]);
+		
+		return { diag: ordered_diag, P: trsp(ordered_Pt),
+			eigen_permutation: eigen_permutation }
+	}
+	
+	//var res = { diag: diag, P: P };
+	var res = reorder_eigen(diag, P);
+	return  res;
 }
 
 /*

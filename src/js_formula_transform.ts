@@ -5,8 +5,13 @@
      - transform AND and OR pseudo-functions into && and || operators (to respect lazy evaluation of boolean expressions)
 */
 
-const acorn = require("acorn");
-const escodegen = require("escodegen");
+// when running in NodeJs
+//const acorn = require("acorn");
+//const escodegen = require("escodegen");
+
+// when running in browser
+const acorn = require("build/acorn");
+const escodegen_ = require("build/escodegen.browser"); // global variable escodegen created as side effect
 
 // if an object is a infix + operator
 function operator_override_ast(ast) {
@@ -43,7 +48,7 @@ function operator_override_ast(ast) {
             case "&&": op = "inter"; break;
             case "||": op = "union"; break;
         }
-        op = "op_"+op;
+        op = "op."+op;
             
         return {
             "type": "CallExpression",
@@ -160,25 +165,25 @@ export function parse_and_transfrom_test() {
           "var a = {\n    ref: abc,\n    src: 123\n};",
           { "abc": "abc" }],
         [ "{ ref: abc, src: 123+456 }", // same as above without assignment, fails in Acorn if not surrounded by parentheses
-          "({\n    ref: abc,\n    src: op_add(123, 456)\n});",
+          "({\n    ref: abc,\n    src: op.add(123, 456)\n});",
           { "abc": "abc" }],
         [ "[ 1.2, abc, true ]", // same as above without assignment, fails in Acorn if not surrounded by parentheses
           "[\n    1.2,\n    abc,\n    true\n];",
           { "abc": "abc" }],
         [ "setInterval(function () {\n    set_range_input_and_fire('C4', new Date());\n    model.evaluate_sheet(hot_render);\n}, 1000+B2);",
-          "setInterval(function () {\n    set_range_input_and_fire('C4', new Date());\n    model.evaluate_sheet(hot_render);\n}, op_add(1000, B2));",
+          "setInterval(function () {\n    set_range_input_and_fire('C4', new Date());\n    model.evaluate_sheet(hot_render);\n}, op.add(1000, B2));",
           { "B2": "B2" }],
         [ "(function (x, y) { return x*y; })(A1,B1);",
-          "(function (x, y) {\n    return op_mult(x, y);\n}(A1, B1));",
+          "(function (x, y) {\n    return op.mult(x, y);\n}(A1, B1));",
            { "A1": "A1", "B1": "B1" }],
         [ 'Math.abs(A1_B1.ref.addr)',
           'Math.abs(A1_B1.ref.addr);', 
           { "A1_B1": "A1_B1" }],
         [ '5*a.c + 4*b;',
-          'op_add(op_mult(5, a.c), op_mult(4, b));', 
+          'op.add(op.mult(5, a.c), op.mult(4, b));', 
           { "a": "a", "b": "b" }],
         [ '42 + 3 + f( 5 + g( 77+99)); // answer', 
-          'op_add(op_add(42, 3), f(op_add(5, g(op_add(77, 99)))));',
+          'op.add(op.add(42, 3), f(op.add(5, g(op.add(77, 99)))));',
           {}, { f:1, g:1 }],
         [ 'moment(C3).hours.ago(C5).fromNow();',
           'moment(C3).hours.ago(C5).fromNow();',

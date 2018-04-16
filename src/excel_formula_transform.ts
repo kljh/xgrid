@@ -60,6 +60,10 @@ export function parse_and_transfrom_test() {
 		//[ '=IF(R13C3>DATE(2002,1,6),0,IF(ISERROR(R[41]C[2]),0,IF(R13C3>=R[41]C[2],0, IF(AND(R[23]C[11]>=55,R[24]C[11]>=20),R53C3,0))))', 
 		//  '=(R13C3>DATE(2002,1,6)?0:(ISERROR(R_41_C_2_)?0:(R13C3>=R_41_C_2_?0:(AND(R_23_C_11_>=55,R_24_C_11_>=20)?R53C3:0))))' ],
 		//[ '=IF(R[39]C[11]>65,R[25]C[42],ROUND((R[11]C[11]*IF(OR(AND(R[39]C[11]>=55, R[40]C[11]>=20),AND(R[40]C[11]>=20,R11C3="YES")),R[44]C[11],R[43]C[11]))+(R[14]C[11] *IF(OR(AND(R[39]C[11]>=55,R[40]C[11]>=20),AND(R[40]C[11]>=20,R11C3="YES")), R[45]C[11],R[43]C[11])),0))', ],
+		[ '=fct(arg1,,arg3)',
+		  '=fct(arg1,undefined,arg3)' ],
+		[ '=fct(arg1,arg2,)',
+		  '=fct(arg1,arg2,undefined)' ],
 		];
 
 	var js_formulas = [
@@ -203,7 +207,8 @@ function excel_to_js_formula(tokens, opt_vars?, opt_fcts?, opt_prms?) {
 		var nb_args = token.args.length;
 		for (var i=0; i<nb_args; i++) {
 			var expr = token.args[i];
-			res += excel_to_js_formula(expr,vars,fcts);
+			var xtxt = excel_to_js_formula(expr,vars,fcts);
+			res += xtxt==="" ? "undefined" : xtxt;
 			res += (i+1<nb_args ? "," : "");
 		}
 		return res+")";

@@ -5,8 +5,13 @@
 <title>XLJS</title>
 <link rel="icon" href="QuattroPro.png">
 <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-<script src="require.js"></script>
-<script src="build/build.js"></script>
+<script src="require.js"></script> 
+<!--
+<script src="build/grid.js"></script>
+<script src="build/acorn.js"></script>
+<script src="build/escodegen.browser.js"></script>
+<script src="build/js_formula_transform.js"></script>
+-->
 <script src="xljs.js"></script>
 
 <!-- a few functions -->
@@ -14,34 +19,41 @@
 <script src="xldemo/jacobi_diag.js"></script>
 
 <script>
-function init() {
+function init_amd() {
     console.log("init();");
-//    require(["build/build"], function(build) {
-//        console.log("with build");
-        require(["lexer", "excel_range_parse", "excel_formula_parse", 
-                "excel_formula_transform", "deps_graph", "global_scope", 
-                //"sheet_exec", "run_tests", "js_formula_transform"
+    require(["build/acorn", "build/escodegen.browser", "build/grid.amd.js"], function(acorn_, escodegen_, grid_) {
+        console.log("acorn", acorn_);  acorn = acorn_;   // defines acorn as global variable
+        console.log("escodegen", escodegen_, escodegen); // a global variable is created by the module
+        console.log("grid", grid_);
+        require(["lexer", "excel_range_parse", "excel_formula_parse", "excel_formula_transform", 
+                "js_formula_transform", "global_scope"
+                //"deps_graph", 
+                //"sheet_exec", "run_tests", 
                 ], 
-            function(lexer, _excel_range_parse, excel_formula_parse, 
-                excel_formula_transform, deps_graph, global_scope, 
-                sheet_exec, run_tests, js_formula_transform ) 
+            function(lexer, _excel_range_parse, excel_formula_parse, excel_formula_transform, 
+                js_formula_transform, global_scope
+                // deps_graph, sheet_exec, run_tests 
+                ) 
             {
                 console.log("running tests");
                 lexer.lexer_test();
                 _excel_range_parse.parse_range_bijection_test();
                 excel_formula_transform.parse_and_transfrom_test();
+                js_formula_transform.parse_and_transfrom_test();
 
                 // add functions to global namespace
-                xl_parse_and_transfrom = excel_formula_transform.parse_and_transfrom;
                 xl_range_parse = _excel_range_parse;
+                xl_parse_and_transfrom = excel_formula_transform.parse_and_transfrom;
+                js_parse_and_transfrom = js_formula_transform.parse_and_transfrom; 
+                op = global_scope.op;
                 get_and_load_workbook();
             }
         );
-//    });
+    });
 }
 </script>
 </head>
 
-<body onload="init();">
+<body onload="init_amd();">
 </body>
 </html>

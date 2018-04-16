@@ -7,8 +7,8 @@
         //"outDir": "../build",
         
         // values for Browser
-        "module": "amd", // none or commonjs (Node style) or amd (require.js) or es6 (ECMAScript 2015 native modules)
-        "outFile": "../build/build.js", // amd and system modules only
+        "module": "amd",
+        "outFile": "../build/grid.amd.js",
         
         "sourceMap": true,
         "allowJs": false,

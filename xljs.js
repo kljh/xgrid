@@ -1,5 +1,13 @@
-// $(init);
-// $(load_workbook);
+//$(init_amd);
+//$(init_no_amd);
+//$(load_workbook);
+
+function init_no_amd() { 
+    // check modules (with no AMD/requirejs)
+    console.log("acorn", acorn);
+    console.log("escodegen", escodegen);
+    console.log("grid", grid);
+}
 
 function get_and_load_workbook() {
     $.get("xljs.json")
@@ -160,8 +168,15 @@ var formula_queue_next = [];
 
 //var async_fct = new AsyncFunction("return new Promise("+formula+");");
 function add_formula(rng, formula_text) {
-    var args = [];
-    var formula = xl_parse_and_transfrom(formula_text, args);
+    var args = [], vars_out = [], fcts_out = [];
+    var formula0 = xl_parse_and_transfrom(formula_text, args);
+    var formula = formula0;
+    try {
+        formula = js_parse_and_transfrom(formula0, vars_out, fcts_out);
+    } catch (e) {
+        console.warn("acorn("+formula0+"): "+e);
+        throw e;
+    }
     var array_formula = formula_text[0]=="{";
                     
     var fct_arg_names = Object.values(args);
@@ -183,8 +198,7 @@ function add_formula(rng, formula_text) {
         var k = 0
         for (var i=0, io=rng.row; io<=rng.end.row; i++, io++) {
             for (var j=0, jo=rng.col; jo<=rng.end.col; j++, jo++, k++) {
-                if (k>4)
-                    continue;    // !!
+                //if (k>4) continue;    // !!
                 formula_queue.push({
                     formula_text: formula_text,
                     target: { row: io, col: jo }, 
@@ -199,8 +213,8 @@ function add_formula(rng, formula_text) {
 function pop_formula(wbk) {
     var node = formula_queue.shift();
 
-    //if (node.formula_text.substr(0,5)=="=SUMP")  debugger;
-
+    //if (node.formula_text.substr(0,10)=="=MATCH(K81") debugger;
+    
     try {
         var arg_values = node.arg_ranges.map(rng => 
             coerce_range_values(wbk, wsh, rng, node.offset));
@@ -211,6 +225,8 @@ function pop_formula(wbk) {
             throw e;
     }
     
+    // if (node.formula_text.substr(0,8)=="=SUMPROD") debugger; // !!
+
     return Promise.resolve(arg_values)
         .then(arg_values => {
             var res = node.fct.apply(null, arg_values);
@@ -224,7 +240,7 @@ function pop_formula(wbk) {
             add_range_to_html(node.target); 
         })
         .catch(e => 
-            console.error("err", xl_range_parse.stringify_range(node.target), node.formula_text, "\n", e));
+            console. error("err", xl_range_parse.stringify_range(node.target), node.formula_text, "\n", e));
 }
 
 async function pop_all_formulas(wbk) {
@@ -257,27 +273,37 @@ var wsh = {
     last_changed: -1,
     objects: {},
     values: new Array(400).fill(null).map(row => new Array(26)),
-    updated: new Array(400).fill(null).map(row => new Array(26)),
+    updated: new Array(400).fill(null).map(row => new Array(26).fill(null)),
     };
 
 
 function set_range_values(rng, data) {
     wsh.last_changed = (new Date())*1;
     console.log("set_range_values now", rng, wsh.last_changed)
-    update_range_values(rng, data);
+    update_range_values(rng, data, null);
 } 
 
 function update_range_values(rng, data, opt_update_time) {
-    var now = opt_update_time || (new Date())*1;
+    var now = opt_update_time!==undefined ? opt_update_time : (new Date())*1;
     console.log("update_range_values now", now, opt_update_time<0 ? "" : ((new Date())*1-opt_update_time))
     var end = rng.end || rng;
     for (var ii=0, io=rng.row; io<=end.row; ii++, io++) {
         for (var ji=0, jo=rng.col; jo<=end.col; ji++, jo++) {
-            wsh.values[io][jo] = Array.isArray(data) ? data[ii][ji] : data;
+            wsh.values[io][jo] = data_to_range_elnt(data, ii, ji);
             wsh.updated[io][jo] = now;
         }
     }
     return now;
+}
+
+function data_to_range_elnt(data,i,j) {
+    if (!Array.isArray(data))
+        // scalar
+        return data;
+    if (Array.isArray(data) && !Array.isArray(data[0]))
+        // array 1D
+        return data[i];
+    return data[i][j];
 }
 
 function TooOldToCorceError(rng) {
@@ -303,7 +329,7 @@ function coerce_range_values(wbk, wsh, rng, rng_offset) {
     for (var i=0; i<=n; i++) {
         data[i] = new Array(m);
         for (var j=0; j<=m; j++) {
-            if (wsh.updated[is+i][js+j] < wsh.last_changed)
+            if (wsh.updated[is+i][js+j]!==null && wsh.updated[is+i][js+j] < wsh.last_changed)
                 throw new TooOldToCorceError({row: is+i, col: js+j });
             data[i][j] = wsh.values[is+i][js+j];
         }
