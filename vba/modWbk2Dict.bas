@@ -366,6 +366,10 @@ End Function
 Function export_worksheet_cells_format(d As Dictionary, sht As Worksheet)
     Dim last_cell As Range, last_row As Long, last_col As Long
     Set last_cell = sht.cells.SpecialCells(xlCellTypeLastCell)
+    On Error Resume Next
+    ' Go one cell past the end(mainly for borders
+    last_cell = last_cell.Offset(1, 1)
+    On Error GoTo 0
     last_row = last_cell.Row
     last_col = last_cell.Column
     
@@ -583,6 +587,7 @@ Function export_worksheet_charts(sht As Worksheet)
         chartDict("type") = chartObj.Chart.ChartType ' xlLine, xlXYScatter, ...
         chartDict("title") = chartObj.Chart.ChartTitle
         chartDict("formula1") = chartObj.Chart.SeriesCollection(1).Formula
+        chartDict("range") = Range(chartObj.TopLeftCell, chartObj.BottomRightCell).Address
         chartList.Add chartDict
         
         imgPath = "C:\temp\wbk2dict " & chartObj.Name & ".jpg" ' jpg or gif
