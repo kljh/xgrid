@@ -382,7 +382,7 @@ function SERIES(chart_json, title, arg1, arg2) {
 
     var chart_topleft = chart.range.split(":").shift().replace(/\$/g,"");
     var chart_id = chart_topleft + "_graph";
-    
+
     var chart_type;
     if (chart.type.indexOf("xlXYScatter")===0) chart_type = 'scatter';
 
@@ -395,7 +395,6 @@ function SERIES(chart_json, title, arg1, arg2) {
         container = $("#"+chart_topleft+" > #graph");
     }
     Highcharts.chart(chart_id, {
-    //container.highcharts({
         chart: {
             type: chart_type,
             zoomType: 'xy'
@@ -418,19 +417,15 @@ function SERIES(chart_json, title, arg1, arg2) {
         legend: {
             enabled: false
         },
-        credits: {
-            enabled: false
-        },
+        credits: { enabled: false },
         plotOptions: {
-        //spline: {
             marker: {
                 enable: true
             }
-        //}
         },
         series: [{
-            //name: 'Installation',
-            data: data //[43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+            // name: "wingspan",
+            data: data
         }]
     });
 }
