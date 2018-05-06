@@ -1,8 +1,8 @@
 {
-    "LastSaved": "2018-04-08 14:23:28",
+    "LastSaved": "2018-05-06 20:37:35",
     "Author": "FAA Airport Engineering Division, AAS-100",
-    "Name": "aircraft_char_122009_PCA.xls",
-    "Path": "C:\\Users\\kljh\\Documents\\Code\\GitHub\\grid\\.tmp",
+    "Name": "aircrafts.xls",
+    "Path": "C:\\Users\\kljh\\Documents\\Code\\GitHub\\grid\\xldemo",
     "FileSize": 280576,
     "CodeName": "ThisWorkbook",
     "HasVBProject": false,
@@ -294,12 +294,18 @@
             },
             "charts": [
                 {
-                    "type": -4169,
-                    "formula1": "=SERIES(\"V1 vs v0\",Sheet1!$R$2:$R$384,Sheet1!$S$2:$S$384,1)"
+                    "type": "xlXYScatter",
+                    "formula1": "=SERIES(\"V1 vs v0\",Sheet1!$R$2:$R$384,Sheet1!$S$2:$S$384,1)",
+                    "range": "$J$25:$N$42",
+                    "width": 360,
+                    "height": 216
                 },
                 {
-                    "type": -4169,
-                    "formula1": "=SERIES(\"V3 vs V2\",Sheet1!$T$2:$T$384,Sheet1!$U$2:$U$384,1)"
+                    "type": "xlXYScatter",
+                    "formula1": "=SERIES(\"V3 vs V2\",Sheet1!$T$2:$T$384,Sheet1!$U$2:$U$384,1)",
+                    "range": "$J$43:$N$59",
+                    "width": 360,
+                    "height": 216
                 }
             ]
         }

@@ -584,10 +584,12 @@ Function export_worksheet_charts(sht As Worksheet)
     On Error Resume Next
     For Each chartObj In sht.ChartObjects
         Set chartDict = New Dictionary
-        chartDict("type") = chartObj.Chart.ChartType ' xlLine, xlXYScatter, ...
+        chartDict("type") = ChartTypeName(chartObj.Chart.ChartType) ' xlLine, xlXYScatter, ...
         chartDict("title") = chartObj.Chart.ChartTitle
         chartDict("formula1") = chartObj.Chart.SeriesCollection(1).Formula
         chartDict("range") = Range(chartObj.TopLeftCell, chartObj.BottomRightCell).Address
+        chartDict("width") = chartObj.Width
+        chartDict("height") = chartObj.Height
         chartList.Add chartDict
         
         imgPath = "C:\temp\wbk2dict " & chartObj.Name & ".jpg" ' jpg or gif
@@ -596,6 +598,30 @@ Function export_worksheet_charts(sht As Worksheet)
     Next
     On Error GoTo 0
     Set export_worksheet_charts = chartList
+End Function
+
+Dim globalChartTypeMap As Dictionary
+Function ChartTypeName(ChartTypeEnum)
+    If IsEmpty(globalChartTypeMap) Then
+        Set globalChartTypeMap = New Dictionary
+        
+        globalChartTypeMap(xlArea) = "xlArea"  ' 1
+        globalChartTypeMap(xlLine) = "xlLine"  ' 4
+        globalChartTypeMap(xlLineMarkers) = "xlLineMarkers"  ' 65
+        globalChartTypeMap(xlLineStacked) = "xlLineStacked"  ' 63
+        globalChartTypeMap(xlPie) = "xlPie"  ' 5
+        globalChartTypeMap(xlPieExploded) = "xlPieExploded"  ' 69
+        globalChartTypeMap(xlSurface) = "xlSurface" ' 83
+        globalChartTypeMap(xlXYScatter) = "xlXYScatter" ' -4169
+        globalChartTypeMap(xlXYScatterLines) = "xlXYScatterLines" ' 74
+        globalChartTypeMap(xlXYScatterSmooth) = "xlXYScatterSmooth" ' 72
+    End If
+    
+    If globalChartTypeMap.Exists(ChartTypeEnum) Then
+        ChartTypeName = globalChartTypeMap(ChartTypeEnum)
+    Else
+        ChartTypeName = ChartTypeEnum
+    End If
 End Function
 
 Function export_worksheet_shapes(sht As Worksheet)

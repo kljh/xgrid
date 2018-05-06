@@ -117,7 +117,10 @@ function load_workbook(wbk) {
             }
         }
 
-        pop_all_formulas(wbk);
+        pop_all_formulas(wbk)
+        .then(_ => render_graphs(wbk))
+        .then(_ => console.log("all formulas popped"))
+        .catch(err => console.warn(""+(err.stack||err)));
 }
 
 function build_table() {
@@ -353,4 +356,81 @@ function add_range_to_html(rng) {
             }
         }
     }
+}
+
+// -------------------------- 
+// graphs
+
+async function render_graphs(wbk) {
+    console.log("wbk", wbk);
+    var wsh = wbk.Worksheets[0];
+    var charts = wsh.charts;
+
+    for (var chart of charts) {
+        console.log("chart", chart);
+        var formula = chart.formula1.replace(/^=SERIES\(/, '=SERIES("'+JSON.stringify(chart).replace(/"/g,'""')+'", ');
+        console.log("chart formula", formula);
+        add_formula({ graph: true}, formula);
+    }
+    var _ = await pop_all_formulas();
+}
+
+function SERIES(chart_json, title, arg1, arg2) {
+    console.log(title);
+
+    var chart = JSON.parse(chart_json);
+
+    var chart_topleft = chart.range.split(":").shift().replace(/\$/g,"");
+    var chart_id = chart_topleft + "_graph";
+    
+    var chart_type;
+    if (chart.type.indexOf("xlXYScatter")===0) chart_type = 'scatter';
+
+    var nb_series = arg2[0].length;
+    var data = arg2.map((x,i) => [ arg1[i][0], x[0] ]);
+
+    var container = $("#"+chart_topleft+" > #graph");
+    if (container.length===0) {
+    $("#"+chart_topleft).append('<div id="'+chart_id+'" style="position:absolute; width: 400px; height: 300px;"></div>');
+        container = $("#"+chart_topleft+" > #graph");
+    }
+    Highcharts.chart(chart_id, {
+    //container.highcharts({
+        chart: {
+            type: chart_type,
+            zoomType: 'xy'
+        },
+        title: {
+            text: title
+        },
+        xAxis: {
+            title: {
+                enabled: false,
+                text: 'abscisa'
+            },
+        },
+        yAxis: {
+            title: {
+                enabled: false,
+                text: 'yyy'
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        credits: {
+            enabled: false
+        },
+        plotOptions: {
+        //spline: {
+            marker: {
+                enable: true
+            }
+        //}
+        },
+        series: [{
+            //name: 'Installation',
+            data: data //[43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+        }]
+    });
 }
