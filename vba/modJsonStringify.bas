@@ -1,4 +1,4 @@
-Attribute VB_Name = "modVb2Json"
+Attribute VB_Name = "modJsonStringify"
 Option Explicit
 
 ' To use Dictionary object type:
@@ -87,10 +87,12 @@ Function vbs_array_2d_to_json(v, Optional indent As String = "") As String
     
     ' check it is a 1D array
     On Error Resume Next
-    Dim upper_bound_2
+    Dim upper_bound_2, upper_bound_3
     upper_bound_2 = UBound(v, 2)
+    upper_bound_3 = UBound(v, 3)
     On Error GoTo 0
     Debug.Assert Not IsEmpty(upper_bound_2)
+    Debug.Assert IsEmpty(upper_bound_3)
     
     Dim json As String, json_row As String, i As Long, j As Long, n As Long, m As Long
     n = UBound(v) - LBound(v) + 1
