@@ -193,11 +193,13 @@ function parse_cell(cell : string, mode : ReferenceStyle, rng_ref? : RangeAddres
 	switch (mode) {
 		case ReferenceStyle.Auto:
 			var isA1 = A1.test(cell),
-				isR1C1 = R1C1.test(cell);
+				isR1C1 = R1C1.test(cell) || cell=="RC";
 			if (isA1 && !isR1C1)
 				return parse_cell_A1(cell, rng_ref);
 			if (!isA1 && isR1C1)
 				return parse_cell_R1C1(cell, rng_ref);
+			if (isA1 && isR1C1)
+				throw new Error("parse_cell: ambiguous range address '"+cell+"' in 'Auto' mode.");
 			return { reference_to_named_range: cell };
 		case ReferenceStyle.A1:
 			return parse_cell_A1(cell, rng_ref);

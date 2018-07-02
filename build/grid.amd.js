@@ -153,11 +153,13 @@ define("excel_range_parse", ["require", "exports"], function (require, exports) 
             return;
         switch (mode) {
             case ReferenceStyle.Auto:
-                var isA1 = A1.test(cell), isR1C1 = R1C1.test(cell);
+                var isA1 = A1.test(cell), isR1C1 = R1C1.test(cell) || cell == "RC";
                 if (isA1 && !isR1C1)
                     return parse_cell_A1(cell, rng_ref);
                 if (!isA1 && isR1C1)
                     return parse_cell_R1C1(cell, rng_ref);
+                if (isA1 && isR1C1)
+                    throw new Error("parse_cell: ambiguous range address '" + cell + "' in 'Auto' mode.");
                 return { reference_to_named_range: cell };
             case ReferenceStyle.A1:
                 return parse_cell_A1(cell, rng_ref);
@@ -1248,77 +1250,101 @@ define("global_scope", ["require", "exports"], function (require, exports) {
         return res;
     }
     exports.trsp = trsp;
-    function op_gen(f, a, b) {
-        if (!Array.isArray(a) && !Array.isArray(b)) {
+    function top_left(a) {
+        if (Array.isArray(a))
+            return top_left(a[0]);
+        else
+            return a;
+    }
+    function op_scalar(f, a, b) {
+        // resolve arguments and apply scalar operation
+        if (Promise.prototype.isPrototypeOf(a)
+            || Promise.prototype.isPrototypeOf(b))
+            return Promise.all([a, b])
+                .then(function (args) { return op_scalar(f, args[0], args[1]); });
+        if (a.is_range_view)
+            a = a.valueOf();
+        else
+            a = top_left(a);
+        if (b.is_range_view)
+            b = b.valueOf();
+        else
+            b = top_left(b);
+        return f(a, b);
+    }
+    function op_array(f, a, b) {
+        if (Promise.prototype.isPrototypeOf(a)
+            || Promise.prototype.isPrototypeOf(b))
+            return Promise.all([a, b])
+                .then(function (args) { return op_array(f, args[0], args[1]); });
+        var left_array = Array.isArray(a) || a.is_range_view, right_array = Array.isArray(b) || b.is_range_view;
+        var n, res;
+        if (!left_array && !right_array) {
             // scalar-scalar operation
             return f(a, b);
         }
-        else if (!Array.isArray(a) && Array.isArray(b) && Array.isArray(b[0])) {
+        else if (!left_array && right_array) {
             // scalar-range operation
-            var n = b.length, m = b[0].length;
-            var res = new Array(n);
-            for (var i = 0; i < n; i++) {
-                res[i] = new Array(m);
-                for (var j = 0; j < m; j++)
-                    res[i][j] = f(a, b[i][j]);
-            }
+            n = b.length;
+            res = new Array(n);
+            for (var i = 0; i < n; i++)
+                res[i] = op_array(f, a, b[i]);
             return res;
         }
-        else if (Array.isArray(a) && Array.isArray(a[0]) && !Array.isArray(b)) {
+        else if (left_array && !right_array) {
             // range-scalar operation
-            var n = a.length, m = a[0].length;
-            var res = new Array(n);
-            for (var i = 0; i < n; i++) {
-                res[i] = new Array(m);
-                for (var j = 0; j < m; j++)
-                    res[i][j] = f(a[i][j], b);
-            }
+            n = a.length;
+            res = new Array(n);
+            for (var i = 0; i < n; i++)
+                res[i] = op_array(f, a[i], b);
             return res;
         }
-        else if (Array.isArray(a) && Array.isArray(a[0]) && Array.isArray(b) && Array.isArray(b[0])) {
+        else if (left_array && right_array) {
             // range-range operation
-            var na = a.length, ma = a[0].length, xna = 1, xma = 1, nb = b.length, mb = b[0].length, xnb = 1, xmb = 1;
+            var na = a.length, xna = 1, nb = b.length, xnb = 1;
             if (na != nb) {
                 if (na == 1)
                     xna = 0;
                 else if (nb == 1)
                     xnb = 0;
                 else
-                    new Error("op_gen: array-array operation nb_rows mismatch: " + na + " vs " + nb);
+                    new Error("op_array: array-array operation nb_rows mismatch: " + na + " vs " + nb);
             }
-            if (ma != mb) {
-                if (ma == 1)
-                    xma = 0;
-                else if (mb == 1)
-                    xmb = 0;
-                else
-                    new Error("op_gen: array-array operation nb_rows mismatch: " + ma + " vs " + mb);
-            }
-            var n = Math.max(na, nb), m = Math.max(ma, mb);
-            var res = new Array(n);
-            for (var i = 0; i < n; i++) {
-                res[i] = new Array(m);
-                for (var j = 0; j < m; j++)
-                    res[i][j] = f(a[i * xna][j * xma], b[i * xnb][j * xmb]);
-            }
+            n = Math.max(na, nb);
+            res = new Array(n);
+            for (var i = 0; i < n; i++)
+                res[i] = op_array(f, a[i * xna], b[i * xnb]);
             return res;
         }
         else {
-            throw new Error("op_gen: operation not implemented on this type combination");
+            throw new Error("op_array: operation not implemented on this type combination");
         }
     }
     exports.op = {
-        add: function op_add(a, b) { return op_gen(function (a, b) { return a + b; }, a, b); },
-        sub: function op_sub(a, b) { return op_gen(function (a, b) { return a - b; }, a, b); },
-        mult: function op_mult(a, b) { return op_gen(function (a, b) { return a * b; }, a, b); },
-        div: function op_div(a, b) { return op_gen(function (a, b) { return a / b; }, a, b); },
-        pow: function op_pow(a, b) { return op_gen(function (a, b) { return a ^ b; }, a, b); },
-        eq: function op_eq(a, b) { return op_gen(function (a, b) { return a === b; }, a, b); },
-        neq: function op_neq(a, b) { return op_gen(function (a, b) { return a !== b; }, a, b); },
-        gt: function op_gt(a, b) { return op_gen(function (a, b) { return a > b; }, a, b); },
-        lt: function op_lt(a, b) { return op_gen(function (a, b) { return a < b; }, a, b); },
-        gte: function op_gte(a, b) { return op_gen(function (a, b) { return a >= b; }, a, b); },
-        lte: function op_lte(a, b) { return op_gen(function (a, b) { return a <= b; }, a, b); },
+        add: function add(a, b) { return op_scalar(function (a, b) { return a + b; }, a, b); },
+        sub: function sub(a, b) { return op_scalar(function (a, b) { return a - b; }, a, b); },
+        mult: function mult(a, b) { return op_scalar(function (a, b) { return a * b; }, a, b); },
+        div: function div(a, b) { return op_scalar(function (a, b) { return a / b; }, a, b); },
+        pow: function pow(a, b) { return op_scalar(function (a, b) { return a ^ b; }, a, b); },
+        eq: function eq(a, b) { return op_scalar(function (a, b) { return a === b; }, a, b); },
+        neq: function neq(a, b) { return op_scalar(function (a, b) { return a !== b; }, a, b); },
+        gt: function gt(a, b) { return op_scalar(function (a, b) { return a > b; }, a, b); },
+        lt: function lt(a, b) { return op_scalar(function (a, b) { return a < b; }, a, b); },
+        gte: function gte(a, b) { return op_scalar(function (a, b) { return a >= b; }, a, b); },
+        lte: function lte(a, b) { return op_scalar(function (a, b) { return a <= b; }, a, b); },
+    };
+    exports.ops = {
+        add: function add(a, b) { return op_array(function (a, b) { return a + b; }, a, b); },
+        sub: function sub(a, b) { return op_array(function (a, b) { return a - b; }, a, b); },
+        mult: function mult(a, b) { return op_array(function (a, b) { return a * b; }, a, b); },
+        div: function div(a, b) { return op_array(function (a, b) { return a / b; }, a, b); },
+        pow: function pow(a, b) { return op_array(function (a, b) { return a ^ b; }, a, b); },
+        eq: function eq(a, b) { return op_array(function (a, b) { return a === b; }, a, b); },
+        neq: function neq(a, b) { return op_array(function (a, b) { return a !== b; }, a, b); },
+        gt: function gt(a, b) { return op_array(function (a, b) { return a > b; }, a, b); },
+        lt: function lt(a, b) { return op_array(function (a, b) { return a < b; }, a, b); },
+        gte: function gte(a, b) { return op_array(function (a, b) { return a >= b; }, a, b); },
+        lte: function lte(a, b) { return op_array(function (a, b) { return a <= b; }, a, b); },
     };
 });
 /*
@@ -1337,14 +1363,14 @@ define("js_formula_transform", ["require", "exports"], function (require, export
     var acorn = require("build/acorn");
     var escodegen_ = require("build/escodegen.browser"); // global variable escodegen created as side effect
     // if an object is a infix + operator
-    function operator_override_ast(ast) {
+    function operator_override_ast(ast, op_gen) {
         for (var k in ast) {
             if (Array.isArray(ast[k])) {
                 for (var i = 0; i < ast[k].length; i++)
-                    ast[k][i] = operator_override_ast(ast[k][i]);
+                    ast[k][i] = operator_override_ast(ast[k][i], op_gen);
             }
             else if (ast[k] !== null && typeof ast[k] == "object") {
-                ast[k] = operator_override_ast(ast[k]);
+                ast[k] = operator_override_ast(ast[k], op_gen);
             }
             else {
                 // do nothing 
@@ -1404,7 +1430,7 @@ define("js_formula_transform", ["require", "exports"], function (require, export
                     op = "union";
                     break;
             }
-            op = "op." + op;
+            op = op_gen + "." + op;
             return {
                 "type": "CallExpression",
                 "callee": {
@@ -1491,7 +1517,11 @@ define("js_formula_transform", ["require", "exports"], function (require, export
         //console.log("expr: " + expr);
         //console.log("vars: " + JSON.stringify(vars, null, 4));
         //console.log("fcts: " + JSON.stringify(fcts, null, 4));
-        var ast_op_over = operator_override_ast(ast);
+        var ast_op_over = ast;
+        if (prms.is_array_formula === undefined || prms.is_array_formula === true)
+            ast_op_over = operator_override_ast(ast, "ops");
+        else
+            ast_op_over = operator_override_ast(ast, "op");
         //console.log(JSON.stringify(ast_op_over, null, 4));
         // generate code
         var code = escodegen.generate(ast_op_over, { comment: false });

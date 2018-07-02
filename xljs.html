@@ -5,8 +5,10 @@
 <title>XLJS</title>
 <link rel="icon" href="QuattroPro.png">
 
+<!--
 <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/6.0.7/highcharts.js"></script>
+-->
 
 <script src="/static/jquery.js"></script>
 <script src="dist/highcharts.js"></script>
@@ -19,6 +21,9 @@
 <script src="build/js_formula_transform.js"></script>
 -->
 <script src="xljs.js"></script>
+<script src="xlfx.js"></script>
+<script src="src/xll_http_request.js"></script>
+<script src="src/excel_range_view.js"></script>
 
 <!-- a few functions -->
 <script src="xldemo/aircrafts.js"></script>
@@ -43,9 +48,9 @@ function init_amd() {
             {
                 console.log("running tests");
                 lexer.lexer_test();
-                _excel_range_parse.parse_range_bijection_test();
-                excel_formula_transform.parse_and_transfrom_test();
-                js_formula_transform.parse_and_transfrom_test();
+                //_excel_range_parse.parse_range_bijection_test();
+                //excel_formula_transform.parse_and_transfrom_test();
+                //js_formula_transform.parse_and_transfrom_test();
 
                 // add functions to global namespace
                 xl_range_parse = _excel_range_parse;

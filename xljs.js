@@ -6,25 +6,44 @@ function init_no_amd() {
     // check modules (with no AMD/requirejs)
     console.log("acorn", acorn);
     console.log("escodegen", escodegen);
-    console.log("grid", grid);
+    //console.log("grid", grid);
 }
 
 function get_and_load_workbook() {
-    $.get("xljs.json")
-    .then(load_workbook)
-	.fail(function (err) { 
-		console.error(err);
-		alert("get_and_load_workbook error. "+err); 
+    var query = parse_query();
+
+	xll_http_init()
+	.catch(err => {
+		console.warn("xll_http_init() failed. ", err);
+		return  null;
+	})
+	.then(_ => {
+		var wbk = query.wbk || "xljs.json"; 
+		$.get(wbk)
+		.then(load_workbook)
+		.fail(function (err) { 
+			console.error(err);
+			alert("get_and_load_workbook error. "+(err.stack||err.message||err)); 
+		});
 	});
 }
 		
 function load_workbook(wbk) {
         console.log("wbk", wbk); 
+        var ref_style = xl_range_parse.ReferenceStyle[wbk.ReferenceStyle || "A1"];
+        if (!ref_style) {
+        	var msg = "missing WorkBook.ReferenceStyle";
+        	throw new Error(msg);
+        }
+
         var wsht = wbk.Worksheets[0];
         //for (var style of wsht.formats.styles) {
         //    $('head').append('<style type="text/css">body {margin:0;}</style>');
         //}
         var fmt = wsht.formats;
+        if (!fmt) { 
+            console.warn("load_workbook: no formatting in loaded workbook.")
+        }
 
         // add CSS styles defintions
         var style_text = "";
@@ -45,6 +64,7 @@ function load_workbook(wbk) {
             style_text += ".border-left { border-left: 1px solid gray; }\n";
             
         }
+        if (wsht.formats && wsht.formats.styles)
         for (var style in wsht.formats.styles) 
             style_text += "."+style+" { "+wsht.formats.styles[style]+" }\n"
         $('head').append('<style type="text/css">\n'+style_text+'</style>');
@@ -55,9 +75,10 @@ function load_workbook(wbk) {
         build_table();
         
         // add CSS classes per cell
+        if (wsht.formats && wsht.formats.cells)
         for (var rng_id in wsht.formats.cells) {
             var css_classes = wsht.formats.cells[rng_id];
-            var rng = xl_range_parse.parse_range(rng_id, xl_range_parse.ReferenceStyle.A1);
+            var rng = xl_range_parse.parse_range(rng_id, ref_style);
             for (var cell of range_cell_iterator(rng)) {
                 var cell_id = xl_range_parse.stringify_range(cell);
                 $('#'+cell_id).addClass(css_classes);
@@ -67,8 +88,9 @@ function load_workbook(wbk) {
         }
         
         // add CSS borders per cell
+        if (wsht.formats && wsht.formats.borders)
         for (var rng_id in wsht.formats.borders) {
-            var rng = xl_range_parse.parse_range(rng_id, xl_range_parse.ReferenceStyle.A1);
+            var rng = xl_range_parse.parse_range(rng_id, ref_style);
             for (var cell of range_cell_iterator(rng)) {
                 var cell_id = xl_range_parse.stringify_range(cell);
                 $('#'+cell_id).addClass(wsht.formats.borders[rng_id]);
@@ -90,11 +112,11 @@ function load_workbook(wbk) {
         }
         // add formulas
         for (var rng_id in wsht.formulas) {
-            var rng = xl_range_parse.parse_range(rng_id, xl_range_parse.ReferenceStyle.A1);
+            var rng = xl_range_parse.parse_range(rng_id, ref_style);
             var val = wsht.formulas[rng_id];
 
             if (val[0]=="=" || (val[0]=="{" && val[1]=="=")) {
-                add_formula(rng, val);
+                add_formula(rng, val, ref_style);
                 continue;
             }
 
@@ -109,6 +131,7 @@ function load_workbook(wbk) {
         }
 
         // add validation
+        if (wsht.formats && wsht.formats.number_format)
         for (var rng_id in wsht.formats.number_format) {
             var fmt =  wsht.formats.number_format[rng_id];
             if (fmt.indexOf("xlValidateList")!=-1) {
@@ -116,6 +139,18 @@ function load_workbook(wbk) {
                 var items = lst[1].split(',');
             }
         }
+
+		// check function usage
+		console.log("function_usage", function_usage);
+		var global_object = window || global;
+		for (var fct_name in function_usage) {
+			var fct_obj = Function('if (typeof '+fct_name+' != "undefined") return '+fct_name+';')();
+			if (typeof fct_obj == "function")
+				continue;
+			else 
+				global_object[fct_name] = xll_http_stub(fct_name);
+		}
+
 
         pop_all_formulas(wbk)
         .then(_ => render_graphs(wbk))
@@ -169,13 +204,17 @@ function range_cell_iterator(rng) {
 var formula_queue = [];
 var formula_queue_next = [];
 
+var function_usage = {};
+
 //var async_fct = new AsyncFunction("return new Promise("+formula+");");
-function add_formula(rng, formula_text) {
-    var args = [], vars_out = [], fcts_out = [];
+function add_formula(rng, formula_text, ref_style) {
+	var is_array_formula = formula_text[0]=="{";
+
+    var args = {}, vars_out = {}, fcts_out = function_usage;
     var formula0 = xl_parse_and_transfrom(formula_text, args);
     var formula = formula0;
     try {
-        formula = js_parse_and_transfrom(formula0, vars_out, fcts_out);
+        formula = js_parse_and_transfrom(formula0, vars_out, fcts_out, { is_array_formula: is_array_formula });
     } catch (e) {
         console.warn("acorn("+formula0+"): "+e);
         throw e;
@@ -186,7 +225,10 @@ function add_formula(rng, formula_text) {
     var fct_body = "return "+formula+";";
     var fct = new Function(fct_arg_names, fct_body);
 
-    var fct_arg_ranges = Object.keys(args).map(name => xl_range_parse.parse_range(name, xl_range_parse.ReferenceStyle.Auto, rng));
+    var fct_arg_ranges = Object.keys(args).map(name => xl_range_parse.parse_range(name, ref_style, rng));
+	if (!is_array_formula) {
+		fct_arg_ranges.forEach(arg => arg.caller = rng);
+	} 
 
     update_range_values(rng, undefined, -1); 
             
@@ -217,7 +259,12 @@ function pop_formula(wbk) {
     var node = formula_queue.shift();
 
     //if (node.formula_text.substr(0,10)=="=MATCH(K81") debugger;
-    
+	if (node.target.row==2 && node.target.col==8) debugger;
+
+    var is_array_formula = node.formula_text[0]=="{";
+    var caller = { wbk: wbk, wsh: wsh, rng: node.target, is_array_formula: is_array_formula };
+    var arg_values = node.arg_ranges.map(rng => range_view(absolute_range_ref(rng, node.offset, caller)));
+    /*
     try {
         var arg_values = node.arg_ranges.map(rng => 
             coerce_range_values(wbk, wsh, rng, node.offset));
@@ -227,23 +274,38 @@ function pop_formula(wbk) {
         else 
             throw e;
     }
+    */
+
     
     // if (node.formula_text.substr(0,8)=="=SUMPROD") debugger; // !!
 
-    return Promise.resolve(arg_values)
+    return Promise.all(arg_values)
         .then(arg_values => {
-            var res = node.fct.apply(null, arg_values);
-            if ((""+res)=="NaN")  // !!
-                console.warn("  NaN with args", arg_values, node.arg_ranges);
+        	var that = node;
+            var res = node.fct.apply(node, arg_values);
+            //if ((""+res)=="NaN")  // !!
+            //    console.warn("  NaN with args", arg_values, node.arg_ranges);
             return res;
         })
         .then(data => { 
             // console.log("ok", xl_range_parse.stringify_range(node.target), node.formula_text, node.target, data); 
+            if (data.is_range_view) {
+            	if (data.caller.is_array_formula)
+            		data = [...data].map(row => [...row]);
+            	else 
+            		data = data.valueOf();
+            }
             update_range_values(node.target, data, wsh.last_changed); // , node.offset 
             add_range_to_html(node.target); 
         })
-        .catch(e => 
-            console. error("err", xl_range_parse.stringify_range(node.target), node.formula_text, "\n", e));
+        .catch(e => {
+            if (e instanceof TooOldToCorceError) {
+				console.warn("deps", xl_range_parse.stringify_range(node.target), node.formula_text, "\n", e);
+                return formula_queue_next.push(node);
+			} else {
+				console.error("err", xl_range_parse.stringify_range(node.target), node.formula_text, "\n", e);
+			}
+        });
 }
 
 async function pop_all_formulas(wbk) {
@@ -252,7 +314,7 @@ async function pop_all_formulas(wbk) {
     var maxDepth = formula_queue.length;
     for (var depth=0; depth<maxDepth; depth++) {
         var nbTasksBegin = formula_queue.length;
-        console.warn("depth", depth, "#tasks", nbTasksBegin);
+        console.log("depth", depth, "#tasks", nbTasksBegin);
         for (var i=0; i<nbTasksBegin; i++)
             await pop_formula(wbk);
         var nbTasksEnd = formula_queue_next.length;
@@ -275,10 +337,9 @@ async function pop_all_formulas(wbk) {
 var wsh = {
     last_changed: -1,
     objects: {},
-    values: new Array(400).fill(null).map(row => new Array(26)),
+    values: new Array(400).fill(null).map(row => new Array(26).fill(null)),
     updated: new Array(400).fill(null).map(row => new Array(26).fill(null)),
     };
-
 
 function set_range_values(rng, data) {
     wsh.last_changed = (new Date())*1;
@@ -300,6 +361,12 @@ function update_range_values(rng, data, opt_update_time) {
 }
 
 function data_to_range_elnt(data,i,j) {
+    if (data===undefined)
+        return undefined;
+        
+    if (data.is_range_view)
+        return data[i][j];
+
     if (!Array.isArray(data))
         // scalar
         return data;
@@ -309,7 +376,21 @@ function data_to_range_elnt(data,i,j) {
     return data[i][j];
 }
 
+function absolute_range_ref(rng, rng_offset, caller) {
+    var abs_rng = {
+    	row: rng.row + ( rng.abs_row ? 0 : rng_offset.i),
+        col: rng.col + ( rng.abs_col ? 0 : rng_offset.j) };
+    if (rng.end) {
+    	var end = rng.end;
+    	abs_rng.end = {
+    		row: end.row + ( end.abs_row ? 0 : end_offset.i),
+        	col: end.col + ( end.abs_col ? 0 : end_offset.j) };	
+    }
+    return { rng: abs_rng, caller: caller };
+}
+
 function TooOldToCorceError(rng) {
+	this.addr =  xl_range_parse.stringify_range(rng);
     this.rng = rng;
 }
 
@@ -317,7 +398,7 @@ function coerce_range_values(wbk, wsh, rng, rng_offset) {
     if (rng.reference_to_named_range) {
         rng = xl_range_parse.parse_range(
             wbk.Names["Sheet1"][rng.reference_to_named_range], 
-            xl_range_parse.ReferenceStyle.Auto);
+            xl_range_parse.ReferenceStyle.A1);
     }
 
     var end = rng.end || rng;
@@ -339,6 +420,7 @@ function coerce_range_values(wbk, wsh, rng, rng_offset) {
     }
     return rng.end ? data : data[0][0];
 }
+
 function add_range_to_html(rng) {
     var end = rng.end || rng;
     for (var i=rng.row; i<=end.row; i++) {
@@ -363,14 +445,16 @@ function add_range_to_html(rng) {
 
 async function render_graphs(wbk) {
     console.log("wbk", wbk);
+    var ref_style = xl_range_parse.ReferenceStyle[wbk.ReferenceStyle || "A1"];
     var wsh = wbk.Worksheets[0];
     var charts = wsh.charts;
 
+    if (charts)
     for (var chart of charts) {
         console.log("chart", chart);
         var formula = chart.formula1.replace(/^=SERIES\(/, '=SERIES("'+JSON.stringify(chart).replace(/"/g,'""')+'", ');
         console.log("chart formula", formula);
-        add_formula({ graph: true}, formula);
+        add_formula({ graph: true}, formula, ref_style);
     }
     var _ = await pop_all_formulas();
 }
@@ -428,4 +512,29 @@ function SERIES(chart_json, title, arg1, arg2) {
             data: data
         }]
     });
+}
+
+function parse_query(query_string)
+{
+	// parse the query
+	var qs = query_string || location.search;
+	if (!qs) return {};
+	
+	var x = qs.substring(1).replace(/\+/g, ' ').replace(/;/g, '&').split('&');
+	
+	// q changes from string version of query to object
+	var q={};
+	for (var i=0; i<x.length; i++)
+	{
+		var t = x[i].split('=', 2);
+		var name = unescape(t[0]);
+		if (!q[name])
+			q[name] = [];
+		if (t.length>1)
+			q[name][q[name].length] = unescape(t[1]);
+		// next two lines are nonstandard 
+		else
+			q[name][q[name].length] = true;
+	}
+	return q;
 }

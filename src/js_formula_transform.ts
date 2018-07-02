@@ -14,13 +14,13 @@ const acorn = require("build/acorn");
 const escodegen_ = require("build/escodegen.browser"); // global variable escodegen created as side effect
 
 // if an object is a infix + operator
-function operator_override_ast(ast) {
+function operator_override_ast(ast, op_gen) {
     for (var k in ast) {
         if (Array.isArray(ast[k])) {
             for (var i=0; i<ast[k].length; i++)
-                ast[k][i] = operator_override_ast(ast[k][i]);
+                ast[k][i] = operator_override_ast(ast[k][i], op_gen);
         } else if (ast[k]!==null && typeof ast[k]=="object") {
-            ast[k] = operator_override_ast(ast[k]);
+            ast[k] = operator_override_ast(ast[k], op_gen);
         } else {
             // do nothing 
         }
@@ -48,7 +48,7 @@ function operator_override_ast(ast) {
             case "&&": op = "inter"; break;
             case "||": op = "union"; break;
         }
-        op = "op."+op;
+        op = op_gen+"."+op;
             
         return {
             "type": "CallExpression",
@@ -138,9 +138,13 @@ export function parse_and_transfrom(expr, opt_vars?, opt_fcts?, opt_prms?) {
     //console.log("vars: " + JSON.stringify(vars, null, 4));
     //console.log("fcts: " + JSON.stringify(fcts, null, 4));
 
-    var ast_op_over = operator_override_ast(ast);
+    var ast_op_over = ast;
+    if (prms.is_array_formula===true || prms.is_array_formula===undefined) 
+        ast_op_over = operator_override_ast(ast, "ops");
+    else 
+        ast_op_over = operator_override_ast(ast, "op");
     //console.log(JSON.stringify(ast_op_over, null, 4));
-
+    
     // generate code
     var code = escodegen.generate(ast_op_over, { comment: false });
     // console.log("code: "+code);
