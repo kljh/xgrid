@@ -50,8 +50,8 @@ function op_array(f, a, b) {
 		return Promise.all([a,b])
 			.then((args) => op_array(f, args[0], args[1]));
 
-	var left_array = Array.isArray(a) || a.is_range_view,
-		right_array = Array.isArray(b) || b.is_range_view;
+	var left_array = Array.isArray(a) || (a && a.is_range_view),
+		right_array = Array.isArray(b) || (b && b.is_range_view);
 	var n: number, res;
 	if (!left_array && !right_array) {
 		// scalar-scalar operation

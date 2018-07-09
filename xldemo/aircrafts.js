@@ -97,8 +97,8 @@ function MIN(arg, arg2) {
 	return res;
 }
 
-function SUM(rng1, rng2, rng3) {
-	if (rng2) throw new Error("SUM only implemented to handle a single argument")
+function SUM(rng) {
+	/*if (rng2) throw new Error("SUM only implemented to handle a single argument")
 	
 	var n = rng1.length,
 		m = rng1[0].length;
@@ -107,6 +107,23 @@ function SUM(rng1, rng2, rng3) {
 		for (var j=0; j<m; j++)
 			sum += rng1[i][j];
 	return sum;
+	*/
+
+	// call with multiple args
+	if (arguments.length>1)
+		return SUM(Array.from(arguments));
+	
+	// array
+	if (Array.isArray(rng) || rng.is_range_view) {
+		var n = rng.length;
+		var sum = 0.0;
+		for (var i=0; i<n; i++) 
+			sum += rng[i];
+		return sum;
+	}
+
+	// scalar
+	return rng;
 }
 
 

@@ -147,6 +147,8 @@ function load_workbook(wbk) {
 			var fct_obj = Function('if (typeof '+fct_name+' != "undefined") return '+fct_name+';')();
 			if (typeof fct_obj == "function")
 				continue;
+			else if (typeof formulajs !== "undefined" && formulajs[fct_name])
+				global_object[fct_name] = formulajs[fct_name];
 			else 
 				global_object[fct_name] = xll_http_stub(fct_name);
 		}
@@ -259,7 +261,7 @@ function pop_formula(wbk) {
     var node = formula_queue.shift();
 
     //if (node.formula_text.substr(0,10)=="=MATCH(K81") debugger;
-	if (node.target.row==2 && node.target.col==8) debugger;
+	//if (node.target.row==4 && node.target.col==4) debugger;
 
     var is_array_formula = node.formula_text[0]=="{";
     var caller = { wbk: wbk, wsh: wsh, rng: node.target, is_array_formula: is_array_formula };
@@ -281,8 +283,9 @@ function pop_formula(wbk) {
 
     return Promise.all(arg_values)
         .then(arg_values => {
-        	var that = node;
-            var res = node.fct.apply(node, arg_values);
+            formula_this.node = node;
+            var that = node;
+            var res = node.fct.apply(that, arg_values);
             //if ((""+res)=="NaN")  // !!
             //    console.warn("  NaN with args", arg_values, node.arg_ranges);
             return res;
@@ -361,19 +364,28 @@ function update_range_values(rng, data, opt_update_time) {
 }
 
 function data_to_range_elnt(data,i,j) {
+	try { 
+		return data_to_range_elnt_throws(data,i,j);
+	} catch (e) {
+		console.error("i", i, "j", j, "data", data);
+		throw e;
+	}
+}
+function data_to_range_elnt_throws(data,i,j) {
     if (data===undefined)
         return undefined;
         
-    if (data.is_range_view)
-        return data[i][j];
-
+    if (data.is_range_view) 
+    	return (i<data.length && j<data[i].length) ? data[i][j] : null;
+        
     if (!Array.isArray(data))
         // scalar
         return data;
     if (Array.isArray(data) && !Array.isArray(data[0]))
         // array 1D
-        return data[i];
-    return data[i][j];
+        return (i<data.length) ? data[i] : null;
+    
+    return (i<data.length && j<data[i].length) ? data[i][j] : null;
 }
 
 function absolute_range_ref(rng, rng_offset, caller) {
@@ -383,8 +395,8 @@ function absolute_range_ref(rng, rng_offset, caller) {
     if (rng.end) {
     	var end = rng.end;
     	abs_rng.end = {
-    		row: end.row + ( end.abs_row ? 0 : end_offset.i),
-        	col: end.col + ( end.abs_col ? 0 : end_offset.j) };	
+    		row: end.row + ( end.abs_row ? 0 : rng_offset.i),
+        	col: end.col + ( end.abs_col ? 0 : rng_offset.j) };	
     }
     return { rng: abs_rng, caller: caller };
 }

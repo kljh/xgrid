@@ -1250,12 +1250,6 @@ define("global_scope", ["require", "exports"], function (require, exports) {
         return res;
     }
     exports.trsp = trsp;
-    function top_left(a) {
-        if (Array.isArray(a))
-            return top_left(a[0]);
-        else
-            return a;
-    }
     function op_scalar(f, a, b) {
         // resolve arguments and apply scalar operation
         if (Promise.prototype.isPrototypeOf(a)
@@ -1277,7 +1271,7 @@ define("global_scope", ["require", "exports"], function (require, exports) {
             || Promise.prototype.isPrototypeOf(b))
             return Promise.all([a, b])
                 .then(function (args) { return op_array(f, args[0], args[1]); });
-        var left_array = Array.isArray(a) || a.is_range_view, right_array = Array.isArray(b) || b.is_range_view;
+        var left_array = Array.isArray(a) || (a && a.is_range_view), right_array = Array.isArray(b) || (b && b.is_range_view);
         var n, res;
         if (!left_array && !right_array) {
             // scalar-scalar operation
@@ -1319,6 +1313,12 @@ define("global_scope", ["require", "exports"], function (require, exports) {
         else {
             throw new Error("op_array: operation not implemented on this type combination");
         }
+    }
+    function top_left(a) {
+        if (Array.isArray(a))
+            return top_left(a[0]);
+        else
+            return a;
     }
     exports.op = {
         add: function add(a, b) { return op_scalar(function (a, b) { return a + b; }, a, b); },
@@ -1518,7 +1518,7 @@ define("js_formula_transform", ["require", "exports"], function (require, export
         //console.log("vars: " + JSON.stringify(vars, null, 4));
         //console.log("fcts: " + JSON.stringify(fcts, null, 4));
         var ast_op_over = ast;
-        if (prms.is_array_formula === undefined || prms.is_array_formula === true)
+        if (prms.is_array_formula === true || prms.is_array_formula === undefined)
             ast_op_over = operator_override_ast(ast, "ops");
         else
             ast_op_over = operator_override_ast(ast, "op");
