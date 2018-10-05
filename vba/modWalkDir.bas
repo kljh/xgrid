@@ -1,13 +1,24 @@
 Attribute VB_Name = "modWalkDir"
 Option Explicit
 
-Const xlFilesRoot = "C:\temp\"
-
 Sub WalkDirTest()
+    
+    Dim xlFilesRoot As String, xlSaveRoot As String, fso
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    xlFilesRoot = fso.GetAbsolutePathName(ThisWorkbook.path & "\..\..\..\vision\bin\xls") ' Vision XLL folder
+    xlSaveRoot = fso.GetAbsolutePathName(ThisWorkbook.path & "\..\..\..\vision\bin\xjs")
+    If Not fso.FolderExists(xlFilesRoot) Then
+        xlFilesRoot = "C:\temp\"
+        xlSaveRoot = "C:\temp\xjs"
+    End If
+    If Not fso.FolderExists(xlSaveRoot) Then
+        MkDir xlSaveRoot
+    End If
+    Debug.Print "xlFilesRoot " & xlFilesRoot
+    Debug.Print "xlSaveRoot " & xlSaveRoot
     
     Dim xlFiles, xlFileIn As String, xlFileOut As String, wbk As Workbook
     Set xlFiles = WalkDir(xlFilesRoot)
-    
     Debug.Print "#xlFiles " & xlFiles.Count
             
     Application.EnableEvents = False
@@ -24,7 +35,7 @@ Sub WalkDirTest()
         
         Debug.Print "< " & (i + 1) & "/" & n & " " & vbTab & fileLenKB & " KB " & vbTab & Replace(xlFileIn, xlFilesRoot, "")
         
-        If fileLenKB > 25000 Then
+        If fileLenKB > 4000 Then
             Debug.Print "> TOO BIG"
         Else
             Set wbk = Workbooks.Open(xlFileIn, ReadOnly = True)
@@ -32,7 +43,7 @@ Sub WalkDirTest()
             Application.CalculateBeforeSave = False
         
             xlFileOut = wbk.FullName & ".json"
-            xlFileOut = "D:\temp\xjson\" & wbk.Name & ".json" '  !!
+            xlFileOut = xlSaveRoot & "\" & wbk.Name & ".json"  '  !!
         
             Call export_workbook_to_file(wbk, xlFileOut)
             wbk.Close (False)
@@ -52,7 +63,6 @@ Function WalkDir(path As String)
     
     Call WalkDirIter(list, path)
     
-    ' WalkDir = vbs_arraylist_to_array(list)
     Set WalkDir = list
 End Function
 
@@ -92,20 +102,4 @@ Function WalkDirIter(ByRef list, path As String)
         Call WalkDirIter(list, subfolder)
     Next i
     
-End Function
-
-
-Function vbs_arraylist_to_array(v) As Variant()
-    Dim t As String
-    t = TypeName(v)
-    Debug.Assert t = "ArrayList"
-    
-    Dim json As String, i As Long, n As Long
-    n = v.Count
-    
-    ReDim res(0 To n) As Variant
-    For i = 0 To n - 1
-        res(i) = v(i)
-    Next i
-    vbs_arraylist_to_array = res
 End Function

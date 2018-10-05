@@ -10,22 +10,33 @@ Attribute VB_Exposed = True
 Option Explicit
 
 Private Sub Workbook_Open()
+    Debug.Print Now() & " Workbook_Open"
     ' Load VBA modules from disk
+    Call RemoveVBAModules(ThisWorkbook)
     Call LoadVBAModules(ThisWorkbook.path, ThisWorkbook)
 End Sub
 
+Private Sub Workbook_BeforeSave(ByVal SaveAsUI As Boolean, Cancel As Boolean)
+    Debug.Print Now() & " Workbook_BeforeSave"
+    Call SaveVBAModules(ThisWorkbook.path, ThisWorkbook)
+End Sub
+
 Private Sub Workbook_BeforeClose(Cancel As Boolean)
+    Debug.Print Now() & " Workbook_BeforeClose"
     If Not ThisWorkbook.Saved Then
-        If MsgBox(ThisWorkbook.Name & " not saved. Save ?", vbYesNo) = vbNo Then
-            Exit Sub
-        End If
+        'If MsgBox(ThisWorkbook.Name & " not saved. Save ?", vbYesNo) = vbNo Then
+        '    Exit Sub
+        'End If
+        
         ' Write VBA modules to disk, remove them, and save Excel file
-        UnloadVBAModules ThisWorkbook.path, ThisWorkbook
+        Call SaveVBAModules(ThisWorkbook.path, ThisWorkbook)
+        Call RemoveVBAModules(ThisWorkbook)
+
         ThisWorkbook.Save
     End If
 End Sub
 
-Sub LoadVBAModulesTest()
+Sub LoadVBAModulesThisWorkbook()
     LoadVBAModules ThisWorkbook.path, ThisWorkbook
 End Sub
 Sub LoadVBAModules(path As String, wbk As Workbook)
@@ -51,10 +62,10 @@ Sub LoadVBAModules(path As String, wbk As Workbook)
     Next
 End Sub
 
-Sub UnloadVBAModulesTest()
-    UnloadVBAModules ThisWorkbook.path, ThisWorkbook
+Sub SaveVBAModulesThisWorkbook()
+    SaveVBAModules ThisWorkbook.path, ThisWorkbook
 End Sub
-Sub UnloadVBAModules(path As String, wbk As Workbook)
+Sub SaveVBAModules(path As String, wbk As Workbook)
     Dim VBProj As VBIDE.VBProject
     On Error Resume Next
     Set VBProj = wbk.VBProject
@@ -70,9 +81,24 @@ Sub UnloadVBAModules(path As String, wbk As Workbook)
         If component.Type = vbext_ct_StdModule Then
             TrimEmptyLines component
             Call component.Export(path & "\" & component.Name & ".bas")
+        End If
+    Next component
+End Sub
+
+Sub RemoveVBAModulesThisWorkbook()
+    RemoveVBAModules ThisWorkbook
+End Sub
+Sub RemoveVBAModules(wbk As Workbook)
+    Dim VBProj As VBIDE.VBProject
+    Set VBProj = wbk.VBProject
+    
+    Dim component As VBIDE.VBComponent
+    For Each component In VBProj.VBComponents
+        If component.Type = vbext_ct_StdModule Then
             VBProj.VBComponents.Remove component
         End If
     Next component
+
 End Sub
 
 ' Trim empty lines at the beginning and at the end of the code module

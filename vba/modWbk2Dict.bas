@@ -19,6 +19,8 @@ Const xlCellTypeSameFormatConditions = -4173 ' Cells having the same format
 Const xlCellTypeAllValidation = -4174 ' Cells having validation criteria
 Const xlCellTypeSameValidation = -4175 ' Cells having the same validation criteria
 
+Dim globalChartTypeMap As Dictionary
+
 Sub export_workbook_to_file_test()
     Dim wbk As Workbook
     Set wbk = ActiveWorkbook
@@ -60,6 +62,7 @@ Function export_workbook(wbk As Workbook)
     d.Add "FileSize", FileLen(wbk.path & "\" & wbk.Name)
     d.Add "CodeName", wbk.CodeName
     d.Add "HasVBProject", wbk.HasVBProject
+    ' d.Add "ReferenceStyle", IIf(Application.ReferenceStyle = xlA1, "A1", "R1C1") ' always A1
     d.Add "#ExcelLinks", nbExcelLinks
     d.Add "#Styles", wbk.styles.Count
     d.Add "#Charts", wbk.Charts.Count
@@ -229,7 +232,7 @@ Function export_worksheet_formulas(sht As Worksheet)
                 
                 If i = i2 Then
                     
-                    formulas(c.Address) = c.FormulaR1C1
+                    formulas(c.Address) = c.Formula
                 Else
                     Set c2 = sht.cells(i2, j)
                     formulas(c.Address & ":" & c2.Address) = c.Formula
@@ -600,7 +603,6 @@ Function export_worksheet_charts(sht As Worksheet)
     Set export_worksheet_charts = chartList
 End Function
 
-Dim globalChartTypeMap As Dictionary
 Function ChartTypeName(ChartTypeEnum)
     If IsEmpty(globalChartTypeMap) Then
         Set globalChartTypeMap = New Dictionary
